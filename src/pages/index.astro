@@ -1,0 +1,598 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Logo from '../components/Logo.astro';
+
+const features = [
+  {
+    icon: 'evm',
+    title: 'EVM Native',
+    description: 'Fully compatible with Ethereum Virtual Machine. Deploy your Solidity smart contracts seamlessly.'
+  },
+  {
+    icon: 'speed',
+    title: 'Fast & Efficient',
+    description: 'High throughput with low latency block times for rapid transaction confirmations.'
+  },
+  {
+    icon: 'secure',
+    title: 'Secure Network',
+    description: 'Proof-of-Stake consensus mechanism ensuring network security and decentralization.'
+  },
+  {
+    icon: 'community',
+    title: 'Open Source',
+    description: 'Transparent and community-driven development. Anyone can contribute and participate.'
+  }
+];
+
+const stats = [
+  { label: 'Chain ID', value: '5222' },
+  { label: 'Consensus', value: 'PoS' },
+  { label: 'EVM', value: 'Compatible' },
+  { label: 'Status', value: 'Active' }
+];
+---
+
+<Layout title="LabChain - EVM Native Blockchain for Laos">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-gradient"></div>
+      <div class="hero-pattern"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          Network Active
+        </div>
+        <h1 class="hero-title">
+          <span class="text-gradient">LabChain</span>
+          <br />
+          Blockchain for Laos
+        </h1>
+        <p class="hero-desc">
+          An EVM-native blockchain network built for Laos. Fast, secure, and decentralized
+          infrastructure powering the next generation of Web3 applications.
+        </p>
+        <div class="hero-actions">
+          <a href="https://explorer.labchain.la/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Block Explorer
+          </a>
+          <a href="https://github.com/xang555/labchain" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-card">
+          <div class="hero-logo">
+            <Logo size={120} showText={false} />
+          </div>
+          <div class="hero-stats">
+            {stats.map((stat) => (
+              <div class="stat-item">
+                <span class="stat-label">{stat.label}</span>
+                <span class="stat-value">{stat.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Network Info Section -->
+  <section class="network-info">
+    <div class="container">
+      <div class="info-card">
+        <div class="info-header">
+          <h3>Quick Connect</h3>
+          <span class="badge badge-success">
+            <span class="pulse-dot green"></span>
+            Online
+          </span>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Network Name</span>
+            <span class="info-value">LabChain</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Chain ID</span>
+            <span class="info-value">5222</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Currency Symbol</span>
+            <span class="info-value">LAB</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Block Explorer</span>
+            <a href="https://explorer.labchain.la/" class="info-link" target="_blank" rel="noopener noreferrer">
+              explorer.labchain.la
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why LabChain?</h2>
+        <p>Built with modern blockchain technology to serve the Laos community and beyond.</p>
+      </div>
+      <div class="features-grid">
+        {features.map((feature, index) => (
+          <div class="feature-card" style={`animation-delay: ${index * 0.1}s`}>
+            <div class="feature-icon">
+              {feature.icon === 'evm' && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+              )}
+              {feature.icon === 'speed' && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+              )}
+              {feature.icon === 'secure' && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              )}
+              {feature.icon === 'community' && (
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              )}
+            </div>
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Ready to Build on LabChain?</h2>
+        <p>
+          Join the network as a validator, deploy your dApps, or explore the blockchain.
+          Get started with our comprehensive documentation.
+        </p>
+        <div class="cta-actions">
+          <a href="https://github.com/xang555/labchain" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+            Get Started
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+          <a href="/boot-nodes" class="btn btn-outline">
+            View Nodes
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Hero Section */
+  .hero {
+    position: relative;
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    align-items: center;
+    padding: 80px 0;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-hero);
+    opacity: 0.05;
+  }
+
+  [data-theme="dark"] .hero-gradient {
+    opacity: 0.3;
+  }
+
+  .hero-pattern {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 25% 25%, var(--color-red) 1px, transparent 1px),
+      radial-gradient(circle at 75% 75%, var(--color-blue) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.1;
+  }
+
+  .hero .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+
+  .hero-content {
+    animation: fadeIn 0.8s ease forwards;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(34, 197, 94, 0.1);
+    color: #22C55E;
+    border-radius: var(--radius-full);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #22C55E;
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .pulse-dot.green {
+    background: #22C55E;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  .hero-desc {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 500px;
+    margin-bottom: 32px;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    animation: fadeIn 0.8s ease 0.2s forwards;
+    opacity: 0;
+  }
+
+  .hero-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-2xl);
+    padding: 48px;
+    text-align: center;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .hero-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* Network Info Section */
+  .network-info {
+    padding: 0 0 80px;
+    margin-top: -40px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .info-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .info-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .info-label {
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  .info-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .info-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-red);
+    transition: opacity var(--transition-fast);
+  }
+
+  .info-link:hover {
+    opacity: 0.8;
+  }
+
+  /* Features Section */
+  .features {
+    padding: 80px 0;
+    background: var(--bg-secondary);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .section-header h2 {
+    margin-bottom: 16px;
+  }
+
+  .section-header p {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    text-align: center;
+    transition: all var(--transition-normal);
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--color-red);
+  }
+
+  .feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+  }
+
+  .feature-card h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .feature-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* CTA Section */
+  .cta {
+    padding: 100px 0;
+    background: var(--gradient-hero);
+  }
+
+  .cta-content {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cta h2 {
+    color: white;
+    margin-bottom: 16px;
+  }
+
+  .cta p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 18px;
+    margin-bottom: 32px;
+    line-height: 1.7;
+  }
+
+  .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .cta .btn-primary {
+    background: white;
+    color: var(--color-blue);
+  }
+
+  .cta .btn-primary:hover {
+    background: var(--color-gray-100);
+  }
+
+  .cta .btn-outline {
+    border-color: white;
+    color: white;
+  }
+
+  .cta .btn-outline:hover {
+    background: white;
+    color: var(--color-blue);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .hero .container {
+      grid-template-columns: 1fr;
+      gap: 48px;
+      text-align: center;
+    }
+
+    .hero-desc {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-actions {
+      justify-content: center;
+    }
+
+    .features-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .info-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      padding: 48px 0;
+      min-height: auto;
+    }
+
+    .hero-card {
+      padding: 32px 24px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+    }
+
+    .hero-actions .btn {
+      width: 100%;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cta {
+      padding: 64px 0;
+    }
+
+    .cta-actions {
+      flex-direction: column;
+    }
+
+    .cta-actions .btn {
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,628 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Placeholder beacon node data - replace with actual data
+const beaconNodes = [
+  {
+    id: 'beacon-1',
+    name: 'LabChain Beacon Node 1',
+    endpoint: 'https://beacon1.labchain.la',
+    location: 'Vientiane, Laos',
+    status: 'active',
+    version: 'v4.1.0',
+    syncStatus: 'Synced',
+    slots: '1,234,567',
+    epoch: '38,580',
+    lastUpdate: '12 seconds ago'
+  },
+  {
+    id: 'beacon-2',
+    name: 'LabChain Beacon Node 2',
+    endpoint: 'https://beacon2.labchain.la',
+    location: 'Singapore',
+    status: 'active',
+    version: 'v4.1.0',
+    syncStatus: 'Synced',
+    slots: '1,234,567',
+    epoch: '38,580',
+    lastUpdate: '8 seconds ago'
+  },
+  {
+    id: 'beacon-3',
+    name: 'LabChain Beacon Node 3',
+    endpoint: 'https://beacon3.labchain.la',
+    location: 'Bangkok, Thailand',
+    status: 'active',
+    version: 'v4.1.0',
+    syncStatus: 'Synced',
+    slots: '1,234,566',
+    epoch: '38,580',
+    lastUpdate: '15 seconds ago'
+  },
+  {
+    id: 'beacon-4',
+    name: 'LabChain Beacon Node 4',
+    endpoint: 'https://beacon4.labchain.la',
+    location: 'Ho Chi Minh, Vietnam',
+    status: 'syncing',
+    version: 'v4.0.3',
+    syncStatus: 'Syncing (98.5%)',
+    slots: '1,234,000',
+    epoch: '38,562',
+    lastUpdate: '25 seconds ago'
+  }
+];
+
+const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
+---
+
+<Layout title="Beacon Nodes - LabChain" description="List of Consensus Layer beacon nodes for LabChain network. Connect your validator to participate in consensus.">
+  <section class="page-hero">
+    <div class="container">
+      <div class="page-header">
+        <div class="breadcrumb">
+          <a href="/">Home</a>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          <span>Beacon Nodes</span>
+        </div>
+        <h1>Consensus Layer Beacon Nodes</h1>
+        <p>
+          Connect to these beacon nodes to participate in the LabChain consensus layer.
+          Beacon nodes coordinate validators and manage the Proof-of-Stake consensus.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{beaconNodes.length}</span>
+            <span class="stat-label">Total Beacon Nodes</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon success">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{activeNodes}</span>
+            <span class="stat-label">Fully Synced</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">38,580</span>
+            <span class="stat-label">Current Epoch</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">1,234,567</span>
+            <span class="stat-label">Latest Slot</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="nodes-section">
+    <div class="container">
+      <div class="section-title">
+        <h2>Available Beacon Nodes</h2>
+        <p>Select a beacon node to view details and connect your validator client.</p>
+      </div>
+
+      <div class="nodes-grid">
+        {beaconNodes.map((node) => (
+          <div class="node-card" data-status={node.status}>
+            <div class="node-header">
+              <div class="node-status">
+                <span class={`status-dot ${node.status}`}></span>
+                <span class="status-text">{node.syncStatus}</span>
+              </div>
+              <span class="node-version">{node.version}</span>
+            </div>
+
+            <h3 class="node-name">{node.name}</h3>
+
+            <div class="node-location">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>{node.location}</span>
+            </div>
+
+            <div class="node-stats">
+              <div class="node-stat">
+                <span class="node-stat-label">Epoch</span>
+                <span class="node-stat-value">{node.epoch}</span>
+              </div>
+              <div class="node-stat">
+                <span class="node-stat-label">Slot</span>
+                <span class="node-stat-value">{node.slots}</span>
+              </div>
+              <div class="node-stat">
+                <span class="node-stat-label">Last Update</span>
+                <span class="node-stat-value">{node.lastUpdate}</span>
+              </div>
+            </div>
+
+            <div class="node-endpoint">
+              <label>API Endpoint</label>
+              <div class="endpoint-wrapper">
+                <code>{node.endpoint}</code>
+                <button class="copy-btn" data-endpoint={node.endpoint} title="Copy endpoint URL">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="node-actions">
+              <a href={node.endpoint} class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer">
+                Open API
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="help-section">
+    <div class="container">
+      <div class="help-card">
+        <div class="help-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div class="help-content">
+          <h3>Become a Validator</h3>
+          <p>
+            Want to help secure the LabChain network? Run a validator node and earn rewards for
+            participating in consensus. Check our documentation for staking requirements and setup guides.
+          </p>
+          <a href="https://github.com/xang555/labchain" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+            View Staking Guide
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    padding: 48px 0 32px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .page-header {
+    max-width: 700px;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+  }
+
+  .breadcrumb a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-red);
+  }
+
+  .page-header h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin-bottom: 16px;
+  }
+
+  .page-header p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* Stats Section */
+  .stats-section {
+    padding: 32px 0;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+  }
+
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: var(--bg-tertiary);
+    color: var(--color-red);
+    border-radius: var(--radius-md);
+  }
+
+  .stat-icon.success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22C55E;
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-card .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .stat-card .stat-label {
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  /* Nodes Section */
+  .nodes-section {
+    padding: 32px 0 80px;
+  }
+
+  .section-title {
+    margin-bottom: 32px;
+  }
+
+  .section-title h2 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+
+  .section-title p {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .nodes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .node-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    transition: all var(--transition-normal);
+  }
+
+  .node-card:hover {
+    border-color: var(--border-color-strong);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .node-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .node-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+  }
+
+  .status-dot.active {
+    background: #22C55E;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+  }
+
+  .status-dot.syncing {
+    background: #EAB308;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .status-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .node-version {
+    font-size: 12px;
+    font-family: monospace;
+    color: var(--text-tertiary);
+    background: var(--bg-tertiary);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .node-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .node-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+
+  .node-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+  }
+
+  .node-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .node-stat-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .node-stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .node-endpoint {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .node-endpoint label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .endpoint-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+  }
+
+  .endpoint-wrapper code {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .copy-btn:hover {
+    color: var(--color-red);
+    border-color: var(--color-red);
+  }
+
+  .node-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  /* Help Section */
+  .help-section {
+    padding: 0 0 80px;
+  }
+
+  .help-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+  }
+
+  .help-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: rgba(206, 17, 38, 0.1);
+    color: var(--color-red);
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+  }
+
+  .help-content {
+    flex: 1;
+  }
+
+  .help-content h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .help-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.7;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .nodes-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .help-card {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .help-icon {
+      align-self: center;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .node-stats {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+</style>
+
+<script>
+  // Copy endpoint URL to clipboard
+  const copyButtons = document.querySelectorAll('.copy-btn');
+
+  copyButtons.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const endpoint = btn.getAttribute('data-endpoint');
+      if (!endpoint) return;
+
+      try {
+        await navigator.clipboard.writeText(endpoint);
+
+        // Visual feedback
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        `;
+        btn.style.color = '#22C55E';
+        btn.style.borderColor = '#22C55E';
+
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    });
+  });
+</script>

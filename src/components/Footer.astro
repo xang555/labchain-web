@@ -1,0 +1,192 @@
+---
+import Logo from './Logo.astro';
+
+const currentYear = new Date().getFullYear();
+
+const links = {
+  resources: [
+    { label: 'Block Explorer', href: 'https://explorer.labchain.la/', external: true },
+    { label: 'Documentation', href: 'https://github.com/xang555/labchain', external: true },
+    { label: 'GitHub', href: 'https://github.com/xang555/labchain', external: true },
+  ],
+  network: [
+    { label: 'Boot Nodes', href: '/boot-nodes' },
+    { label: 'Beacon Nodes', href: '/beacon-nodes' },
+  ],
+};
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <Logo size={32} />
+        <p class="footer-desc">
+          LabChain is an EVM-native blockchain network built for Laos,
+          providing fast, secure, and decentralized infrastructure.
+        </p>
+        <div class="chain-info">
+          <span class="badge badge-primary">Chain ID: 5222</span>
+          <span class="badge">EVM Compatible</span>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-section">
+          <h4>Resources</h4>
+          <ul>
+            {links.resources.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  target={link.external ? '_blank' : undefined}
+                  rel={link.external ? 'noopener noreferrer' : undefined}
+                >
+                  {link.label}
+                  {link.external && (
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>Network</h4>
+          <ul>
+            {links.network.map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {currentYear} LabChain. All rights reserved.</p>
+      <p class="footer-tagline">Blockchain for Laos</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: 64px 0 32px;
+    margin-top: auto;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 64px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .footer-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 360px;
+    line-height: 1.7;
+  }
+
+  .chain-info {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .footer-section h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .footer-section ul {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .footer-section a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+  }
+
+  .footer-section a:hover {
+    color: var(--color-red);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 24px;
+    gap: 16px;
+  }
+
+  .footer-bottom p {
+    font-size: 14px;
+    color: var(--text-tertiary);
+  }
+
+  .footer-tagline {
+    font-weight: 500;
+    color: var(--color-red) !important;
+  }
+
+  @media (max-width: 768px) {
+    .footer {
+      padding: 48px 0 24px;
+    }
+
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    .footer-links {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer-links {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+</style>
