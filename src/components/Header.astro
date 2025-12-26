@@ -3,8 +3,13 @@ import Logo from './Logo.astro';
 
 const navItems = [
   { label: 'Home', href: '/' },
-  { label: 'Boot Nodes', href: '/boot-nodes' },
-  { label: 'Beacon Nodes', href: '/beacon-nodes' },
+  { label: 'Documentation', href: '/docs' },
+];
+
+const networkItems = [
+  { label: 'RPC Endpoints', href: '/rpc', desc: 'Public RPC URLs' },
+  { label: 'Boot Nodes', href: '/boot-nodes', desc: 'Execution layer nodes' },
+  { label: 'Beacon Nodes', href: '/beacon-nodes', desc: 'Consensus layer nodes' },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -33,6 +38,28 @@ const currentPath = Astro.url.pathname;
               </a>
             </li>
           ))}
+          <li class="nav-dropdown">
+            <button
+              class:list={['nav-link dropdown-trigger', { active: networkItems.some(item => currentPath === item.href) }]}
+              aria-expanded="false"
+            >
+              Network
+              <svg class="dropdown-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="dropdown-menu">
+              {networkItems.map((item) => (
+                <a
+                  href={item.href}
+                  class:list={['dropdown-item', { active: currentPath === item.href }]}
+                >
+                  <span class="dropdown-item-label">{item.label}</span>
+                  <span class="dropdown-item-desc">{item.desc}</span>
+                </a>
+              ))}
+            </div>
+          </li>
         </ul>
 
         <div class="nav-actions">
@@ -53,14 +80,13 @@ const currentPath = Astro.url.pathname;
             </svg>
           </button>
 
-          <button class="btn btn-secondary connect-wallet-btn" id="connectWalletBtn">
+          <button class="btn btn-secondary add-network-btn" id="addNetworkBtn">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
-              <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
-              <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
             </svg>
-            <span class="wallet-text">Connect Wallet</span>
-            <span class="wallet-address" style="display: none;"></span>
+            <span class="btn-text">Add Network</span>
           </button>
 
           <a href="https://explorer.labchain.la/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
@@ -146,6 +172,85 @@ const currentPath = Astro.url.pathname;
   .nav-link.active {
     color: var(--color-red);
     background: rgba(206, 17, 38, 0.1);
+  }
+
+  /* Dropdown Styles */
+  .nav-dropdown {
+    position: relative;
+  }
+
+  .dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  .dropdown-icon {
+    transition: transform var(--transition-fast);
+  }
+
+  .nav-dropdown:hover .dropdown-icon,
+  .dropdown-trigger[aria-expanded="true"] .dropdown-icon {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+    min-width: 220px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-fast);
+    z-index: 100;
+    padding: 8px;
+  }
+
+  .nav-dropdown:hover .dropdown-menu,
+  .dropdown-trigger[aria-expanded="true"] + .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .dropdown-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+  }
+
+  .dropdown-item:hover {
+    background: var(--bg-tertiary);
+  }
+
+  .dropdown-item.active {
+    background: rgba(206, 17, 38, 0.1);
+  }
+
+  .dropdown-item-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .dropdown-item.active .dropdown-item-label {
+    color: var(--color-red);
+  }
+
+  .dropdown-item-desc {
+    font-size: 12px;
+    color: var(--text-tertiary);
   }
 
   .nav-actions {
@@ -286,6 +391,41 @@ const currentPath = Astro.url.pathname;
       text-align: center;
     }
 
+    /* Mobile Dropdown */
+    .nav-dropdown {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dropdown-trigger {
+      padding: 16px;
+      font-size: 18px;
+      justify-content: center;
+    }
+
+    .dropdown-menu {
+      position: static;
+      transform: none;
+      margin-top: 0;
+      opacity: 1;
+      visibility: visible;
+      box-shadow: none;
+      border: none;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      padding: 8px;
+      display: none;
+    }
+
+    .nav-dropdown.open .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-item {
+      text-align: center;
+      align-items: center;
+    }
+
     .nav-actions {
       flex-direction: column;
       gap: 16px;
@@ -303,29 +443,21 @@ const currentPath = Astro.url.pathname;
       padding: 16px 24px;
     }
 
-    .connect-wallet-btn .wallet-address {
-      max-width: 120px;
-    }
   }
 
-  /* Connect Wallet Button Styles */
-  .connect-wallet-btn {
+  /* Add Network Button Styles */
+  .add-network-btn {
     position: relative;
   }
 
-  .connect-wallet-btn.connected {
+  .add-network-btn.added {
     background: rgba(34, 197, 94, 0.1);
     border-color: #22C55E;
     color: #22C55E;
   }
 
-  .connect-wallet-btn.connected:hover {
+  .add-network-btn.added:hover {
     background: rgba(34, 197, 94, 0.15);
-  }
-
-  .wallet-address {
-    font-family: monospace;
-    font-size: 13px;
   }
 </style>
 
@@ -364,7 +496,7 @@ const currentPath = Astro.url.pathname;
   });
 
   // Close mobile menu on link click
-  const navLinks = document.querySelectorAll('.nav-link');
+  const navLinks = document.querySelectorAll('.nav-link:not(.dropdown-trigger)');
   navLinks.forEach(link => {
     link.addEventListener('click', () => {
       mobileMenuBtn?.setAttribute('aria-expanded', 'false');
@@ -373,10 +505,33 @@ const currentPath = Astro.url.pathname;
     });
   });
 
-  // Connect Wallet functionality
-  const connectWalletBtn = document.getElementById('connectWalletBtn');
-  const walletText = connectWalletBtn?.querySelector('.wallet-text') as HTMLElement;
-  const walletAddress = connectWalletBtn?.querySelector('.wallet-address') as HTMLElement;
+  // Close mobile menu on dropdown item click
+  const dropdownItems = document.querySelectorAll('.dropdown-item');
+  dropdownItems.forEach(item => {
+    item.addEventListener('click', () => {
+      mobileMenuBtn?.setAttribute('aria-expanded', 'false');
+      navContent?.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // Mobile dropdown toggle
+  const dropdownTrigger = document.querySelector('.dropdown-trigger');
+  const navDropdown = document.querySelector('.nav-dropdown');
+
+  dropdownTrigger?.addEventListener('click', (e) => {
+    // Only toggle on mobile
+    if (window.innerWidth <= 768) {
+      e.preventDefault();
+      const isExpanded = dropdownTrigger.getAttribute('aria-expanded') === 'true';
+      dropdownTrigger.setAttribute('aria-expanded', (!isExpanded).toString());
+      navDropdown?.classList.toggle('open');
+    }
+  });
+
+  // Add Network functionality
+  const addNetworkBtn = document.getElementById('addNetworkBtn');
+  const btnText = addNetworkBtn?.querySelector('.btn-text') as HTMLElement;
 
   const LAB_CHAIN_ID = '0x1466'; // 5222 in hex
 
@@ -392,105 +547,51 @@ const currentPath = Astro.url.pathname;
     blockExplorerUrls: ['https://explorer.labchain.la']
   };
 
-  function shortenAddress(address: string): string {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  }
+  function showSuccess() {
+    if (addNetworkBtn && btnText) {
+      const originalText = btnText.textContent;
+      btnText.textContent = 'Network Added!';
+      addNetworkBtn.classList.add('added');
 
-  function updateWalletUI(address: string | null) {
-    if (address && walletText && walletAddress && connectWalletBtn) {
-      walletText.style.display = 'none';
-      walletAddress.style.display = 'inline';
-      walletAddress.textContent = shortenAddress(address);
-      connectWalletBtn.classList.add('connected');
-      connectWalletBtn.title = address;
-    } else if (walletText && walletAddress && connectWalletBtn) {
-      walletText.style.display = 'inline';
-      walletAddress.style.display = 'none';
-      connectWalletBtn.classList.remove('connected');
-      connectWalletBtn.title = '';
+      setTimeout(() => {
+        btnText.textContent = originalText;
+        addNetworkBtn.classList.remove('added');
+      }, 3000);
     }
   }
 
-  async function switchToLabChain() {
-    try {
-      await (window as any).ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: LAB_CHAIN_ID }]
-      });
-    } catch (switchError: any) {
-      // Chain not added, try to add it
-      if (switchError.code === 4902) {
-        try {
-          await (window as any).ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [LAB_CHAIN_CONFIG]
-          });
-        } catch (addError) {
-          console.error('Failed to add LAB Chain:', addError);
-        }
-      } else {
-        console.error('Failed to switch to LAB Chain:', switchError);
-      }
+  function showError(message: string) {
+    if (btnText) {
+      const originalText = btnText.textContent;
+      btnText.textContent = message;
+
+      setTimeout(() => {
+        btnText.textContent = originalText;
+      }, 3000);
     }
   }
 
-  async function connectWallet() {
+  async function addLabChainNetwork() {
     if (typeof (window as any).ethereum === 'undefined') {
-      alert('Please install MetaMask or another Web3 wallet to connect.');
+      alert('Please install MetaMask or another Web3 wallet to add the network.');
       return;
     }
 
     try {
-      const accounts = await (window as any).ethereum.request({
-        method: 'eth_requestAccounts'
+      await (window as any).ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [LAB_CHAIN_CONFIG]
       });
-
-      if (accounts.length > 0) {
-        updateWalletUI(accounts[0]);
-        await switchToLabChain();
-      }
+      showSuccess();
     } catch (error: any) {
       if (error.code === 4001) {
-        console.log('User rejected the connection request');
+        console.log('User rejected adding LAB Chain network');
       } else {
-        console.error('Error connecting wallet:', error);
+        console.error('Failed to add LAB Chain network:', error);
+        showError('Failed to add');
       }
     }
   }
 
-  async function checkConnection() {
-    if (typeof (window as any).ethereum !== 'undefined') {
-      try {
-        const accounts = await (window as any).ethereum.request({
-          method: 'eth_accounts'
-        });
-        if (accounts.length > 0) {
-          updateWalletUI(accounts[0]);
-        }
-      } catch (error) {
-        console.error('Error checking wallet connection:', error);
-      }
-    }
-  }
-
-  // Event listeners
-  connectWalletBtn?.addEventListener('click', connectWallet);
-
-  // Check if already connected on page load
-  checkConnection();
-
-  // Listen for account changes
-  if (typeof (window as any).ethereum !== 'undefined') {
-    (window as any).ethereum.on('accountsChanged', (accounts: string[]) => {
-      if (accounts.length > 0) {
-        updateWalletUI(accounts[0]);
-      } else {
-        updateWalletUI(null);
-      }
-    });
-
-    (window as any).ethereum.on('chainChanged', () => {
-      window.location.reload();
-    });
-  }
+  addNetworkBtn?.addEventListener('click', addLabChainNetwork);
 </script>
