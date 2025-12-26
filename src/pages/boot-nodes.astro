@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
 const bootNodes = [
   {
     id: 'boot-1',
-    name: 'LabChain Boot Node 1',
+    name: 'LAB Chain Boot Node 1',
     enode: 'enode://abc123...@boot1.labchain.la:30303',
     location: 'Vientiane, Laos',
     status: 'active',
@@ -15,7 +15,7 @@ const bootNodes = [
   },
   {
     id: 'boot-2',
-    name: 'LabChain Boot Node 2',
+    name: 'LAB Chain Boot Node 2',
     enode: 'enode://def456...@boot2.labchain.la:30303',
     location: 'Singapore',
     status: 'active',
@@ -25,7 +25,7 @@ const bootNodes = [
   },
   {
     id: 'boot-3',
-    name: 'LabChain Boot Node 3',
+    name: 'LAB Chain Boot Node 3',
     enode: 'enode://ghi789...@boot3.labchain.la:30303',
     location: 'Bangkok, Thailand',
     status: 'active',
@@ -35,7 +35,7 @@ const bootNodes = [
   },
   {
     id: 'boot-4',
-    name: 'LabChain Boot Node 4',
+    name: 'LAB Chain Boot Node 4',
     enode: 'enode://jkl012...@boot4.labchain.la:30303',
     location: 'Ho Chi Minh, Vietnam',
     status: 'syncing',
@@ -49,7 +49,7 @@ const activeNodes = bootNodes.filter(n => n.status === 'active').length;
 const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
 ---
 
-<Layout title="Boot Nodes - LabChain" description="List of Execution Layer boot nodes for LabChain network. Connect your node to join the network.">
+<Layout title="Boot Nodes - LAB Chain" description="List of Execution Layer boot nodes for LAB Chain network. Connect your node to join the network.">
   <section class="page-hero">
     <div class="container">
       <div class="page-header">
@@ -62,7 +62,7 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
         </div>
         <h1>Execution Layer Boot Nodes</h1>
         <p>
-          Connect to these boot nodes to join the LabChain network. Boot nodes help your node
+          Connect to these boot nodes to join the LAB Chain network. Boot nodes help your node
           discover peers and synchronize with the network.
         </p>
       </div>

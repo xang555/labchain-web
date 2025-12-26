@@ -5,7 +5,7 @@ import Layout from '../layouts/Layout.astro';
 const beaconNodes = [
   {
     id: 'beacon-1',
-    name: 'LabChain Beacon Node 1',
+    name: 'LAB Chain Beacon Node 1',
     endpoint: 'https://beacon1.labchain.la',
     location: 'Vientiane, Laos',
     status: 'active',
@@ -17,7 +17,7 @@ const beaconNodes = [
   },
   {
     id: 'beacon-2',
-    name: 'LabChain Beacon Node 2',
+    name: 'LAB Chain Beacon Node 2',
     endpoint: 'https://beacon2.labchain.la',
     location: 'Singapore',
     status: 'active',
@@ -29,7 +29,7 @@ const beaconNodes = [
   },
   {
     id: 'beacon-3',
-    name: 'LabChain Beacon Node 3',
+    name: 'LAB Chain Beacon Node 3',
     endpoint: 'https://beacon3.labchain.la',
     location: 'Bangkok, Thailand',
     status: 'active',
@@ -41,7 +41,7 @@ const beaconNodes = [
   },
   {
     id: 'beacon-4',
-    name: 'LabChain Beacon Node 4',
+    name: 'LAB Chain Beacon Node 4',
     endpoint: 'https://beacon4.labchain.la',
     location: 'Ho Chi Minh, Vietnam',
     status: 'syncing',
@@ -56,7 +56,7 @@ const beaconNodes = [
 const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
 ---
 
-<Layout title="Beacon Nodes - LabChain" description="List of Consensus Layer beacon nodes for LabChain network. Connect your validator to participate in consensus.">
+<Layout title="Beacon Nodes - LAB Chain" description="List of Consensus Layer beacon nodes for LAB Chain network. Connect your validator to participate in consensus.">
   <section class="page-hero">
     <div class="container">
       <div class="page-header">
@@ -69,7 +69,7 @@ const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
         </div>
         <h1>Consensus Layer Beacon Nodes</h1>
         <p>
-          Connect to these beacon nodes to participate in the LabChain consensus layer.
+          Connect to these beacon nodes to participate in the LAB Chain consensus layer.
           Beacon nodes coordinate validators and manage the Proof-of-Stake consensus.
         </p>
       </div>
@@ -216,7 +216,7 @@ const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
         <div class="help-content">
           <h3>Become a Validator</h3>
           <p>
-            Want to help secure the LabChain network? Run a validator node and earn rewards for
+            Want to help secure the LAB Chain network? Run a validator node and earn rewards for
             participating in consensus. Check our documentation for staking requirements and setup guides.
           </p>
           <a href="https://github.com/xang555/labchain" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
