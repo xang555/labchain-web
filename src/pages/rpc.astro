@@ -185,13 +185,19 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
 
       {rpcNodes.length === 0 ? (
         <div class="empty-state">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
+          <div class="empty-state-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
           <h3>No RPC Endpoints Found</h3>
           <p>{searchQuery ? 'Try a different search term.' : 'No RPC endpoints have been added yet.'}</p>
-          {searchQuery && <a href="/rpc" class="btn btn-secondary">Clear Search</a>}
+          {searchQuery && (
+            <div class="empty-state-actions">
+              <a href="/rpc" class="btn btn-secondary">Clear Search</a>
+            </div>
+          )}
         </div>
       ) : (
       <div class="nodes-grid">
@@ -573,6 +579,10 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
   }
 
   .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     padding: 64px 24px;
     background: var(--bg-card);
@@ -580,9 +590,19 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
     border-radius: var(--radius-lg);
   }
 
-  .empty-state svg {
+  .empty-state-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: var(--bg-tertiary);
+    border-radius: 50%;
+    margin-bottom: 24px;
+  }
+
+  .empty-state-icon svg {
     color: var(--text-tertiary);
-    margin-bottom: 16px;
   }
 
   .empty-state h3 {
@@ -594,6 +614,12 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
     font-size: 14px;
     color: var(--text-secondary);
     margin-bottom: 24px;
+  }
+
+  .empty-state-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
   }
 
   .nodes-grid {

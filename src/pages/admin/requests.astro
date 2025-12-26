@@ -1,0 +1,631 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getAllNodeRequests, getNodeRequestById, updateNodeRequestStatus, deleteNodeRequest, approveAndCreateNode } from '../../lib/data';
+
+let message = '';
+let messageType = '';
+
+// Handle form submissions
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action')?.toString();
+  const id = parseInt(formData.get('id')?.toString() || '0');
+
+  if (action === 'approve') {
+    const result = approveAndCreateNode(id);
+    if (result.success) {
+      message = 'Request approved and node created successfully';
+      messageType = 'success';
+    } else {
+      message = `Failed to approve: ${result.error}`;
+      messageType = 'error';
+    }
+  } else if (action === 'reject') {
+    const adminNotes = formData.get('admin_notes')?.toString() || '';
+    updateNodeRequestStatus(id, 'rejected', adminNotes);
+    message = 'Request rejected';
+    messageType = 'success';
+  } else if (action === 'delete') {
+    deleteNodeRequest(id);
+    message = 'Request deleted successfully';
+    messageType = 'success';
+  } else if (action === 'pending') {
+    updateNodeRequestStatus(id, 'pending');
+    message = 'Request moved back to pending';
+    messageType = 'success';
+  }
+}
+
+const requests = getAllNodeRequests();
+const urlParams = new URL(Astro.request.url).searchParams;
+const filterStatus = urlParams.get('status') || 'all';
+const viewId = urlParams.get('view') ? parseInt(urlParams.get('view')!) : null;
+const viewItem = viewId ? getNodeRequestById(viewId) : null;
+
+const filteredRequests = filterStatus === 'all'
+  ? requests
+  : requests.filter(r => r.status === filterStatus);
+
+const pendingCount = requests.filter(r => r.status === 'pending').length;
+const approvedCount = requests.filter(r => r.status === 'approved').length;
+const rejectedCount = requests.filter(r => r.status === 'rejected').length;
+
+const nodeTypeLabels: Record<string, string> = {
+  rpc: 'RPC Endpoint',
+  bootnode: 'Boot Node',
+  beacon: 'Beacon Node'
+};
+---
+
+<AdminLayout title="Node Requests" currentPage="requests">
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1 class="page-title">Node Requests</h1>
+        <p class="page-subtitle">Review and manage community node submissions</p>
+      </div>
+    </div>
+  </div>
+
+  {message && (
+    <div class={`alert alert-${messageType}`}>{message}</div>
+  )}
+
+  <div class="stats-row">
+    <a href="/admin/requests" class={`stat-chip ${filterStatus === 'all' ? 'active' : ''}`}>
+      <span class="stat-count">{requests.length}</span>
+      <span class="stat-label">All</span>
+    </a>
+    <a href="/admin/requests?status=pending" class={`stat-chip pending ${filterStatus === 'pending' ? 'active' : ''}`}>
+      <span class="stat-count">{pendingCount}</span>
+      <span class="stat-label">Pending</span>
+    </a>
+    <a href="/admin/requests?status=approved" class={`stat-chip approved ${filterStatus === 'approved' ? 'active' : ''}`}>
+      <span class="stat-count">{approvedCount}</span>
+      <span class="stat-label">Approved</span>
+    </a>
+    <a href="/admin/requests?status=rejected" class={`stat-chip rejected ${filterStatus === 'rejected' ? 'active' : ''}`}>
+      <span class="stat-count">{rejectedCount}</span>
+      <span class="stat-label">Rejected</span>
+    </a>
+  </div>
+
+  <div class="card">
+    {filteredRequests.length === 0 ? (
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="12" y1="18" x2="12" y2="12"></line>
+          <line x1="9" y1="15" x2="15" y2="15"></line>
+        </svg>
+        <h3>No Requests</h3>
+        <p>{filterStatus === 'all' ? 'No node requests have been submitted yet.' : `No ${filterStatus} requests.`}</p>
+      </div>
+    ) : (
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Tracking ID</th>
+              <th>Type</th>
+              <th>Name</th>
+              <th>Contact</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRequests.map((req) => (
+              <tr>
+                <td>
+                  <code class="tracking-code">{req.tracking_id}</code>
+                </td>
+                <td>
+                  <span class={`type-badge ${req.node_type}`}>{nodeTypeLabels[req.node_type] || req.node_type}</span>
+                </td>
+                <td>
+                  <strong>{req.name}</strong>
+                  <div class="endpoint-preview" title={req.endpoint}>
+                    {req.endpoint.length > 30 ? req.endpoint.substring(0, 30) + '...' : req.endpoint}
+                  </div>
+                </td>
+                <td>
+                  <div class="contact-info">
+                    {req.contact_name && <span class="contact-name">{req.contact_name}</span>}
+                    <a href={`mailto:${req.contact_email}`} class="contact-email">{req.contact_email}</a>
+                  </div>
+                </td>
+                <td>
+                  <span class={`status-badge ${req.status}`}>{req.status}</span>
+                </td>
+                <td>
+                  <span class="date-text">{new Date(req.created_at).toLocaleDateString()}</span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <a href={`/admin/requests?view=${req.id}`} class="action-icon" title="View Details">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </a>
+                    {req.status === 'pending' && (
+                      <>
+                        <form method="POST" class="inline-form">
+                          <input type="hidden" name="action" value="approve" />
+                          <input type="hidden" name="id" value={req.id} />
+                          <button type="submit" class="action-icon approve" title="Approve">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          </button>
+                        </form>
+                        <a href={`/admin/requests?view=${req.id}&reject=1`} class="action-icon reject" title="Reject">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </a>
+                      </>
+                    )}
+                    <form method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this request?')">
+                      <input type="hidden" name="action" value="delete" />
+                      <input type="hidden" name="id" value={req.id} />
+                      <button type="submit" class="action-icon delete" title="Delete">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+
+  <!-- View/Reject Modal -->
+  <div class={`modal-overlay ${viewItem ? 'open' : ''}`} id="modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2 class="modal-title">Request Details</h2>
+        <a href={`/admin/requests${filterStatus !== 'all' ? `?status=${filterStatus}` : ''}`} class="modal-close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </a>
+      </div>
+      {viewItem && (
+        <div class="modal-body">
+          <div class="detail-header">
+            <div class="detail-title">
+              <h3>{viewItem.name}</h3>
+              <span class={`status-badge ${viewItem.status}`}>{viewItem.status}</span>
+            </div>
+            <div class="detail-meta">
+              <span class="tracking-code">{viewItem.tracking_id}</span>
+              <span class={`type-badge ${viewItem.node_type}`}>{nodeTypeLabels[viewItem.node_type]}</span>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item full-width">
+              <span class="detail-label">Endpoint</span>
+              <code class="detail-code">{viewItem.endpoint}</code>
+            </div>
+            {viewItem.location && (
+              <div class="detail-item">
+                <span class="detail-label">Location</span>
+                <span class="detail-value">{viewItem.location}</span>
+              </div>
+            )}
+            <div class="detail-item">
+              <span class="detail-label">Submitted</span>
+              <span class="detail-value">{new Date(viewItem.created_at).toLocaleString()}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Contact Name</span>
+              <span class="detail-value">{viewItem.contact_name || '-'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Contact Email</span>
+              <a href={`mailto:${viewItem.contact_email}`} class="detail-value link">{viewItem.contact_email}</a>
+            </div>
+            {viewItem.description && (
+              <div class="detail-item full-width">
+                <span class="detail-label">Description</span>
+                <span class="detail-value">{viewItem.description}</span>
+              </div>
+            )}
+            {viewItem.admin_notes && (
+              <div class="detail-item full-width">
+                <span class="detail-label">Admin Notes</span>
+                <span class="detail-value">{viewItem.admin_notes}</span>
+              </div>
+            )}
+          </div>
+
+          {urlParams.get('reject') === '1' && viewItem.status === 'pending' && (
+            <form method="POST" class="reject-form">
+              <input type="hidden" name="action" value="reject" />
+              <input type="hidden" name="id" value={viewItem.id} />
+              <div class="reject-form-header">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <span>Reject Request</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Rejection Reason *</label>
+                <textarea name="admin_notes" class="form-textarea" rows="4" required placeholder="Please provide a reason for rejecting this request. This will be visible to the user when they check their request status."></textarea>
+                <span class="form-hint">This reason will be displayed to the user on the request status page.</span>
+              </div>
+              <div class="form-actions">
+                <a href={`/admin/requests?view=${viewItem.id}`} class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Reject Request</button>
+              </div>
+            </form>
+          )}
+        </div>
+      )}
+      {viewItem && urlParams.get('reject') !== '1' && (
+        <div class="modal-footer">
+          {viewItem.status === 'pending' && (
+            <>
+              <form method="POST" class="inline-form">
+                <input type="hidden" name="action" value="approve" />
+                <input type="hidden" name="id" value={viewItem.id} />
+                <button type="submit" class="btn btn-success">Approve & Create Node</button>
+              </form>
+              <a href={`/admin/requests?view=${viewItem.id}&reject=1`} class="btn btn-danger">Reject</a>
+            </>
+          )}
+          {viewItem.status === 'rejected' && (
+            <form method="POST" class="inline-form">
+              <input type="hidden" name="action" value="pending" />
+              <input type="hidden" name="id" value={viewItem.id} />
+              <button type="submit" class="btn btn-secondary">Move to Pending</button>
+            </form>
+          )}
+          <a href={`/admin/requests${filterStatus !== 'all' ? `?status=${filterStatus}` : ''}`} class="btn btn-secondary">Close</a>
+        </div>
+      )}
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+  }
+
+  .stat-chip:hover {
+    border-color: var(--border-color-strong);
+  }
+
+  .stat-chip.active {
+    border-color: var(--color-red);
+    background: rgba(206, 17, 38, 0.05);
+  }
+
+  .stat-chip.pending.active {
+    border-color: #EAB308;
+    background: rgba(234, 179, 8, 0.05);
+  }
+
+  .stat-chip.approved.active {
+    border-color: #22C55E;
+    background: rgba(34, 197, 94, 0.05);
+  }
+
+  .stat-chip.rejected.active {
+    border-color: #EF4444;
+    background: rgba(239, 68, 68, 0.05);
+  }
+
+  .stat-count {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .stat-chip.pending .stat-count { color: #EAB308; }
+  .stat-chip.approved .stat-count { color: #22C55E; }
+  .stat-chip.rejected .stat-count { color: #EF4444; }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .tracking-code {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-red);
+    background: rgba(206, 17, 38, 0.1);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .type-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .type-badge.rpc {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+  }
+
+  .type-badge.bootnode {
+    background: rgba(168, 85, 247, 0.1);
+    color: #A855F7;
+  }
+
+  .type-badge.beacon {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22C55E;
+  }
+
+  .endpoint-preview {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-family: monospace;
+    margin-top: 4px;
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .contact-name {
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+
+  .contact-email {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .contact-email:hover {
+    color: var(--color-red);
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .status-badge.pending {
+    background: rgba(234, 179, 8, 0.15);
+    color: #EAB308;
+  }
+
+  .status-badge.approved {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22C55E;
+  }
+
+  .status-badge.rejected {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+  }
+
+  .date-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .inline-form {
+    display: inline;
+  }
+
+  .action-icon.approve {
+    color: #22C55E;
+  }
+
+  .action-icon.approve:hover {
+    background: rgba(34, 197, 94, 0.1);
+  }
+
+  .action-icon.reject {
+    color: #EF4444;
+  }
+
+  .action-icon.reject:hover {
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .modal-lg {
+    max-width: 700px;
+  }
+
+  .detail-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .detail-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .detail-title h3 {
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .detail-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .detail-item.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .detail-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .detail-value {
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .detail-value.link {
+    color: var(--color-red);
+  }
+
+  .detail-code {
+    display: block;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    word-break: break-all;
+  }
+
+  .reject-form {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .reject-form-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: #EF4444;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .form-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+
+  .btn-success {
+    background: #22C55E;
+    color: white;
+  }
+
+  .btn-success:hover {
+    background: #16A34A;
+  }
+
+  .btn-danger {
+    background: #EF4444;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background: #DC2626;
+  }
+
+  @media (max-width: 768px) {
+    .stats-row {
+      flex-wrap: wrap;
+    }
+
+    .stat-chip {
+      flex: 1;
+      min-width: calc(50% - 6px);
+      justify-content: center;
+    }
+
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const modal = document.getElementById('modal');
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      const url = new URL(window.location.href);
+      const status = url.searchParams.get('status');
+      window.location.href = '/admin/requests' + (status ? `?status=${status}` : '');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('open')) {
+      const url = new URL(window.location.href);
+      const status = url.searchParams.get('status');
+      window.location.href = '/admin/requests' + (status ? `?status=${status}` : '');
+    }
+  });
+</script>

@@ -4,6 +4,7 @@ import Logo from './Logo.astro';
 const navItems = [
   { label: 'Home', href: '/' },
   { label: 'Documentation', href: '/docs' },
+  { label: 'Community', href: '/community' },
 ];
 
 const networkItems = [
@@ -78,15 +79,6 @@ const currentPath = Astro.url.pathname;
             <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
-          </button>
-
-          <button class="btn btn-secondary add-network-btn" id="addNetworkBtn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="16"></line>
-              <line x1="8" y1="12" x2="16" y2="12"></line>
-            </svg>
-            <span class="btn-text">Add Network</span>
           </button>
 
           <a href="https://explorer.labchain.la/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
@@ -445,20 +437,6 @@ const currentPath = Astro.url.pathname;
 
   }
 
-  /* Add Network Button Styles */
-  .add-network-btn {
-    position: relative;
-  }
-
-  .add-network-btn.added {
-    background: rgba(34, 197, 94, 0.1);
-    border-color: #22C55E;
-    color: #22C55E;
-  }
-
-  .add-network-btn.added:hover {
-    background: rgba(34, 197, 94, 0.15);
-  }
 </style>
 
 <script>
@@ -528,70 +506,4 @@ const currentPath = Astro.url.pathname;
       navDropdown?.classList.toggle('open');
     }
   });
-
-  // Add Network functionality
-  const addNetworkBtn = document.getElementById('addNetworkBtn');
-  const btnText = addNetworkBtn?.querySelector('.btn-text') as HTMLElement;
-
-  const LAB_CHAIN_ID = '0x1466'; // 5222 in hex
-
-  const LAB_CHAIN_CONFIG = {
-    chainId: LAB_CHAIN_ID,
-    chainName: 'LAB Chain',
-    nativeCurrency: {
-      name: 'LAB',
-      symbol: 'LAB',
-      decimals: 18
-    },
-    rpcUrls: ['https://rpc.labchain.la'],
-    blockExplorerUrls: ['https://explorer.labchain.la']
-  };
-
-  function showSuccess() {
-    if (addNetworkBtn && btnText) {
-      const originalText = btnText.textContent;
-      btnText.textContent = 'Network Added!';
-      addNetworkBtn.classList.add('added');
-
-      setTimeout(() => {
-        btnText.textContent = originalText;
-        addNetworkBtn.classList.remove('added');
-      }, 3000);
-    }
-  }
-
-  function showError(message: string) {
-    if (btnText) {
-      const originalText = btnText.textContent;
-      btnText.textContent = message;
-
-      setTimeout(() => {
-        btnText.textContent = originalText;
-      }, 3000);
-    }
-  }
-
-  async function addLabChainNetwork() {
-    if (typeof (window as any).ethereum === 'undefined') {
-      alert('Please install MetaMask or another Web3 wallet to add the network.');
-      return;
-    }
-
-    try {
-      await (window as any).ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [LAB_CHAIN_CONFIG]
-      });
-      showSuccess();
-    } catch (error: any) {
-      if (error.code === 4001) {
-        console.log('User rejected adding LAB Chain network');
-      } else {
-        console.error('Failed to add LAB Chain network:', error);
-        showError('Failed to add');
-      }
-    }
-  }
-
-  addNetworkBtn?.addEventListener('click', addLabChainNetwork);
 </script>

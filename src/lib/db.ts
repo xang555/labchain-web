@@ -94,6 +94,25 @@ export function initDatabase() {
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
+
+  // Node requests table for user submissions
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS node_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tracking_id TEXT UNIQUE NOT NULL,
+      node_type TEXT NOT NULL,
+      name TEXT NOT NULL,
+      endpoint TEXT NOT NULL,
+      location TEXT,
+      contact_email TEXT NOT NULL,
+      contact_name TEXT,
+      description TEXT,
+      status TEXT DEFAULT 'pending',
+      admin_notes TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 }
 
 // Initialize database on import
@@ -158,4 +177,20 @@ export interface Session {
   user_id: number;
   expires_at: string;
   created_at: string;
+}
+
+export interface NodeRequest {
+  id: number;
+  tracking_id: string;
+  node_type: 'rpc' | 'bootnode' | 'beacon';
+  name: string;
+  endpoint: string;
+  location: string;
+  contact_email: string;
+  contact_name: string;
+  description: string;
+  status: 'pending' | 'approved' | 'rejected';
+  admin_notes: string;
+  created_at: string;
+  updated_at: string;
 }

@@ -11,6 +11,17 @@ const stats = getStats();
     <p class="page-subtitle">Overview of LAB Chain network data</p>
   </div>
 
+  {stats.requests.pending > 0 && (
+    <div class="pending-alert">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span>You have <strong>{stats.requests.pending}</strong> pending node request{stats.requests.pending !== 1 ? 's' : ''} to review</span>
+      <a href="/admin/requests?status=pending" class="btn btn-sm btn-primary">Review Now</a>
+    </div>
+  )}
+
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-icon rpc">
@@ -56,6 +67,23 @@ const stats = getStats();
         <span class="stat-sub">{stats.beaconNodes.active} active</span>
       </div>
       <a href="/admin/beacon-nodes" class="stat-link">Manage</a>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon requests">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="12" y1="18" x2="12" y2="12"></line>
+          <line x1="9" y1="15" x2="15" y2="15"></line>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{stats.requests.pending}</span>
+        <span class="stat-label">Pending Requests</span>
+        <span class="stat-sub">awaiting review</span>
+      </div>
+      <a href="/admin/requests" class="stat-link">Review</a>
     </div>
   </div>
 
@@ -107,9 +135,30 @@ const stats = getStats();
 </AdminLayout>
 
 <style>
+  .pending-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: var(--radius-lg);
+    color: #EAB308;
+    margin-bottom: 24px;
+  }
+
+  .pending-alert span {
+    flex: 1;
+    font-size: 14px;
+  }
+
+  .pending-alert strong {
+    font-weight: 700;
+  }
+
   .stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 24px;
     margin-bottom: 48px;
   }
@@ -148,6 +197,11 @@ const stats = getStats();
   .stat-icon.beacon {
     background: rgba(34, 197, 94, 0.1);
     color: #22c55e;
+  }
+
+  .stat-icon.requests {
+    background: rgba(234, 179, 8, 0.1);
+    color: #EAB308;
   }
 
   .stat-info {
@@ -247,6 +301,12 @@ const stats = getStats();
     color: var(--text-primary);
   }
 
+  @media (max-width: 1200px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (max-width: 1024px) {
     .stats-grid {
       grid-template-columns: 1fr;
@@ -254,6 +314,13 @@ const stats = getStats();
 
     .actions-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .pending-alert {
+      flex-direction: column;
+      text-align: center;
     }
   }
 

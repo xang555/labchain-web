@@ -19,6 +19,7 @@ const navItems = [
   { label: 'RPC Endpoints', href: '/admin/rpc', icon: 'rpc' },
   { label: 'Boot Nodes', href: '/admin/boot-nodes', icon: 'boot' },
   { label: 'Beacon Nodes', href: '/admin/beacon-nodes', icon: 'beacon' },
+  { label: 'Node Requests', href: '/admin/requests', icon: 'requests' },
 ];
 ---
 
@@ -83,6 +84,14 @@ const navItems = [
                 <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
                 <polyline points="2 17 12 22 22 17"></polyline>
                 <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+            )}
+            {item.icon === 'requests' && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
               </svg>
             )}
             <span>{item.label}</span>

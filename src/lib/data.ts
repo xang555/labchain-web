@@ -1,5 +1,6 @@
 import db from './db';
-import type { RpcEndpoint, BootNode, BeaconNode } from './db';
+import type { RpcEndpoint, BootNode, BeaconNode, NodeRequest } from './db';
+import { randomBytes } from 'crypto';
 
 // RPC Endpoints
 export function getAllRpcEndpoints(): RpcEndpoint[] {
@@ -209,10 +210,157 @@ export function getStats() {
   const activeRpc = (db.prepare("SELECT COUNT(*) as count FROM rpc_endpoints WHERE status = 'active'").get() as { count: number }).count;
   const activeBootNodes = (db.prepare("SELECT COUNT(*) as count FROM boot_nodes WHERE status = 'active'").get() as { count: number }).count;
   const activeBeaconNodes = (db.prepare("SELECT COUNT(*) as count FROM beacon_nodes WHERE status = 'active'").get() as { count: number }).count;
+  const pendingRequests = (db.prepare("SELECT COUNT(*) as count FROM node_requests WHERE status = 'pending'").get() as { count: number }).count;
 
   return {
     rpcEndpoints: { total: rpcCount, active: activeRpc },
     bootNodes: { total: bootNodeCount, active: activeBootNodes },
     beaconNodes: { total: beaconNodeCount, active: activeBeaconNodes },
+    requests: { pending: pendingRequests },
   };
+}
+
+// Node Requests
+function generateTrackingId(): string {
+  return 'REQ-' + randomBytes(4).toString('hex').toUpperCase();
+}
+
+export function getAllNodeRequests(): NodeRequest[] {
+  return db.prepare('SELECT * FROM node_requests ORDER BY created_at DESC').all() as NodeRequest[];
+}
+
+export function getNodeRequestsByStatus(status: string): NodeRequest[] {
+  return db.prepare("SELECT * FROM node_requests WHERE status = ? ORDER BY created_at DESC").all(status) as NodeRequest[];
+}
+
+export function getNodeRequestById(id: number): NodeRequest | null {
+  return db.prepare('SELECT * FROM node_requests WHERE id = ?').get(id) as NodeRequest | null;
+}
+
+export function getNodeRequestByTrackingId(trackingId: string): NodeRequest | null {
+  return db.prepare('SELECT * FROM node_requests WHERE tracking_id = ?').get(trackingId) as NodeRequest | null;
+}
+
+// Check if endpoint already exists in requests or approved nodes
+export function isEndpointDuplicate(endpoint: string, nodeType: string): { exists: boolean; location: string } {
+  // Check in pending/approved requests
+  const requestExists = db.prepare(
+    "SELECT * FROM node_requests WHERE endpoint = ? AND status != 'rejected'"
+  ).get(endpoint) as NodeRequest | null;
+
+  if (requestExists) {
+    return { exists: true, location: 'pending request' };
+  }
+
+  // Check in existing nodes based on type
+  if (nodeType === 'rpc') {
+    const rpcExists = db.prepare('SELECT * FROM rpc_endpoints WHERE endpoint = ?').get(endpoint);
+    if (rpcExists) return { exists: true, location: 'RPC endpoints' };
+  } else if (nodeType === 'bootnode') {
+    const bootExists = db.prepare('SELECT * FROM boot_nodes WHERE enode = ?').get(endpoint);
+    if (bootExists) return { exists: true, location: 'Boot nodes' };
+  } else if (nodeType === 'beacon') {
+    const beaconExists = db.prepare('SELECT * FROM beacon_nodes WHERE endpoint = ?').get(endpoint);
+    if (beaconExists) return { exists: true, location: 'Beacon nodes' };
+  }
+
+  return { exists: false, location: '' };
+}
+
+export function createNodeRequest(data: {
+  node_type: string;
+  name: string;
+  endpoint: string;
+  location?: string;
+  contact_email: string;
+  contact_name?: string;
+  description?: string;
+}): NodeRequest {
+  const trackingId = generateTrackingId();
+
+  const stmt = db.prepare(`
+    INSERT INTO node_requests (tracking_id, node_type, name, endpoint, location, contact_email, contact_name, description, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+  `);
+
+  const result = stmt.run(
+    trackingId,
+    data.node_type,
+    data.name,
+    data.endpoint,
+    data.location || '',
+    data.contact_email,
+    data.contact_name || '',
+    data.description || ''
+  );
+
+  return db.prepare('SELECT * FROM node_requests WHERE id = ?').get(result.lastInsertRowid) as NodeRequest;
+}
+
+export function updateNodeRequestStatus(id: number, status: string, adminNotes?: string): NodeRequest | null {
+  const existing = getNodeRequestById(id);
+  if (!existing) return null;
+
+  const stmt = db.prepare(`
+    UPDATE node_requests
+    SET status = ?, admin_notes = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+
+  stmt.run(status, adminNotes || existing.admin_notes || '', id);
+  return getNodeRequestById(id);
+}
+
+export function deleteNodeRequest(id: number): boolean {
+  const result = db.prepare('DELETE FROM node_requests WHERE id = ?').run(id);
+  return result.changes > 0;
+}
+
+// Approve request and create the node
+export function approveAndCreateNode(requestId: number): { success: boolean; error?: string } {
+  const request = getNodeRequestById(requestId);
+  if (!request) return { success: false, error: 'Request not found' };
+
+  try {
+    if (request.node_type === 'rpc') {
+      createRpcEndpoint({
+        name: request.name,
+        endpoint: request.endpoint,
+        type: 'community',
+        location: request.location,
+        status: 'active',
+        latency: '',
+        requests: '',
+        rate_limit: '',
+        features: ''
+      });
+    } else if (request.node_type === 'bootnode') {
+      createBootNode({
+        name: request.name,
+        enode: request.endpoint,
+        location: request.location,
+        status: 'active',
+        uptime: '',
+        peers: 0,
+        last_seen: ''
+      });
+    } else if (request.node_type === 'beacon') {
+      createBeaconNode({
+        name: request.name,
+        endpoint: request.endpoint,
+        location: request.location,
+        status: 'active',
+        version: '',
+        sync_status: '',
+        slots: '',
+        epoch: '',
+        last_update: ''
+      });
+    }
+
+    updateNodeRequestStatus(requestId, 'approved');
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
 }

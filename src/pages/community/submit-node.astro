@@ -1,0 +1,519 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { createNodeRequest, isEndpointDuplicate } from '../../lib/data';
+
+let message = '';
+let messageType = '';
+let trackingId = '';
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+
+  const nodeType = formData.get('node_type')?.toString() || '';
+  const name = formData.get('name')?.toString() || '';
+  const endpoint = formData.get('endpoint')?.toString() || '';
+  const location = formData.get('location')?.toString() || '';
+  const contactEmail = formData.get('contact_email')?.toString() || '';
+  const contactName = formData.get('contact_name')?.toString() || '';
+  const description = formData.get('description')?.toString() || '';
+
+  // Validate required fields
+  if (!nodeType || !name || !endpoint || !contactEmail) {
+    message = 'Please fill in all required fields.';
+    messageType = 'error';
+  } else {
+    // Check for duplicate endpoint
+    const duplicate = isEndpointDuplicate(endpoint, nodeType);
+    if (duplicate.exists) {
+      message = `This endpoint already exists in ${duplicate.location}. Please use a different endpoint.`;
+      messageType = 'error';
+    } else {
+      // Create the request
+      const request = createNodeRequest({
+        node_type: nodeType,
+        name,
+        endpoint,
+        location,
+        contact_email: contactEmail,
+        contact_name: contactName,
+        description
+      });
+
+      trackingId = request.tracking_id;
+      message = 'Your node request has been submitted successfully!';
+      messageType = 'success';
+    }
+  }
+}
+---
+
+<Layout title="Submit Your Node - LAB Chain" description="Submit your RPC endpoint, boot node, or beacon node to be listed on the LAB Chain network.">
+  <section class="page-hero">
+    <div class="container">
+      <div class="page-header">
+        <div class="breadcrumb">
+          <a href="/">Home</a>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          <a href="/community">Community</a>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          <span>Submit Node</span>
+        </div>
+        <h1>Submit Your Node</h1>
+        <p>
+          Share your RPC endpoint, boot node, or beacon node with the LAB Chain community.
+          Once approved, your node will be listed on our public pages.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="container">
+      {message && (
+        <div class={`alert alert-${messageType}`}>
+          {message}
+          {trackingId && (
+            <div class="tracking-info">
+              <strong>Your Tracking ID:</strong>
+              <code>{trackingId}</code>
+              <p>Save this ID to check the status of your request.</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!trackingId && (
+        <div class="form-card">
+          <form method="POST">
+            <div class="form-section-title">
+              <h2>Node Information</h2>
+              <p>Provide details about the node you want to submit.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Node Type *</label>
+              <select name="node_type" class="form-select" required>
+                <option value="">Select node type...</option>
+                <option value="rpc">RPC Endpoint</option>
+                <option value="bootnode">Boot Node</option>
+                <option value="beacon">Beacon Node</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Node Name *</label>
+              <input type="text" name="name" class="form-input" required placeholder="e.g., My LAB Chain Node" />
+              <span class="form-hint">A friendly name for your node</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Endpoint URL / Enode *</label>
+              <textarea name="endpoint" class="form-textarea" required placeholder="e.g., https://rpc.example.com or enode://...@host:port"></textarea>
+              <span class="form-hint">For RPC/Beacon: HTTP(S) URL. For Boot nodes: enode URL</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Location</label>
+              <input type="text" name="location" class="form-input" placeholder="e.g., Singapore, AWS" />
+              <span class="form-hint">Geographic location or hosting provider</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea name="description" class="form-textarea" rows="3" placeholder="Tell us more about your node (optional)"></textarea>
+            </div>
+
+            <div class="form-divider"></div>
+
+            <div class="form-section-title">
+              <h2>Contact Information</h2>
+              <p>We'll use this to notify you about your request status.</p>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Your Name</label>
+                <input type="text" name="contact_name" class="form-input" placeholder="Your name (optional)" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Email Address *</label>
+                <input type="email" name="contact_email" class="form-input" required placeholder="your@email.com" />
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                Submit Request
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {trackingId && (
+        <div class="success-card">
+          <div class="success-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <h2>Request Submitted!</h2>
+          <p>Your node request has been received and is pending review.</p>
+          <div class="tracking-box">
+            <span class="tracking-label">Tracking ID</span>
+            <code class="tracking-code">{trackingId}</code>
+          </div>
+          <div class="success-actions">
+            <a href={`/community/request-status?id=${trackingId}`} class="btn btn-primary">Check Status</a>
+            <a href="/community/submit-node" class="btn btn-secondary">Submit Another</a>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="info-section">
+    <div class="container">
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <h3>Review Process</h3>
+          <p>All submissions are reviewed by our team to ensure quality and security.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3>Requirements</h3>
+          <p>Nodes must be stable, secure, and publicly accessible to be listed.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <h3>Processing Time</h3>
+          <p>Most requests are reviewed within 24-48 hours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    padding: 48px 0 32px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .page-header {
+    max-width: 700px;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+  }
+
+  .breadcrumb a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-red);
+  }
+
+  .page-header h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin-bottom: 16px;
+  }
+
+  .page-header p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .form-section {
+    padding: 48px 0 80px;
+  }
+
+  .alert {
+    padding: 16px 20px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+  }
+
+  .alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #22C55E;
+  }
+
+  .alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #EF4444;
+  }
+
+  .tracking-info {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .tracking-info code {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 4px 12px;
+    background: rgba(34, 197, 94, 0.2);
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .tracking-info p {
+    margin-top: 8px;
+    font-size: 13px;
+    opacity: 0.8;
+  }
+
+  .form-card {
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+  }
+
+  .form-section-title {
+    margin-bottom: 24px;
+  }
+
+  .form-section-title h2 {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .form-section-title p {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--color-red);
+    box-shadow: 0 0 0 3px rgba(206, 17, 38, 0.1);
+  }
+
+  .form-textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .form-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .form-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 32px 0;
+  }
+
+  .form-actions {
+    margin-top: 32px;
+  }
+
+  .btn-lg {
+    padding: 14px 28px;
+    font-size: 16px;
+  }
+
+  .btn-lg svg {
+    margin-right: 8px;
+  }
+
+  .success-card {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 48px 40px;
+  }
+
+  .success-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: rgba(34, 197, 94, 0.1);
+    color: #22C55E;
+    border-radius: 50%;
+    margin-bottom: 24px;
+  }
+
+  .success-card h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .success-card > p {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+  }
+
+  .tracking-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+  }
+
+  .tracking-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tracking-code {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-red);
+  }
+
+  .success-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .info-section {
+    padding: 0 0 80px;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .info-card {
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+  }
+
+  .info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(206, 17, 38, 0.1);
+    color: var(--color-red);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+  }
+
+  .info-card h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .info-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .form-card {
+      padding: 24px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .success-actions {
+      flex-direction: column;
+    }
+  }
+</style>
