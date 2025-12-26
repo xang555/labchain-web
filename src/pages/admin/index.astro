@@ -1,0 +1,265 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getStats } from '../../lib/data';
+
+const stats = getStats();
+---
+
+<AdminLayout title="Dashboard" currentPage="dashboard">
+  <div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Overview of LAB Chain network data</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon rpc">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{stats.rpcEndpoints.total}</span>
+        <span class="stat-label">RPC Endpoints</span>
+        <span class="stat-sub">{stats.rpcEndpoints.active} active</span>
+      </div>
+      <a href="/admin/rpc" class="stat-link">Manage</a>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon boot">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{stats.bootNodes.total}</span>
+        <span class="stat-label">Boot Nodes</span>
+        <span class="stat-sub">{stats.bootNodes.active} active</span>
+      </div>
+      <a href="/admin/boot-nodes" class="stat-link">Manage</a>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon beacon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{stats.beaconNodes.total}</span>
+        <span class="stat-label">Beacon Nodes</span>
+        <span class="stat-sub">{stats.beaconNodes.active} active</span>
+      </div>
+      <a href="/admin/beacon-nodes" class="stat-link">Manage</a>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="actions-grid">
+      <a href="/admin/rpc?action=new" class="action-card">
+        <div class="action-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+        </div>
+        <span>Add RPC Endpoint</span>
+      </a>
+      <a href="/admin/boot-nodes?action=new" class="action-card">
+        <div class="action-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+        </div>
+        <span>Add Boot Node</span>
+      </a>
+      <a href="/admin/beacon-nodes?action=new" class="action-card">
+        <div class="action-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+        </div>
+        <span>Add Beacon Node</span>
+      </a>
+      <a href="/" target="_blank" class="action-card">
+        <div class="action-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </div>
+        <span>View Public Site</span>
+      </a>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .stat-icon.rpc {
+    background: rgba(206, 17, 38, 0.1);
+    color: var(--color-red);
+  }
+
+  .stat-icon.boot {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+  }
+
+  .stat-icon.beacon {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  .stat-link {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-red);
+  }
+
+  .stat-link:hover {
+    text-decoration: underline;
+  }
+
+  .quick-actions {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+  }
+
+  .quick-actions h2 {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 16px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    text-align: center;
+  }
+
+  .action-card:hover {
+    border-color: var(--color-red);
+    background: rgba(206, 17, 38, 0.05);
+  }
+
+  .action-card .action-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  .action-card:hover .action-icon {
+    color: var(--color-red);
+  }
+
+  .action-card span {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .action-card:hover span {
+    color: var(--text-primary);
+  }
+
+  @media (max-width: 1024px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .actions-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .actions-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

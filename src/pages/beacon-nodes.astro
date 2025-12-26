@@ -1,57 +1,27 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getAllBeaconNodes, searchBeaconNodes } from '../lib/data';
 
-// Placeholder beacon node data - replace with actual data
-const beaconNodes = [
-  {
-    id: 'beacon-1',
-    name: 'LAB Chain Beacon Node 1',
-    endpoint: 'https://beacon1.labchain.la',
-    location: 'Vientiane, Laos',
-    status: 'active',
-    version: 'v4.1.0',
-    syncStatus: 'Synced',
-    slots: '1,234,567',
-    epoch: '38,580',
-    lastUpdate: '12 seconds ago'
-  },
-  {
-    id: 'beacon-2',
-    name: 'LAB Chain Beacon Node 2',
-    endpoint: 'https://beacon2.labchain.la',
-    location: 'Singapore',
-    status: 'active',
-    version: 'v4.1.0',
-    syncStatus: 'Synced',
-    slots: '1,234,567',
-    epoch: '38,580',
-    lastUpdate: '8 seconds ago'
-  },
-  {
-    id: 'beacon-3',
-    name: 'LAB Chain Beacon Node 3',
-    endpoint: 'https://beacon3.labchain.la',
-    location: 'Bangkok, Thailand',
-    status: 'active',
-    version: 'v4.1.0',
-    syncStatus: 'Synced',
-    slots: '1,234,566',
-    epoch: '38,580',
-    lastUpdate: '15 seconds ago'
-  },
-  {
-    id: 'beacon-4',
-    name: 'LAB Chain Beacon Node 4',
-    endpoint: 'https://beacon4.labchain.la',
-    location: 'Ho Chi Minh, Vietnam',
-    status: 'syncing',
-    version: 'v4.0.3',
-    syncStatus: 'Syncing (98.5%)',
-    slots: '1,234,000',
-    epoch: '38,562',
-    lastUpdate: '25 seconds ago'
-  }
-];
+// Get search query from URL
+const url = new URL(Astro.request.url);
+const searchQuery = url.searchParams.get('search') || '';
+
+// Get beacon nodes from database
+const beaconNodesRaw = searchQuery ? searchBeaconNodes(searchQuery) : getAllBeaconNodes();
+
+// Transform to display format
+const beaconNodes = beaconNodesRaw.map(node => ({
+  id: node.id.toString(),
+  name: node.name,
+  endpoint: node.endpoint,
+  location: node.location,
+  status: node.status,
+  version: node.version,
+  syncStatus: node.sync_status,
+  slots: node.slots,
+  epoch: node.epoch,
+  lastUpdate: node.last_update
+}));
 
 const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
 ---
@@ -135,11 +105,49 @@ const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
 
   <section class="nodes-section">
     <div class="container">
-      <div class="section-title">
-        <h2>Available Beacon Nodes</h2>
-        <p>Select a beacon node to view details and connect your validator client.</p>
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Available Beacon Nodes</h2>
+          <p>Select a beacon node to view details and connect your validator client.</p>
+        </div>
+        <form class="search-form" method="GET">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" name="search" class="search-input" placeholder="Search nodes..." value={searchQuery} />
+            {searchQuery && (
+              <a href="/beacon-nodes" class="search-clear" title="Clear search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </a>
+            )}
+          </div>
+          <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
       </div>
 
+      {searchQuery && (
+        <div class="search-results-info">
+          Found {beaconNodes.length} result{beaconNodes.length !== 1 ? 's' : ''} for "{searchQuery}"
+        </div>
+      )}
+
+      {beaconNodes.length === 0 ? (
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <h3>No Beacon Nodes Found</h3>
+          <p>{searchQuery ? 'Try a different search term.' : 'No beacon nodes have been added yet.'}</p>
+          {searchQuery && <a href="/beacon-nodes" class="btn btn-secondary">Clear Search</a>}
+        </div>
+      ) : (
       <div class="nodes-grid">
         {beaconNodes.map((node) => (
           <div class="node-card" data-status={node.status}>
@@ -202,6 +210,7 @@ const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
           </div>
         ))}
       </div>
+      )}
     </div>
   </section>
 
@@ -331,8 +340,17 @@ const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
     padding: 32px 0 80px;
   }
 
-  .section-title {
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
     margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .section-title {
+    flex: 1;
   }
 
   .section-title h2 {
@@ -343,6 +361,102 @@ const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
   .section-title p {
     font-size: 14px;
     color: var(--text-secondary);
+  }
+
+  .search-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-tertiary);
+    pointer-events: none;
+  }
+
+  .search-input {
+    padding: 10px 40px 10px 40px;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    width: 250px;
+    transition: all var(--transition-fast);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--color-red);
+    box-shadow: 0 0 0 3px rgba(206, 17, 38, 0.1);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: var(--text-tertiary);
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+  }
+
+  .search-clear:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+  }
+
+  .search-results-info {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    text-align: center;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+  }
+
+  .empty-state svg {
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+  }
+
+  .empty-state h3 {
+    font-size: 18px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    margin-bottom: 16px;
   }
 
   .nodes-grid {
@@ -566,6 +680,23 @@ const activeNodes = beaconNodes.filter(n => n.status === 'active').length;
   }
 
   @media (max-width: 768px) {
+    .section-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .search-form {
+      width: 100%;
+    }
+
+    .search-input-wrapper {
+      flex: 1;
+    }
+
+    .search-input {
+      width: 100%;
+    }
+
     .nodes-grid {
       grid-template-columns: 1fr;
     }

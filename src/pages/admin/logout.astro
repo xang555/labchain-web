@@ -1,0 +1,23 @@
+---
+import { deleteSession } from '../../lib/auth';
+
+// Get session ID from cookie
+const cookie = Astro.request.headers.get('cookie') ?? '';
+const cookies = Object.fromEntries(
+  cookie.split(';').map(c => {
+    const [key, ...val] = c.trim().split('=');
+    return [key, val.join('=')];
+  })
+);
+
+const sessionId = cookies['session'];
+
+if (sessionId) {
+  deleteSession(sessionId);
+}
+
+// Redirect to login with cleared cookie
+const response = Astro.redirect('/admin/login');
+response.headers.set('Set-Cookie', 'session=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0');
+return response;
+---

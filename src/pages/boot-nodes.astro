@@ -1,49 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getAllBootNodes, searchBootNodes } from '../lib/data';
 
-// Placeholder boot node data - replace with actual data
-const bootNodes = [
-  {
-    id: 'boot-1',
-    name: 'LAB Chain Boot Node 1',
-    enode: 'enode://abc123...@boot1.labchain.la:30303',
-    location: 'Vientiane, Laos',
-    status: 'active',
-    uptime: '99.9%',
-    peers: 24,
-    lastSeen: '2 seconds ago'
-  },
-  {
-    id: 'boot-2',
-    name: 'LAB Chain Boot Node 2',
-    enode: 'enode://def456...@boot2.labchain.la:30303',
-    location: 'Singapore',
-    status: 'active',
-    uptime: '99.8%',
-    peers: 18,
-    lastSeen: '5 seconds ago'
-  },
-  {
-    id: 'boot-3',
-    name: 'LAB Chain Boot Node 3',
-    enode: 'enode://ghi789...@boot3.labchain.la:30303',
-    location: 'Bangkok, Thailand',
-    status: 'active',
-    uptime: '99.7%',
-    peers: 21,
-    lastSeen: '3 seconds ago'
-  },
-  {
-    id: 'boot-4',
-    name: 'LAB Chain Boot Node 4',
-    enode: 'enode://jkl012...@boot4.labchain.la:30303',
-    location: 'Ho Chi Minh, Vietnam',
-    status: 'syncing',
-    uptime: '98.5%',
-    peers: 12,
-    lastSeen: '10 seconds ago'
-  }
-];
+// Get search query from URL
+const url = new URL(Astro.request.url);
+const searchQuery = url.searchParams.get('search') || '';
+
+// Get boot nodes from database
+const bootNodesRaw = searchQuery ? searchBootNodes(searchQuery) : getAllBootNodes();
+
+// Transform to display format
+const bootNodes = bootNodesRaw.map(node => ({
+  id: node.id.toString(),
+  name: node.name,
+  enode: node.enode,
+  location: node.location,
+  status: node.status,
+  uptime: node.uptime,
+  peers: node.peers,
+  lastSeen: node.last_seen
+}));
 
 const activeNodes = bootNodes.filter(n => n.status === 'active').length;
 const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
@@ -129,11 +105,49 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
 
   <section class="nodes-section">
     <div class="container">
-      <div class="section-title">
-        <h2>Available Boot Nodes</h2>
-        <p>Select a boot node to view details and copy the enode URL.</p>
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Available Boot Nodes</h2>
+          <p>Select a boot node to view details and copy the enode URL.</p>
+        </div>
+        <form class="search-form" method="GET">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" name="search" class="search-input" placeholder="Search nodes..." value={searchQuery} />
+            {searchQuery && (
+              <a href="/boot-nodes" class="search-clear" title="Clear search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </a>
+            )}
+          </div>
+          <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
       </div>
 
+      {searchQuery && (
+        <div class="search-results-info">
+          Found {bootNodes.length} result{bootNodes.length !== 1 ? 's' : ''} for "{searchQuery}"
+        </div>
+      )}
+
+      {bootNodes.length === 0 ? (
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <h3>No Boot Nodes Found</h3>
+          <p>{searchQuery ? 'Try a different search term.' : 'No boot nodes have been added yet.'}</p>
+          {searchQuery && <a href="/boot-nodes" class="btn btn-secondary">Clear Search</a>}
+        </div>
+      ) : (
       <div class="nodes-grid">
         {bootNodes.map((node) => (
           <div class="node-card" data-status={node.status}>
@@ -185,6 +199,7 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
           </div>
         ))}
       </div>
+      )}
     </div>
   </section>
 
@@ -316,8 +331,17 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
     padding: 32px 0 80px;
   }
 
-  .section-title {
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
     margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .section-title {
+    flex: 1;
   }
 
   .section-title h2 {
@@ -328,6 +352,93 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
   .section-title p {
     font-size: 14px;
     color: var(--text-secondary);
+  }
+
+  .search-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--text-tertiary);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 280px;
+    padding: 10px 40px 10px 44px;
+    font-size: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    transition: border-color var(--transition-fast);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--color-red);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    transition: color var(--transition-fast);
+  }
+
+  .search-clear:hover {
+    color: var(--text-primary);
+  }
+
+  .search-results-info {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 64px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+  }
+
+  .empty-state svg {
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+  }
+
+  .empty-state h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
   }
 
   .nodes-grid {
@@ -540,6 +651,19 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
   }
 
   @media (max-width: 768px) {
+    .section-header {
+      flex-direction: column;
+    }
+
+    .search-form {
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      flex: 1;
+    }
+
     .nodes-grid {
       grid-template-columns: 1fr;
     }
