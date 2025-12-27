@@ -1,18 +1,11 @@
 ---
-import { validateSessionCookie } from '../lib/auth';
-
 interface Props {
   title: string;
   currentPage?: string;
+  user: { id: number; username: string };
 }
 
-const { title, currentPage = '' } = Astro.props;
-
-// Check authentication
-const user = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
-if (!user) {
-  return Astro.redirect('/admin/login');
-}
+const { title, currentPage = '', user } = Astro.props;
 
 const navItems = [
   { label: 'Dashboard', href: '/admin', icon: 'dashboard' },

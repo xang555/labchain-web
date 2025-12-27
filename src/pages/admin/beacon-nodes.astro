@@ -1,6 +1,13 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getAllBeaconNodes, getBeaconNodeById, createBeaconNode, updateBeaconNode, deleteBeaconNode } from '../../lib/data';
+import { validateSessionCookie } from '../../lib/auth';
+
+// Check authentication
+const user = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
 
 let message = '';
 let messageType = '';
@@ -48,7 +55,7 @@ const editId = urlParams.get('edit') ? parseInt(urlParams.get('edit')!) : null;
 const editItem = editId ? getBeaconNodeById(editId) : null;
 ---
 
-<AdminLayout title="Beacon Nodes" currentPage="beacon">
+<AdminLayout title="Beacon Nodes" currentPage="beacon" user={user}>
   <div class="page-header">
     <div class="header-content">
       <div>

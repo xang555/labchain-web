@@ -1,11 +1,18 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getStats } from '../../lib/data';
+import { validateSessionCookie } from '../../lib/auth';
+
+// Check authentication
+const user = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
 
 const stats = getStats();
 ---
 
-<AdminLayout title="Dashboard" currentPage="dashboard">
+<AdminLayout title="Dashboard" currentPage="dashboard" user={user}>
   <div class="page-header">
     <h1 class="page-title">Dashboard</h1>
     <p class="page-subtitle">Overview of LAB Chain network data</p>

@@ -1,6 +1,13 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getAllNodeRequests, getNodeRequestById, updateNodeRequestStatus, deleteNodeRequest, approveAndCreateNode } from '../../lib/data';
+import { validateSessionCookie } from '../../lib/auth';
+
+// Check authentication
+const user = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
 
 let message = '';
 let messageType = '';
@@ -57,7 +64,7 @@ const nodeTypeLabels: Record<string, string> = {
 };
 ---
 
-<AdminLayout title="Node Requests" currentPage="requests">
+<AdminLayout title="Node Requests" currentPage="requests" user={user}>
   <div class="page-header">
     <div class="header-content">
       <div>

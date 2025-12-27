@@ -1,6 +1,13 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getAllBootNodes, getBootNodeById, createBootNode, updateBootNode, deleteBootNode } from '../../lib/data';
+import { validateSessionCookie } from '../../lib/auth';
+
+// Check authentication
+const user = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
 
 let message = '';
 let messageType = '';
@@ -46,7 +53,7 @@ const editId = urlParams.get('edit') ? parseInt(urlParams.get('edit')!) : null;
 const editItem = editId ? getBootNodeById(editId) : null;
 ---
 
-<AdminLayout title="Boot Nodes" currentPage="boot">
+<AdminLayout title="Boot Nodes" currentPage="boot" user={user}>
   <div class="page-header">
     <div class="header-content">
       <div>
