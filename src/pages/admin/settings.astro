@@ -1,0 +1,450 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getEmailSettings, setEmailSettings } from '../../lib/data';
+import { validateSessionCookie } from '../../lib/auth';
+
+// Check authentication
+const user = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
+
+let message = '';
+let messageType = '';
+let testEmailMessage = '';
+let testEmailType = '';
+
+// Handle form submissions
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action')?.toString();
+
+  if (action === 'save_email') {
+    const smtp_host = formData.get('smtp_host')?.toString() || '';
+    const smtp_port = formData.get('smtp_port')?.toString() || '587';
+    const smtp_user = formData.get('smtp_user')?.toString() || '';
+    const smtp_pass = formData.get('smtp_pass')?.toString() || '';
+    const smtp_from = formData.get('smtp_from')?.toString() || '';
+    const smtp_from_name = formData.get('smtp_from_name')?.toString() || 'LAB Chain';
+    const smtp_secure = formData.get('smtp_secure') ? 'true' : 'false';
+
+    setEmailSettings({
+      smtp_host,
+      smtp_port,
+      smtp_user,
+      smtp_pass,
+      smtp_from,
+      smtp_from_name,
+      smtp_secure,
+    });
+
+    message = 'Email settings saved successfully';
+    messageType = 'success';
+  } else if (action === 'test_email') {
+    const testEmail = formData.get('test_email')?.toString();
+    if (testEmail) {
+      const settings = getEmailSettings();
+      if (!settings.smtp_host || !settings.smtp_user || !settings.smtp_pass) {
+        testEmailMessage = 'Please configure SMTP settings first';
+        testEmailType = 'error';
+      } else {
+        try {
+          const nodemailer = await import('nodemailer');
+          const transporter = nodemailer.default.createTransport({
+            host: settings.smtp_host,
+            port: parseInt(settings.smtp_port),
+            secure: settings.smtp_secure === 'true',
+            auth: {
+              user: settings.smtp_user,
+              pass: settings.smtp_pass,
+            },
+          });
+
+          await transporter.sendMail({
+            from: `"${settings.smtp_from_name}" <${settings.smtp_from}>`,
+            to: testEmail,
+            subject: 'LAB Chain - Test Email',
+            text: 'This is a test email from LAB Chain admin panel. If you received this, your email configuration is working correctly!',
+            html: `
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #CE1126;">LAB Chain - Test Email</h2>
+                <p>This is a test email from LAB Chain admin panel.</p>
+                <p>If you received this, your email configuration is working correctly!</p>
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                <p style="color: #6b7280; font-size: 12px;">This email was sent from the LAB Chain admin panel.</p>
+              </div>
+            `,
+          });
+
+          testEmailMessage = `Test email sent successfully to ${testEmail}`;
+          testEmailType = 'success';
+        } catch (error) {
+          testEmailMessage = `Failed to send test email: ${error instanceof Error ? error.message : String(error)}`;
+          testEmailType = 'error';
+        }
+      }
+    }
+  }
+}
+
+const emailSettings = getEmailSettings();
+---
+
+<AdminLayout title="Settings" currentPage="settings" user={user}>
+  <div class="page-header">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Configure application settings and email notifications</p>
+  </div>
+
+  {message && (
+    <div class={`alert alert-${messageType}`}>{message}</div>
+  )}
+
+  <div class="settings-grid">
+    <!-- Email Configuration -->
+    <div class="card settings-card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h2 class="card-title">Email Configuration</h2>
+          <p class="card-subtitle">Configure SMTP settings for sending email notifications</p>
+        </div>
+      </div>
+
+      <form method="POST" class="settings-form">
+        <input type="hidden" name="action" value="save_email" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="smtp_host">SMTP Host *</label>
+            <input
+              type="text"
+              id="smtp_host"
+              name="smtp_host"
+              class="form-input"
+              value={emailSettings.smtp_host}
+              placeholder="e.g., smtp.gmail.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="smtp_port">SMTP Port *</label>
+            <input
+              type="number"
+              id="smtp_port"
+              name="smtp_port"
+              class="form-input"
+              value={emailSettings.smtp_port}
+              placeholder="587"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="smtp_user">SMTP Username *</label>
+            <input
+              type="text"
+              id="smtp_user"
+              name="smtp_user"
+              class="form-input"
+              value={emailSettings.smtp_user}
+              placeholder="your-email@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="smtp_pass">SMTP Password *</label>
+            <input
+              type="password"
+              id="smtp_pass"
+              name="smtp_pass"
+              class="form-input"
+              value={emailSettings.smtp_pass}
+              placeholder="App password or SMTP password"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="smtp_from">From Email *</label>
+            <input
+              type="email"
+              id="smtp_from"
+              name="smtp_from"
+              class="form-input"
+              value={emailSettings.smtp_from}
+              placeholder="noreply@labchain.la"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="smtp_from_name">From Name</label>
+            <input
+              type="text"
+              id="smtp_from_name"
+              name="smtp_from_name"
+              class="form-input"
+              value={emailSettings.smtp_from_name}
+              placeholder="LAB Chain"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              name="smtp_secure"
+              checked={emailSettings.smtp_secure === 'true'}
+            />
+            <span class="checkbox-text">Use SSL/TLS (port 465)</span>
+          </label>
+          <span class="form-hint">Enable for port 465 (SSL), disable for port 587 (STARTTLS)</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save Settings
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Test Email -->
+    <div class="card settings-card">
+      <div class="card-header">
+        <div class="card-icon test">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </div>
+        <div>
+          <h2 class="card-title">Test Email</h2>
+          <p class="card-subtitle">Send a test email to verify your configuration</p>
+        </div>
+      </div>
+
+      {testEmailMessage && (
+        <div class={`alert alert-${testEmailType}`} style="margin-bottom: 20px;">{testEmailMessage}</div>
+      )}
+
+      <form method="POST" class="settings-form">
+        <input type="hidden" name="action" value="test_email" />
+
+        <div class="form-group">
+          <label class="form-label" for="test_email">Recipient Email *</label>
+          <input
+            type="email"
+            id="test_email"
+            name="test_email"
+            class="form-input"
+            placeholder="Enter email address to send test"
+            required
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            Send Test Email
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Email Templates Info -->
+    <div class="card settings-card info-card">
+      <div class="card-header">
+        <div class="card-icon info">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div>
+          <h2 class="card-title">Email Notifications</h2>
+          <p class="card-subtitle">About automated email notifications</p>
+        </div>
+      </div>
+
+      <div class="info-content">
+        <p>When email is configured, the system will automatically send notifications to users when:</p>
+        <ul>
+          <li><strong>Node Approved:</strong> User will receive confirmation that their node has been approved and added to the network.</li>
+          <li><strong>Node Rejected:</strong> User will receive notification with the reason for rejection.</li>
+        </ul>
+        <p class="note">Make sure to test your email configuration before approving/rejecting submissions.</p>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .settings-grid {
+    display: grid;
+    gap: 24px;
+  }
+
+  .settings-card {
+    padding: 0;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(206, 17, 38, 0.1);
+    color: var(--color-red);
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+  }
+
+  .card-icon.test {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+  }
+
+  .card-icon.info {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .card-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .settings-form {
+    padding: 24px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+  }
+
+  .form-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-red);
+  }
+
+  .checkbox-text {
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 8px;
+  }
+
+  .info-card .info-content {
+    padding: 24px;
+  }
+
+  .info-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .info-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+  }
+
+  .info-content li {
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .info-content li strong {
+    color: var(--color-red);
+  }
+
+  .info-content .note {
+    padding: 12px 16px;
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: var(--radius-md);
+    color: #eab308;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

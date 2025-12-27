@@ -1,5 +1,5 @@
 import db from './db';
-import type { RpcEndpoint, BootNode, BeaconNode, NodeRequest } from './db';
+import type { RpcEndpoint, BootNode, BeaconNode, NodeRequest, Setting } from './db';
 import { randomBytes } from 'crypto';
 
 // Pagination helper
@@ -346,12 +346,14 @@ export function createNodeRequest(data: {
   name: string;
   endpoint: string;
   description?: string;
+  contact_name?: string;
+  contact_email?: string;
 }): NodeRequest {
   const trackingId = generateTrackingId();
 
   const stmt = db.prepare(`
     INSERT INTO node_requests (tracking_id, node_type, name, endpoint, location, contact_email, contact_name, description, status)
-    VALUES (?, ?, ?, ?, '', '', '', ?, 'pending')
+    VALUES (?, ?, ?, ?, '', ?, ?, ?, 'pending')
   `);
 
   const result = stmt.run(
@@ -359,6 +361,8 @@ export function createNodeRequest(data: {
     data.node_type,
     data.name,
     data.endpoint,
+    data.contact_email || '',
+    data.contact_name || '',
     data.description || ''
   );
 
@@ -414,4 +418,65 @@ export function approveAndCreateNode(requestId: number): { success: boolean; err
   } catch (error) {
     return { success: false, error: String(error) };
   }
+}
+
+// Settings
+export function getSetting(key: string): string | null {
+  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key) as { value: string } | undefined;
+  return row?.value ?? null;
+}
+
+export function setSetting(key: string, value: string): void {
+  db.prepare(`
+    INSERT INTO settings (key, value, updated_at)
+    VALUES (?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(key) DO UPDATE SET value = ?, updated_at = CURRENT_TIMESTAMP
+  `).run(key, value, value);
+}
+
+export function getAllSettings(): Record<string, string> {
+  const rows = db.prepare('SELECT key, value FROM settings').all() as Setting[];
+  const settings: Record<string, string> = {};
+  for (const row of rows) {
+    settings[row.key] = row.value;
+  }
+  return settings;
+}
+
+export function getEmailSettings(): {
+  smtp_host: string;
+  smtp_port: string;
+  smtp_user: string;
+  smtp_pass: string;
+  smtp_from: string;
+  smtp_from_name: string;
+  smtp_secure: string;
+} {
+  return {
+    smtp_host: getSetting('smtp_host') || '',
+    smtp_port: getSetting('smtp_port') || '587',
+    smtp_user: getSetting('smtp_user') || '',
+    smtp_pass: getSetting('smtp_pass') || '',
+    smtp_from: getSetting('smtp_from') || '',
+    smtp_from_name: getSetting('smtp_from_name') || 'LAB Chain',
+    smtp_secure: getSetting('smtp_secure') || 'false',
+  };
+}
+
+export function setEmailSettings(settings: {
+  smtp_host: string;
+  smtp_port: string;
+  smtp_user: string;
+  smtp_pass: string;
+  smtp_from: string;
+  smtp_from_name: string;
+  smtp_secure: string;
+}): void {
+  setSetting('smtp_host', settings.smtp_host);
+  setSetting('smtp_port', settings.smtp_port);
+  setSetting('smtp_user', settings.smtp_user);
+  setSetting('smtp_pass', settings.smtp_pass);
+  setSetting('smtp_from', settings.smtp_from);
+  setSetting('smtp_from_name', settings.smtp_from_name);
+  setSetting('smtp_secure', settings.smtp_secure);
 }

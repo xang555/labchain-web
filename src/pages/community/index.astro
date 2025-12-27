@@ -1,0 +1,236 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Community - LAB Chain" description="Join the LAB Chain community. Contribute nodes, participate in governance, and help build the future of blockchain in Laos.">
+  <section class="page-hero">
+    <div class="container">
+      <div class="page-header">
+        <div class="breadcrumb">
+          <a href="/">Home</a>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          <span>Community</span>
+        </div>
+        <h1>LAB Chain Community</h1>
+        <p>
+          Join our growing community of developers, node operators, and blockchain enthusiasts.
+          Together, we're building the decentralized future of Laos.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="community-section">
+    <div class="container">
+      <!-- Main Action Card -->
+      <div class="hero-card">
+        <div class="hero-card-content">
+          <div class="hero-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+          </div>
+          <div class="hero-text">
+            <h2>Share Your Node</h2>
+            <p>Running a LAB Chain node? Share your RPC endpoint, boot node, or beacon node with the community and help strengthen the network.</p>
+          </div>
+          <a href="/community/submit-node" class="btn btn-primary btn-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            Submit Your Node
+          </a>
+        </div>
+      </div>
+
+      <!-- How It Works Section -->
+      <div class="how-it-works">
+        <h2>How to Contribute</h2>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h4>Run a Node</h4>
+            <p>Set up your own LAB Chain node using our documentation. You can run an RPC endpoint, boot node, or beacon node.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h4>Submit Details</h4>
+            <p>Fill out our submission form with your node details and contact information. We'll review your submission promptly.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h4>Get Listed</h4>
+            <p>Once approved, your node will be listed on our public pages. You'll receive an email notification about your submission status.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-hero {
+    padding: 48px 0 32px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .page-header {
+    max-width: 700px;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+  }
+
+  .breadcrumb a {
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-red);
+  }
+
+  .page-header h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin-bottom: 16px;
+  }
+
+  .page-header p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .community-section {
+    padding: 48px 0 80px;
+  }
+
+  /* Hero Card */
+  .hero-card {
+    background: linear-gradient(135deg, rgba(206, 17, 38, 0.1) 0%, rgba(0, 40, 104, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 48px;
+    margin-bottom: 48px;
+  }
+
+  .hero-card-content {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .hero-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    background: var(--color-red);
+    color: white;
+    border-radius: var(--radius-xl);
+    flex-shrink: 0;
+  }
+
+  .hero-text {
+    flex: 1;
+  }
+
+  .hero-text h2 {
+    font-size: 1.75rem;
+    margin-bottom: 8px;
+  }
+
+  .hero-text p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .btn-lg {
+    padding: 16px 32px;
+    font-size: 16px;
+  }
+
+  /* How It Works */
+  .how-it-works {
+    margin-bottom: 0;
+  }
+
+  .how-it-works h2 {
+    font-size: 1.5rem;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .step-card {
+    text-align: center;
+    padding: 32px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+  }
+
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: var(--color-red);
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-radius: 50%;
+    margin-bottom: 16px;
+  }
+
+  .step-card h4 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  .step-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .hero-card-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .steps-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-card {
+      padding: 32px 24px;
+    }
+  }
+</style>

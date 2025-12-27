@@ -160,6 +160,15 @@ export function initDatabase() {
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Settings table for application configuration
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 }
 
 // Initialize database on import
@@ -241,5 +250,11 @@ export interface NodeRequest {
   status: 'pending' | 'approved' | 'rejected';
   admin_notes: string;
   created_at: string;
+  updated_at: string;
+}
+
+export interface Setting {
+  key: string;
+  value: string;
   updated_at: string;
 }

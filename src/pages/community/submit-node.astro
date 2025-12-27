@@ -4,7 +4,7 @@ import { createNodeRequest, isEndpointDuplicate } from '../../lib/data';
 
 let message = '';
 let messageType = '';
-let trackingId = '';
+let submitted = false;
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
@@ -12,6 +12,8 @@ if (Astro.request.method === 'POST') {
   const nodeType = formData.get('node_type')?.toString() || '';
   const name = formData.get('name')?.toString() || '';
   const description = formData.get('description')?.toString() || '';
+  const contactName = formData.get('contact_name')?.toString() || '';
+  const contactEmail = formData.get('contact_email')?.toString() || '';
 
   // Handle different node types
   let endpoint = '';
@@ -30,7 +32,7 @@ if (Astro.request.method === 'POST') {
   }
 
   // Validate required fields
-  if (!nodeType || !name) {
+  if (!nodeType || !name || !contactEmail) {
     message = 'Please fill in all required fields.';
     messageType = 'error';
   } else if (nodeType === 'beacon' && !enr && !p2p) {
@@ -51,13 +53,15 @@ if (Astro.request.method === 'POST') {
         node_type: nodeType,
         name,
         endpoint: nodeType === 'beacon' ? `ENR: ${enr}\nP2P: ${p2p}` : endpoint,
-        description: nodeType === 'beacon' ? `${description}\n\nENR: ${enr}\nP2P: ${p2p}` : description
+        description: nodeType === 'beacon' ? `${description}\n\nENR: ${enr}\nP2P: ${p2p}` : description,
+        contact_name: contactName,
+        contact_email: contactEmail
       };
 
-      const request = createNodeRequest(requestData);
+      createNodeRequest(requestData);
 
-      trackingId = request.tracking_id;
-      message = 'Your node request has been submitted successfully!';
+      submitted = true;
+      message = 'Your node request has been submitted successfully! We will review it and notify you via email.';
       messageType = 'success';
     }
   }
@@ -82,7 +86,7 @@ if (Astro.request.method === 'POST') {
         <h1>Submit Your Node</h1>
         <p>
           Share your RPC endpoint, boot node, or beacon node with the LAB Chain community.
-          Once approved, your node will be listed on our public pages.
+          Once approved, your node will be listed on our public pages and you'll receive an email notification.
         </p>
       </div>
     </div>
@@ -90,22 +94,16 @@ if (Astro.request.method === 'POST') {
 
   <section class="form-section">
     <div class="container">
-      {message && (
+      {message && !submitted && (
         <div class={`alert alert-${messageType}`}>
           {message}
-          {trackingId && (
-            <div class="tracking-info">
-              <strong>Your Tracking ID:</strong>
-              <code>{trackingId}</code>
-              <p>Save this ID to check the status of your request.</p>
-            </div>
-          )}
         </div>
       )}
 
-      {!trackingId && (
+      {!submitted ? (
         <div class="form-card">
           <form method="POST">
+            <!-- Node Information Section -->
             <div class="form-section-title">
               <h2>Node Information</h2>
               <p>Provide details about the node you want to submit.</p>
@@ -170,6 +168,25 @@ if (Astro.request.method === 'POST') {
               <textarea name="description" class="form-textarea" rows="3" placeholder="Tell us more about your node (optional)"></textarea>
             </div>
 
+            <!-- Contact Information Section -->
+            <div class="form-section-title" style="margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--border-color);">
+              <h2>Contact Information</h2>
+              <p>We'll use this to notify you about your submission status.</p>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Your Name</label>
+                <input type="text" name="contact_name" class="form-input" placeholder="e.g., John Doe" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Email Address *</label>
+                <input type="email" name="contact_email" class="form-input" required placeholder="e.g., you@example.com" />
+                <span class="form-hint">Required for status notifications</span>
+              </div>
+            </div>
+
             <div class="form-actions">
               <button type="submit" class="btn btn-primary btn-lg">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -181,9 +198,7 @@ if (Astro.request.method === 'POST') {
             </div>
           </form>
         </div>
-      )}
-
-      {trackingId && (
+      ) : (
         <div class="success-card">
           <div class="success-icon">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -192,14 +207,17 @@ if (Astro.request.method === 'POST') {
             </svg>
           </div>
           <h2>Request Submitted!</h2>
-          <p>Your node request has been received and is pending review.</p>
-          <div class="tracking-box">
-            <span class="tracking-label">Tracking ID</span>
-            <code class="tracking-code">{trackingId}</code>
+          <p>Your node request has been received and is pending review. We will notify you via email once your submission has been reviewed.</p>
+          <div class="success-info">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <span>Check your email for updates on your submission.</span>
           </div>
           <div class="success-actions">
-            <a href={`/community/request-status?id=${trackingId}`} class="btn btn-primary">Check Status</a>
-            <a href="/community/submit-node" class="btn btn-secondary">Submit Another</a>
+            <a href="/community/submit-node" class="btn btn-primary">Submit Another</a>
+            <a href="/community" class="btn btn-secondary">Back to Community</a>
           </div>
         </div>
       )}
@@ -223,11 +241,12 @@ if (Astro.request.method === 'POST') {
         <div class="info-card">
           <div class="info-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
             </svg>
           </div>
-          <h3>Requirements</h3>
-          <p>Nodes must be stable, secure, and publicly accessible to be listed.</p>
+          <h3>Email Notifications</h3>
+          <p>You'll receive an email when your submission is approved or if we need more information.</p>
         </div>
         <div class="info-card">
           <div class="info-icon">
@@ -289,9 +308,10 @@ if (Astro.request.method === 'POST') {
   }
 
   .alert {
+    max-width: 700px;
+    margin: 0 auto 24px;
     padding: 16px 20px;
     border-radius: var(--radius-lg);
-    margin-bottom: 24px;
   }
 
   .alert-success {
@@ -304,28 +324,6 @@ if (Astro.request.method === 'POST') {
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.3);
     color: #EF4444;
-  }
-
-  .tracking-info {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(34, 197, 94, 0.3);
-  }
-
-  .tracking-info code {
-    display: inline-block;
-    margin-left: 8px;
-    padding: 4px 12px;
-    background: rgba(34, 197, 94, 0.2);
-    border-radius: var(--radius-sm);
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  .tracking-info p {
-    margin-top: 8px;
-    font-size: 13px;
-    opacity: 0.8;
   }
 
   .form-card {
@@ -353,6 +351,12 @@ if (Astro.request.method === 'POST') {
 
   .form-group {
     margin-bottom: 20px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 
   .form-label {
@@ -439,30 +443,21 @@ if (Astro.request.method === 'POST') {
   .success-card > p {
     color: var(--text-secondary);
     margin-bottom: 24px;
+    line-height: 1.7;
   }
 
-  .tracking-box {
+  .success-info {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 20px;
-    background: var(--bg-tertiary);
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
     border-radius: var(--radius-lg);
+    color: #3B82F6;
+    font-size: 14px;
     margin-bottom: 24px;
-  }
-
-  .tracking-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .tracking-code {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--color-red);
   }
 
   .success-actions {
@@ -542,6 +537,10 @@ if (Astro.request.method === 'POST') {
   @media (max-width: 768px) {
     .form-card {
       padding: 24px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
     }
 
     .info-grid {

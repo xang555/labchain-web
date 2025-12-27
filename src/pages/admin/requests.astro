@@ -2,6 +2,7 @@
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getAllNodeRequests, getNodeRequestById, updateNodeRequestStatus, deleteNodeRequest, approveAndCreateNode } from '../../lib/data';
 import { validateSessionCookie } from '../../lib/auth';
+import { sendApprovalEmail, sendRejectionEmail, isEmailConfigured } from '../../lib/email';
 
 // Check authentication
 const user = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
@@ -19,19 +20,41 @@ if (Astro.request.method === 'POST') {
   const id = parseInt(formData.get('id')?.toString() || '0');
 
   if (action === 'approve') {
+    const request = getNodeRequestById(id);
     const result = approveAndCreateNode(id);
     if (result.success) {
       message = 'Request approved and node created successfully';
       messageType = 'success';
+
+      // Send approval email
+      if (request && request.contact_email && isEmailConfigured()) {
+        const emailResult = await sendApprovalEmail(request);
+        if (emailResult.success) {
+          message += '. Notification email sent.';
+        } else {
+          message += `. Email notification failed: ${emailResult.error}`;
+        }
+      }
     } else {
       message = `Failed to approve: ${result.error}`;
       messageType = 'error';
     }
   } else if (action === 'reject') {
     const adminNotes = formData.get('admin_notes')?.toString() || '';
+    const request = getNodeRequestById(id);
     updateNodeRequestStatus(id, 'rejected', adminNotes);
     message = 'Request rejected';
     messageType = 'success';
+
+    // Send rejection email
+    if (request && request.contact_email && isEmailConfigured()) {
+      const emailResult = await sendRejectionEmail(request, adminNotes);
+      if (emailResult.success) {
+        message += '. Notification email sent.';
+      } else {
+        message += `. Email notification failed: ${emailResult.error}`;
+      }
+    }
   } else if (action === 'delete') {
     deleteNodeRequest(id);
     message = 'Request deleted successfully';
@@ -62,6 +85,8 @@ const nodeTypeLabels: Record<string, string> = {
   bootnode: 'Boot Node',
   beacon: 'Beacon Node'
 };
+
+const emailConfigured = isEmailConfigured();
 ---
 
 <AdminLayout title="Node Requests" currentPage="requests" user={user}>
@@ -70,6 +95,25 @@ const nodeTypeLabels: Record<string, string> = {
       <div>
         <h1 class="page-title">Node Requests</h1>
         <p class="page-subtitle">Review and manage community node submissions</p>
+      </div>
+      <div class="email-status">
+        {emailConfigured ? (
+          <span class="email-badge configured">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Email notifications enabled
+          </span>
+        ) : (
+          <a href="/admin/settings" class="email-badge not-configured">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            Configure email notifications
+          </a>
+        )}
       </div>
     </div>
   </div>
@@ -315,6 +359,37 @@ const nodeTypeLabels: Record<string, string> = {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+  }
+
+  .email-status {
+    margin-top: 4px;
+  }
+
+  .email-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+  }
+
+  .email-badge.configured {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .email-badge.not-configured {
+    background: rgba(234, 179, 8, 0.1);
+    color: #eab308;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    transition: all var(--transition-fast);
+  }
+
+  .email-badge.not-configured:hover {
+    background: rgba(234, 179, 8, 0.2);
   }
 
   .stats-row {
