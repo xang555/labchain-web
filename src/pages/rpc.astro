@@ -15,17 +15,13 @@ const rpcNodes = rpcNodesRaw.map(node => ({
   name: node.name,
   endpoint: node.endpoint,
   type: node.type,
-  location: node.location,
   status: node.status,
   latency: node.latency,
-  requests: node.requests,
-  rateLimit: node.rate_limit,
   features: node.features ? node.features.split(',').map(f => f.trim()) : []
 }));
 
 const officialNodes = rpcNodes.filter(n => n.type === 'official').length;
 const communityNodes = rpcNodes.filter(n => n.type === 'community').length;
-const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
 ---
 
 <Layout title="RPC Endpoints - LAB Chain" description="List of public RPC endpoints for LAB Chain network. Connect your dApps and wallets to the network.">
@@ -42,65 +38,7 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
         <h1>Public RPC Endpoints</h1>
         <p>
           Connect your dApps, wallets, and tools to LAB Chain using these public RPC endpoints.
-          Choose from official and community-operated nodes based on your needs.
         </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="stats-section">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-              <line x1="12" y1="22.08" x2="12" y2="12"></line>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{rpcNodes.length}</span>
-            <span class="stat-label">Total Endpoints</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon official">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{officialNodes}</span>
-            <span class="stat-label">Official Nodes</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon community">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{communityNodes}</span>
-            <span class="stat-label">Community Nodes</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon success">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{activeNodes}</span>
-            <span class="stat-label">Active Endpoints</span>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -155,7 +93,7 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
       <div class="section-header">
         <div class="section-title">
           <h2>All RPC Endpoints</h2>
-          <p>Browse all available public RPC endpoints for LAB Chain.</p>
+          <p>Official: {officialNodes} | Community: {communityNodes}</p>
         </div>
         <form class="search-form" method="GET">
           <div class="search-input-wrapper">
@@ -177,115 +115,67 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
         </form>
       </div>
 
-      {searchQuery && (
-        <div class="search-results-info">
-          Found {rpcNodes.length} result{rpcNodes.length !== 1 ? 's' : ''} for "{searchQuery}"
-        </div>
-      )}
-
       {rpcNodes.length === 0 ? (
         <div class="empty-state">
-          <div class="empty-state-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </div>
           <h3>No RPC Endpoints Found</h3>
           <p>{searchQuery ? 'Try a different search term.' : 'No RPC endpoints have been added yet.'}</p>
           {searchQuery && (
-            <div class="empty-state-actions">
-              <a href="/rpc" class="btn btn-secondary">Clear Search</a>
-            </div>
+            <a href="/rpc" class="btn btn-secondary">Clear Search</a>
           )}
         </div>
       ) : (
-      <div class="nodes-grid">
-        {rpcNodes.map((node) => (
-          <div class="node-card" data-status={node.status} data-type={node.type}>
-            <div class="node-header">
-              <div class="node-status">
-                <span class={`status-dot ${node.status}`}></span>
-                <span class="status-text">{node.status === 'active' ? 'Online' : 'Offline'}</span>
-              </div>
-              <span class={`node-type ${node.type}`}>{node.type === 'official' ? 'Official' : 'Community'}</span>
-            </div>
-
-            <h3 class="node-name">{node.name}</h3>
-
-            <div class="node-location">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <span>{node.location}</span>
-            </div>
-
-            <div class="node-features">
-              {node.features.map((feature) => (
-                <span class="feature-tag">{feature}</span>
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Endpoint</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Latency</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rpcNodes.map((node) => (
+                <tr>
+                  <td>
+                    <span class="node-name">{node.name}</span>
+                    {node.features.length > 0 && (
+                      <div class="node-features">
+                        {node.features.map((f) => <span class="feature-tag">{f}</span>)}
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    <code class="endpoint-code">{node.endpoint}</code>
+                  </td>
+                  <td>
+                    <span class={`type-badge ${node.type}`}>{node.type}</span>
+                  </td>
+                  <td>
+                    <span class={`status-badge ${node.status}`}>
+                      <span class="status-dot"></span>
+                      {node.status}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="latency-value">{node.latency || '-'}</span>
+                  </td>
+                  <td>
+                    <button class="copy-btn" data-endpoint={node.endpoint} title="Copy RPC URL">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </div>
-
-            <div class="node-stats">
-              <div class="node-stat">
-                <span class="node-stat-label">Latency</span>
-                <span class="node-stat-value">{node.latency}</span>
-              </div>
-              <div class="node-stat">
-                <span class="node-stat-label">Rate Limit</span>
-                <span class="node-stat-value">{node.rateLimit}</span>
-              </div>
-              <div class="node-stat">
-                <span class="node-stat-label">Requests</span>
-                <span class="node-stat-value">{node.requests}</span>
-              </div>
-            </div>
-
-            <div class="node-endpoint">
-              <label>RPC URL</label>
-              <div class="endpoint-wrapper">
-                <code>{node.endpoint}</code>
-                <button class="copy-btn" data-endpoint={node.endpoint} title="Copy RPC URL">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            </tbody>
+          </table>
+        </div>
       )}
-    </div>
-  </section>
-
-  <section class="help-section">
-    <div class="container">
-      <div class="help-card">
-        <div class="help-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-            <line x1="8" y1="21" x2="16" y2="21"></line>
-            <line x1="12" y1="17" x2="12" y2="21"></line>
-          </svg>
-        </div>
-        <div class="help-content">
-          <h3>Run Your Own RPC Node</h3>
-          <p>
-            Want to contribute to the network or need a dedicated endpoint? Set up your own RPC node
-            and optionally share it with the community. Check our documentation for setup instructions.
-          </p>
-          <a href="/docs#el-node" class="btn btn-secondary">
-            View Setup Guide
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
-      </div>
     </div>
   </section>
 </Layout>
@@ -330,73 +220,9 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
     line-height: 1.7;
   }
 
-  /* Stats Section */
-  .stats-section {
-    padding: 32px 0;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-  }
-
-  .stat-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 24px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-  }
-
-  .stat-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: var(--bg-tertiary);
-    color: var(--color-red);
-    border-radius: var(--radius-md);
-  }
-
-  .stat-icon.official {
-    background: rgba(206, 17, 38, 0.1);
-    color: var(--color-red);
-  }
-
-  .stat-icon.community {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
-  }
-
-  .stat-icon.success {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22C55E;
-  }
-
-  .stat-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .stat-card .stat-value {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-
-  .stat-card .stat-label {
-    font-size: 13px;
-    color: var(--text-tertiary);
-  }
-
   /* Primary RPC Section */
   .primary-rpc {
-    padding: 0 0 32px;
+    padding: 32px 0;
   }
 
   .primary-card {
@@ -476,20 +302,15 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
     text-decoration: underline;
   }
 
-  /* Add Network Button */
   .add-network-btn.added {
     background: rgba(34, 197, 94, 0.1);
     border-color: #22C55E;
     color: #22C55E;
   }
 
-  .add-network-btn.added:hover {
-    background: rgba(34, 197, 94, 0.15);
-  }
-
   /* Nodes Section */
   .nodes-section {
-    padding: 32px 0 80px;
+    padding: 0 0 80px;
   }
 
   .section-header {
@@ -497,17 +318,13 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
     justify-content: space-between;
     align-items: flex-start;
     gap: 24px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
-  }
-
-  .section-title {
-    flex: 1;
   }
 
   .section-title h2 {
     font-size: 1.5rem;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
 
   .section-title p {
@@ -568,41 +385,12 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
     color: var(--text-primary);
   }
 
-  .search-results-info {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 24px;
-    padding: 12px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-  }
-
   .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     text-align: center;
     padding: 64px 24px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-  }
-
-  .empty-state-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 80px;
-    height: 80px;
-    background: var(--bg-tertiary);
-    border-radius: 50%;
-    margin-bottom: 24px;
-  }
-
-  .empty-state-icon svg {
-    color: var(--text-tertiary);
   }
 
   .empty-state h3 {
@@ -616,176 +404,118 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
     margin-bottom: 24px;
   }
 
-  .empty-state-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-  }
-
-  .nodes-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-
-  .node-card {
+  /* Table Styles */
+  .table-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    transition: all var(--transition-normal);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
   }
 
-  .node-card:hover {
-    border-color: var(--border-color-strong);
-    box-shadow: var(--shadow-lg);
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
   }
 
-  .node-card[data-type="official"] {
-    border-color: rgba(206, 17, 38, 0.3);
-  }
-
-  .node-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-
-  .node-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--text-tertiary);
-  }
-
-  .status-dot.active {
-    background: #22C55E;
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
-  }
-
-  .status-text {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-  }
-
-  .node-type {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 4px 10px;
-    border-radius: var(--radius-full);
-  }
-
-  .node-type.official {
-    background: rgba(206, 17, 38, 0.1);
-    color: var(--color-red);
-  }
-
-  .node-type.community {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3B82F6;
-  }
-
-  .node-name {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 12px;
-  }
-
-  .node-location {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-  }
-
-  .node-features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-
-  .feature-tag {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    background: var(--bg-tertiary);
-    color: var(--text-secondary);
-    border-radius: var(--radius-full);
-  }
-
-  .node-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+  .data-table th,
+  .data-table td {
     padding: 16px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-md);
-    margin-bottom: 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
   }
 
-  .node-stat {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .node-stat-label {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .node-stat-value {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  .node-endpoint {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .node-endpoint label {
+  .data-table th {
     font-size: 12px;
     font-weight: 600;
     color: var(--text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-  }
-
-  .endpoint-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
     background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
   }
 
-  .endpoint-wrapper code {
-    flex: 1;
+  .data-table tbody tr:hover {
+    background: var(--bg-tertiary);
+  }
+
+  .data-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .node-name {
+    font-weight: 600;
+    display: block;
+  }
+
+  .node-features {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  .feature-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    background: var(--bg-tertiary);
+    color: var(--text-tertiary);
+    border-radius: var(--radius-sm);
+  }
+
+  .endpoint-code {
     font-size: 13px;
     color: var(--text-secondary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    background: var(--bg-tertiary);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .type-badge {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+  }
+
+  .type-badge.official {
+    background: rgba(206, 17, 38, 0.1);
+    color: var(--color-red);
+  }
+
+  .type-badge.community {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+
+  .status-badge .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+  }
+
+  .status-badge.active .status-dot {
+    background: #22C55E;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+  }
+
+  .status-badge.inactive .status-dot {
+    background: #EF4444;
+  }
+
+  .latency-value {
+    font-size: 13px;
+    color: var(--text-secondary);
   }
 
   .copy-btn {
@@ -807,55 +537,8 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
     border-color: var(--color-red);
   }
 
-  /* Help Section */
-  .help-section {
-    padding: 0 0 80px;
-  }
-
-  .help-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 24px;
-    padding: 32px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-  }
-
-  .help-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 64px;
-    height: 64px;
-    background: rgba(206, 17, 38, 0.1);
-    color: var(--color-red);
-    border-radius: var(--radius-lg);
-    flex-shrink: 0;
-  }
-
-  .help-content {
-    flex: 1;
-  }
-
-  .help-content h3 {
-    font-size: 18px;
-    margin-bottom: 8px;
-  }
-
-  .help-content p {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-    line-height: 1.7;
-  }
-
   /* Responsive */
   @media (max-width: 1024px) {
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
     .primary-header {
       flex-direction: column;
     }
@@ -880,30 +563,16 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
       flex: 1;
     }
 
-    .nodes-grid {
-      grid-template-columns: 1fr;
+    .table-card {
+      overflow-x: auto;
     }
 
-    .help-card {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .help-icon {
-      align-self: center;
+    .data-table {
+      min-width: 700px;
     }
   }
 
   @media (max-width: 640px) {
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .node-stats {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-
     .primary-details {
       flex-direction: column;
       gap: 16px;
@@ -923,7 +592,6 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
       try {
         await navigator.clipboard.writeText(endpoint);
 
-        // Visual feedback
         const originalHTML = btn.innerHTML;
         btn.innerHTML = `
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -948,7 +616,7 @@ const activeNodes = rpcNodes.filter(n => n.status === 'active').length;
   const addNetworkBtn = document.getElementById('addNetworkBtnRpc');
   const btnText = addNetworkBtn?.querySelector('.btn-text') as HTMLElement;
 
-  const LAB_CHAIN_ID = '0x1466'; // 5222 in hex
+  const LAB_CHAIN_ID = '0x1466';
 
   const LAB_CHAIN_CONFIG = {
     chainId: LAB_CHAIN_ID,

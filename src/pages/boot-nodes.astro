@@ -9,20 +9,12 @@ const searchQuery = url.searchParams.get('search') || '';
 // Get boot nodes from database
 const bootNodesRaw = searchQuery ? searchBootNodes(searchQuery) : getAllBootNodes();
 
-// Transform to display format
+// Transform to display format - only name and enode
 const bootNodes = bootNodesRaw.map(node => ({
   id: node.id.toString(),
   name: node.name,
-  enode: node.enode,
-  location: node.location,
-  status: node.status,
-  uptime: node.uptime,
-  peers: node.peers,
-  lastSeen: node.last_seen
+  enode: node.enode
 }));
-
-const activeNodes = bootNodes.filter(n => n.status === 'active').length;
-const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
 ---
 
 <Layout title="Boot Nodes - LAB Chain" description="List of Execution Layer boot nodes for LAB Chain network. Connect your node to join the network.">
@@ -45,70 +37,12 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
     </div>
   </section>
 
-  <section class="stats-section">
-    <div class="container">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-              <line x1="8" y1="21" x2="16" y2="21"></line>
-              <line x1="12" y1="17" x2="12" y2="21"></line>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{bootNodes.length}</span>
-            <span class="stat-label">Total Boot Nodes</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon success">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{activeNodes}</span>
-            <span class="stat-label">Active Nodes</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">{totalPeers}</span>
-            <span class="stat-label">Connected Peers</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">99.8%</span>
-            <span class="stat-label">Avg Uptime</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="nodes-section">
     <div class="container">
       <div class="section-header">
         <div class="section-title">
           <h2>Available Boot Nodes</h2>
-          <p>Select a boot node to view details and copy the enode URL.</p>
+          <p>Total: {bootNodes.length}</p>
         </div>
         <form class="search-form" method="GET">
           <div class="search-input-wrapper">
@@ -130,81 +64,46 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
         </form>
       </div>
 
-      {searchQuery && (
-        <div class="search-results-info">
-          Found {bootNodes.length} result{bootNodes.length !== 1 ? 's' : ''} for "{searchQuery}"
-        </div>
-      )}
-
       {bootNodes.length === 0 ? (
         <div class="empty-state">
-          <div class="empty-state-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-              <line x1="8" y1="21" x2="16" y2="21"></line>
-              <line x1="12" y1="17" x2="12" y2="21"></line>
-            </svg>
-          </div>
           <h3>No Boot Nodes Found</h3>
           <p>{searchQuery ? 'Try a different search term.' : 'No boot nodes have been added yet.'}</p>
           {searchQuery && (
-            <div class="empty-state-actions">
-              <a href="/boot-nodes" class="btn btn-secondary">Clear Search</a>
-            </div>
+            <a href="/boot-nodes" class="btn btn-secondary">Clear Search</a>
           )}
         </div>
       ) : (
-      <div class="nodes-grid">
-        {bootNodes.map((node) => (
-          <div class="node-card" data-status={node.status}>
-            <div class="node-header">
-              <div class="node-status">
-                <span class={`status-dot ${node.status}`}></span>
-                <span class="status-text">{node.status === 'active' ? 'Active' : 'Syncing'}</span>
-              </div>
-              <span class="node-id">{node.id}</span>
-            </div>
-
-            <h3 class="node-name">{node.name}</h3>
-
-            <div class="node-location">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <span>{node.location}</span>
-            </div>
-
-            <div class="node-stats">
-              <div class="node-stat">
-                <span class="node-stat-label">Uptime</span>
-                <span class="node-stat-value">{node.uptime}</span>
-              </div>
-              <div class="node-stat">
-                <span class="node-stat-label">Peers</span>
-                <span class="node-stat-value">{node.peers}</span>
-              </div>
-              <div class="node-stat">
-                <span class="node-stat-label">Last Seen</span>
-                <span class="node-stat-value">{node.lastSeen}</span>
-              </div>
-            </div>
-
-            <div class="node-enode">
-              <label>Enode URL</label>
-              <div class="enode-wrapper">
-                <code>{node.enode}</code>
-                <button class="copy-btn" data-enode={node.enode} title="Copy enode URL">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Enode URL</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bootNodes.map((node) => (
+                <tr>
+                  <td>
+                    <span class="node-name">{node.name}</span>
+                  </td>
+                  <td>
+                    <code class="endpoint-code" title={node.enode}>{node.enode.length > 60 ? node.enode.substring(0, 60) + '...' : node.enode}</code>
+                  </td>
+                  <td>
+                    <button class="copy-btn" data-enode={node.enode} title="Copy Enode URL">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   </section>
@@ -278,60 +177,6 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
     line-height: 1.7;
   }
 
-  /* Stats Section */
-  .stats-section {
-    padding: 32px 0;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-  }
-
-  .stat-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 24px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-  }
-
-  .stat-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: var(--bg-tertiary);
-    color: var(--color-red);
-    border-radius: var(--radius-md);
-  }
-
-  .stat-icon.success {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22C55E;
-  }
-
-  .stat-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .stat-card .stat-value {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-
-  .stat-card .stat-label {
-    font-size: 13px;
-    color: var(--text-tertiary);
-  }
-
   /* Nodes Section */
   .nodes-section {
     padding: 32px 0 80px;
@@ -342,17 +187,13 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
     justify-content: space-between;
     align-items: flex-start;
     gap: 24px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
-  }
-
-  .section-title {
-    flex: 1;
   }
 
   .section-title h2 {
     font-size: 1.5rem;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
 
   .section-title p {
@@ -413,41 +254,12 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
     color: var(--text-primary);
   }
 
-  .search-results-info {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 24px;
-    padding: 12px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-  }
-
   .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     text-align: center;
     padding: 64px 24px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-  }
-
-  .empty-state-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 80px;
-    height: 80px;
-    background: var(--bg-tertiary);
-    border-radius: 50%;
-    margin-bottom: 24px;
-  }
-
-  .empty-state-icon svg {
-    color: var(--text-tertiary);
   }
 
   .empty-state h3 {
@@ -461,148 +273,56 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
     margin-bottom: 24px;
   }
 
-  .empty-state-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-  }
-
-  .nodes-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-
-  .node-card {
+  /* Table Styles */
+  .table-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-xl);
-    padding: 24px;
-    transition: all var(--transition-normal);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
   }
 
-  .node-card:hover {
-    border-color: var(--border-color-strong);
-    box-shadow: var(--shadow-lg);
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
   }
 
-  .node-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
+  .data-table th,
+  .data-table td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
   }
 
-  .node-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--text-tertiary);
-  }
-
-  .status-dot.active {
-    background: #22C55E;
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
-  }
-
-  .status-dot.syncing {
-    background: #EAB308;
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-
-  .status-text {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-  }
-
-  .node-id {
+  .data-table th {
     font-size: 12px;
-    font-family: monospace;
+    font-weight: 600;
     color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     background: var(--bg-tertiary);
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
+  }
+
+  .data-table tbody tr:hover {
+    background: var(--bg-tertiary);
+  }
+
+  .data-table tbody tr:last-child td {
+    border-bottom: none;
   }
 
   .node-name {
-    font-size: 18px;
     font-weight: 600;
-    margin-bottom: 12px;
+    display: block;
   }
 
-  .node-location {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-bottom: 20px;
-  }
-
-  .node-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    padding: 16px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-md);
-    margin-bottom: 20px;
-  }
-
-  .node-stat {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .node-stat-label {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .node-stat-value {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-
-  .node-enode {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .node-enode label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .enode-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-  }
-
-  .enode-wrapper code {
-    flex: 1;
+  .endpoint-code {
     font-size: 12px;
     color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    max-width: 500px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -612,13 +332,14 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     color: var(--text-secondary);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
     transition: all var(--transition-fast);
+    flex-shrink: 0;
   }
 
   .copy-btn:hover {
@@ -670,12 +391,6 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
   }
 
   /* Responsive */
-  @media (max-width: 1024px) {
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
   @media (max-width: 768px) {
     .section-header {
       flex-direction: column;
@@ -690,8 +405,12 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
       flex: 1;
     }
 
-    .nodes-grid {
-      grid-template-columns: 1fr;
+    .table-card {
+      overflow-x: auto;
+    }
+
+    .data-table {
+      min-width: 500px;
     }
 
     .help-card {
@@ -701,17 +420,6 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
 
     .help-icon {
       align-self: center;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .node-stats {
-      grid-template-columns: 1fr;
-      gap: 12px;
     }
   }
 </style>
@@ -728,7 +436,6 @@ const totalPeers = bootNodes.reduce((sum, n) => sum + n.peers, 0);
       try {
         await navigator.clipboard.writeText(enode);
 
-        // Visual feedback
         const originalHTML = btn.innerHTML;
         btn.innerHTML = `
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

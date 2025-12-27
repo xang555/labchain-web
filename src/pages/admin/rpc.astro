@@ -9,8 +9,22 @@ if (!user) {
   return Astro.redirect('/admin/login');
 }
 
+// Handle success messages from redirects
+const urlParamsMsg = new URL(Astro.request.url).searchParams;
+const successParam = urlParamsMsg.get('success');
 let message = '';
 let messageType = '';
+
+if (successParam === 'created') {
+  message = 'RPC endpoint created successfully';
+  messageType = 'success';
+} else if (successParam === 'updated') {
+  message = 'RPC endpoint updated successfully';
+  messageType = 'success';
+} else if (successParam === 'deleted') {
+  message = 'RPC endpoint deleted successfully';
+  messageType = 'success';
+}
 
 // Handle form submissions
 if (Astro.request.method === 'POST') {
@@ -22,29 +36,20 @@ if (Astro.request.method === 'POST') {
       name: formData.get('name')?.toString() || '',
       endpoint: formData.get('endpoint')?.toString() || '',
       type: (formData.get('type')?.toString() || 'community') as 'official' | 'community',
-      location: formData.get('location')?.toString() || '',
-      status: (formData.get('status')?.toString() || 'active') as 'active' | 'inactive',
-      latency: formData.get('latency')?.toString() || '',
-      requests: formData.get('requests')?.toString() || '',
-      rate_limit: formData.get('rate_limit')?.toString() || '',
-      features: formData.get('features')?.toString() || '',
     };
 
     if (action === 'create') {
       createRpcEndpoint(data);
-      message = 'RPC endpoint created successfully';
-      messageType = 'success';
+      return Astro.redirect('/admin/rpc?success=created');
     } else {
       const id = parseInt(formData.get('id')?.toString() || '0');
       updateRpcEndpoint(id, data);
-      message = 'RPC endpoint updated successfully';
-      messageType = 'success';
+      return Astro.redirect('/admin/rpc?success=updated');
     }
   } else if (action === 'delete') {
     const id = parseInt(formData.get('id')?.toString() || '0');
     deleteRpcEndpoint(id);
-    message = 'RPC endpoint deleted successfully';
-    messageType = 'success';
+    return Astro.redirect('/admin/rpc?success=deleted');
   }
 }
 
@@ -94,8 +99,6 @@ const editItem = editId ? getRpcEndpointById(editId) : null;
               <th>Name</th>
               <th>Endpoint</th>
               <th>Type</th>
-              <th>Location</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -110,10 +113,6 @@ const editItem = editId ? getRpcEndpointById(editId) : null;
                 </td>
                 <td>
                   <span class={`type-badge ${rpc.type}`}>{rpc.type}</span>
-                </td>
-                <td>{rpc.location || '-'}</td>
-                <td>
-                  <span class={`status-badge ${rpc.status}`}>{rpc.status}</span>
                 </td>
                 <td>
                   <div class="actions-cell">
@@ -170,49 +169,12 @@ const editItem = editId ? getRpcEndpointById(editId) : null;
             <input type="url" name="endpoint" class="form-input" required value={editItem?.endpoint || ''} placeholder="https://rpc.labchain.la" />
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Type</label>
-              <select name="type" class="form-select">
-                <option value="official" selected={editItem?.type === 'official'}>Official</option>
-                <option value="community" selected={editItem?.type === 'community' || !editItem}>Community</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Status</label>
-              <select name="status" class="form-select">
-                <option value="active" selected={editItem?.status === 'active' || !editItem}>Active</option>
-                <option value="inactive" selected={editItem?.status === 'inactive'}>Inactive</option>
-              </select>
-            </div>
-          </div>
-
           <div class="form-group">
-            <label class="form-label">Location</label>
-            <input type="text" name="location" class="form-input" value={editItem?.location || ''} placeholder="e.g., Vientiane, Laos" />
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Latency</label>
-              <input type="text" name="latency" class="form-input" value={editItem?.latency || ''} placeholder="e.g., 12ms" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Rate Limit</label>
-              <input type="text" name="rate_limit" class="form-input" value={editItem?.rate_limit || ''} placeholder="e.g., Unlimited" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Requests/Day</label>
-            <input type="text" name="requests" class="form-input" value={editItem?.requests || ''} placeholder="e.g., 1.2M/day" />
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Features (comma-separated)</label>
-            <input type="text" name="features" class="form-input" value={editItem?.features || ''} placeholder="e.g., HTTP, WebSocket, Archive" />
+            <label class="form-label">Type</label>
+            <select name="type" class="form-select">
+              <option value="official" selected={editItem?.type === 'official'}>Official</option>
+              <option value="community" selected={editItem?.type === 'community' || !editItem}>Community</option>
+            </select>
           </div>
         </div>
         <div class="modal-footer">
@@ -243,20 +205,10 @@ const editItem = editId ? getRpcEndpointById(editId) : null;
     display: inline;
   }
 
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
   @media (max-width: 640px) {
     .header-content {
       flex-direction: column;
       gap: 16px;
-    }
-
-    .form-row {
-      grid-template-columns: 1fr;
     }
   }
 </style>

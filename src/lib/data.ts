@@ -20,33 +20,26 @@ export function getRpcEndpointById(id: number): RpcEndpoint | null {
   return db.prepare('SELECT * FROM rpc_endpoints WHERE id = ?').get(id) as RpcEndpoint | null;
 }
 
-export function createRpcEndpoint(data: Omit<RpcEndpoint, 'id' | 'created_at' | 'updated_at'>): RpcEndpoint {
+export function createRpcEndpoint(data: { name: string; endpoint: string; type: 'official' | 'community' }): RpcEndpoint {
   const stmt = db.prepare(`
-    INSERT INTO rpc_endpoints (name, endpoint, type, location, status, latency, requests, rate_limit, features)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO rpc_endpoints (name, endpoint, type)
+    VALUES (?, ?, ?)
   `);
   const result = stmt.run(
     data.name,
     data.endpoint,
-    data.type,
-    data.location,
-    data.status,
-    data.latency,
-    data.requests,
-    data.rate_limit,
-    data.features
+    data.type
   );
   return db.prepare('SELECT * FROM rpc_endpoints WHERE id = ?').get(result.lastInsertRowid) as RpcEndpoint;
 }
 
-export function updateRpcEndpoint(id: number, data: Partial<RpcEndpoint>): RpcEndpoint | null {
+export function updateRpcEndpoint(id: number, data: { name?: string; endpoint?: string; type?: 'official' | 'community' }): RpcEndpoint | null {
   const existing = getRpcEndpointById(id);
   if (!existing) return null;
 
   const stmt = db.prepare(`
     UPDATE rpc_endpoints
-    SET name = ?, endpoint = ?, type = ?, location = ?, status = ?,
-        latency = ?, requests = ?, rate_limit = ?, features = ?,
+    SET name = ?, endpoint = ?, type = ?,
         updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
   `);
@@ -54,12 +47,6 @@ export function updateRpcEndpoint(id: number, data: Partial<RpcEndpoint>): RpcEn
     data.name ?? existing.name,
     data.endpoint ?? existing.endpoint,
     data.type ?? existing.type,
-    data.location ?? existing.location,
-    data.status ?? existing.status,
-    data.latency ?? existing.latency,
-    data.requests ?? existing.requests,
-    data.rate_limit ?? existing.rate_limit,
-    data.features ?? existing.features,
     id
   );
   return getRpcEndpointById(id);
@@ -88,42 +75,31 @@ export function getBootNodeById(id: number): BootNode | null {
   return db.prepare('SELECT * FROM boot_nodes WHERE id = ?').get(id) as BootNode | null;
 }
 
-export function createBootNode(data: Omit<BootNode, 'id' | 'created_at' | 'updated_at'>): BootNode {
+export function createBootNode(data: { name: string; enode: string }): BootNode {
   const stmt = db.prepare(`
-    INSERT INTO boot_nodes (name, enode, location, status, uptime, peers, last_seen)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO boot_nodes (name, enode)
+    VALUES (?, ?)
   `);
   const result = stmt.run(
     data.name,
-    data.enode,
-    data.location,
-    data.status,
-    data.uptime,
-    data.peers,
-    data.last_seen
+    data.enode
   );
   return db.prepare('SELECT * FROM boot_nodes WHERE id = ?').get(result.lastInsertRowid) as BootNode;
 }
 
-export function updateBootNode(id: number, data: Partial<BootNode>): BootNode | null {
+export function updateBootNode(id: number, data: { name?: string; enode?: string }): BootNode | null {
   const existing = getBootNodeById(id);
   if (!existing) return null;
 
   const stmt = db.prepare(`
     UPDATE boot_nodes
-    SET name = ?, enode = ?, location = ?, status = ?,
-        uptime = ?, peers = ?, last_seen = ?,
+    SET name = ?, enode = ?,
         updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
   `);
   stmt.run(
     data.name ?? existing.name,
     data.enode ?? existing.enode,
-    data.location ?? existing.location,
-    data.status ?? existing.status,
-    data.uptime ?? existing.uptime,
-    data.peers ?? existing.peers,
-    data.last_seen ?? existing.last_seen,
     id
   );
   return getBootNodeById(id);
@@ -152,46 +128,33 @@ export function getBeaconNodeById(id: number): BeaconNode | null {
   return db.prepare('SELECT * FROM beacon_nodes WHERE id = ?').get(id) as BeaconNode | null;
 }
 
-export function createBeaconNode(data: Omit<BeaconNode, 'id' | 'created_at' | 'updated_at'>): BeaconNode {
+export function createBeaconNode(data: { name: string; enr?: string; p2p?: string }): BeaconNode {
   const stmt = db.prepare(`
-    INSERT INTO beacon_nodes (name, endpoint, location, status, version, sync_status, slots, epoch, last_update)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO beacon_nodes (name, enr, p2p)
+    VALUES (?, ?, ?)
   `);
   const result = stmt.run(
     data.name,
-    data.endpoint,
-    data.location,
-    data.status,
-    data.version,
-    data.sync_status,
-    data.slots,
-    data.epoch,
-    data.last_update
+    data.enr || '',
+    data.p2p || ''
   );
   return db.prepare('SELECT * FROM beacon_nodes WHERE id = ?').get(result.lastInsertRowid) as BeaconNode;
 }
 
-export function updateBeaconNode(id: number, data: Partial<BeaconNode>): BeaconNode | null {
+export function updateBeaconNode(id: number, data: { name?: string; enr?: string; p2p?: string }): BeaconNode | null {
   const existing = getBeaconNodeById(id);
   if (!existing) return null;
 
   const stmt = db.prepare(`
     UPDATE beacon_nodes
-    SET name = ?, endpoint = ?, location = ?, status = ?,
-        version = ?, sync_status = ?, slots = ?, epoch = ?, last_update = ?,
+    SET name = ?, enr = ?, p2p = ?,
         updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
   `);
   stmt.run(
     data.name ?? existing.name,
-    data.endpoint ?? existing.endpoint,
-    data.location ?? existing.location,
-    data.status ?? existing.status,
-    data.version ?? existing.version,
-    data.sync_status ?? existing.sync_status,
-    data.slots ?? existing.slots,
-    data.epoch ?? existing.epoch,
-    data.last_update ?? existing.last_update,
+    data.enr ?? existing.enr ?? '',
+    data.p2p ?? existing.p2p ?? '',
     id
   );
   return getBeaconNodeById(id);
@@ -271,16 +234,13 @@ export function createNodeRequest(data: {
   node_type: string;
   name: string;
   endpoint: string;
-  location?: string;
-  contact_email: string;
-  contact_name?: string;
   description?: string;
 }): NodeRequest {
   const trackingId = generateTrackingId();
 
   const stmt = db.prepare(`
     INSERT INTO node_requests (tracking_id, node_type, name, endpoint, location, contact_email, contact_name, description, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+    VALUES (?, ?, ?, ?, '', '', '', ?, 'pending')
   `);
 
   const result = stmt.run(
@@ -288,9 +248,6 @@ export function createNodeRequest(data: {
     data.node_type,
     data.name,
     data.endpoint,
-    data.location || '',
-    data.contact_email,
-    data.contact_name || '',
     data.description || ''
   );
 
@@ -326,35 +283,18 @@ export function approveAndCreateNode(requestId: number): { success: boolean; err
       createRpcEndpoint({
         name: request.name,
         endpoint: request.endpoint,
-        type: 'community',
-        location: request.location,
-        status: 'active',
-        latency: '',
-        requests: '',
-        rate_limit: '',
-        features: ''
+        type: 'community'
       });
     } else if (request.node_type === 'bootnode') {
       createBootNode({
         name: request.name,
-        enode: request.endpoint,
-        location: request.location,
-        status: 'active',
-        uptime: '',
-        peers: 0,
-        last_seen: ''
+        enode: request.endpoint
       });
     } else if (request.node_type === 'beacon') {
       createBeaconNode({
         name: request.name,
-        endpoint: request.endpoint,
-        location: request.location,
-        status: 'active',
-        version: '',
-        sync_status: '',
-        slots: '',
-        epoch: '',
-        last_update: ''
+        enr: request.endpoint,  // User submits ENR in the endpoint field
+        p2p: ''
       });
     }
 

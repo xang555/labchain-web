@@ -9,8 +9,22 @@ if (!user) {
   return Astro.redirect('/admin/login');
 }
 
+// Handle success messages from redirects
+const urlParamsMsg = new URL(Astro.request.url).searchParams;
+const successParam = urlParamsMsg.get('success');
 let message = '';
 let messageType = '';
+
+if (successParam === 'created') {
+  message = 'Beacon node created successfully';
+  messageType = 'success';
+} else if (successParam === 'updated') {
+  message = 'Beacon node updated successfully';
+  messageType = 'success';
+} else if (successParam === 'deleted') {
+  message = 'Beacon node deleted successfully';
+  messageType = 'success';
+}
 
 // Handle form submissions
 if (Astro.request.method === 'POST') {
@@ -20,31 +34,22 @@ if (Astro.request.method === 'POST') {
   if (action === 'create' || action === 'update') {
     const data = {
       name: formData.get('name')?.toString() || '',
-      endpoint: formData.get('endpoint')?.toString() || '',
-      location: formData.get('location')?.toString() || '',
-      status: (formData.get('status')?.toString() || 'active') as 'active' | 'syncing' | 'inactive',
-      version: formData.get('version')?.toString() || '',
-      sync_status: formData.get('sync_status')?.toString() || '',
-      slots: formData.get('slots')?.toString() || '',
-      epoch: formData.get('epoch')?.toString() || '',
-      last_update: formData.get('last_update')?.toString() || '',
+      enr: formData.get('enr')?.toString() || '',
+      p2p: formData.get('p2p')?.toString() || '',
     };
 
     if (action === 'create') {
       createBeaconNode(data);
-      message = 'Beacon node created successfully';
-      messageType = 'success';
+      return Astro.redirect('/admin/beacon-nodes?success=created');
     } else {
       const id = parseInt(formData.get('id')?.toString() || '0');
       updateBeaconNode(id, data);
-      message = 'Beacon node updated successfully';
-      messageType = 'success';
+      return Astro.redirect('/admin/beacon-nodes?success=updated');
     }
   } else if (action === 'delete') {
     const id = parseInt(formData.get('id')?.toString() || '0');
     deleteBeaconNode(id);
-    message = 'Beacon node deleted successfully';
-    messageType = 'success';
+    return Astro.redirect('/admin/beacon-nodes?success=deleted');
   }
 }
 
@@ -94,10 +99,8 @@ const editItem = editId ? getBeaconNodeById(editId) : null;
           <thead>
             <tr>
               <th>Name</th>
-              <th>Endpoint</th>
-              <th>Location</th>
-              <th>Version</th>
-              <th>Status</th>
+              <th>ENR</th>
+              <th>P2P (libp2p)</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -108,12 +111,10 @@ const editItem = editId ? getBeaconNodeById(editId) : null;
                   <strong>{node.name}</strong>
                 </td>
                 <td>
-                  <code class="endpoint-code">{node.endpoint}</code>
+                  <code class="endpoint-code">{node.enr ? (node.enr.length > 40 ? node.enr.substring(0, 40) + '...' : node.enr) : '-'}</code>
                 </td>
-                <td>{node.location || '-'}</td>
-                <td>{node.version || '-'}</td>
                 <td>
-                  <span class={`status-badge ${node.status}`}>{node.status}</span>
+                  <code class="endpoint-code">{node.p2p ? (node.p2p.length > 40 ? node.p2p.substring(0, 40) + '...' : node.p2p) : '-'}</code>
                 </td>
                 <td>
                   <div class="actions-cell">
@@ -166,53 +167,15 @@ const editItem = editId ? getBeaconNodeById(editId) : null;
           </div>
 
           <div class="form-group">
-            <label class="form-label">Endpoint URL *</label>
-            <input type="url" name="endpoint" class="form-input" required value={editItem?.endpoint || ''} placeholder="https://beacon1.labchain.la" />
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Location</label>
-              <input type="text" name="location" class="form-input" value={editItem?.location || ''} placeholder="e.g., Vientiane, Laos" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Status</label>
-              <select name="status" class="form-select">
-                <option value="active" selected={editItem?.status === 'active' || !editItem}>Active</option>
-                <option value="syncing" selected={editItem?.status === 'syncing'}>Syncing</option>
-                <option value="inactive" selected={editItem?.status === 'inactive'}>Inactive</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Version</label>
-              <input type="text" name="version" class="form-input" value={editItem?.version || ''} placeholder="e.g., v4.1.0" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Sync Status</label>
-              <input type="text" name="sync_status" class="form-input" value={editItem?.sync_status || ''} placeholder="e.g., Synced" />
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Slots</label>
-              <input type="text" name="slots" class="form-input" value={editItem?.slots || ''} placeholder="e.g., 1,234,567" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Epoch</label>
-              <input type="text" name="epoch" class="form-input" value={editItem?.epoch || ''} placeholder="e.g., 38,580" />
-            </div>
+            <label class="form-label">ENR (Ethereum Node Record)</label>
+            <textarea name="enr" class="form-textarea" placeholder="enr:-...">{editItem?.enr || ''}</textarea>
+            <span class="form-hint">The ENR string for peer discovery</span>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Last Update</label>
-            <input type="text" name="last_update" class="form-input" value={editItem?.last_update || ''} placeholder="e.g., 12 seconds ago" />
+            <label class="form-label">P2P (libp2p Address)</label>
+            <textarea name="p2p" class="form-textarea" placeholder="/ip4/...or /dns4/...">{editItem?.p2p || ''}</textarea>
+            <span class="form-hint">The libp2p multiaddress for direct P2P connection</span>
           </div>
         </div>
         <div class="modal-footer">
@@ -243,20 +206,17 @@ const editItem = editId ? getBeaconNodeById(editId) : null;
     display: inline;
   }
 
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+  .form-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-tertiary);
   }
 
   @media (max-width: 640px) {
     .header-content {
       flex-direction: column;
       gap: 16px;
-    }
-
-    .form-row {
-      grid-template-columns: 1fr;
     }
   }
 </style>

@@ -71,7 +71,9 @@ export function initDatabase() {
     CREATE TABLE IF NOT EXISTS beacon_nodes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      endpoint TEXT NOT NULL,
+      endpoint TEXT,
+      enr TEXT,
+      p2p TEXT,
       location TEXT,
       status TEXT DEFAULT 'active',
       version TEXT,
@@ -83,6 +85,18 @@ export function initDatabase() {
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Add enr and p2p columns if they don't exist (migration for existing databases)
+  try {
+    db.exec(`ALTER TABLE beacon_nodes ADD COLUMN enr TEXT`);
+  } catch (e) {
+    // Column already exists
+  }
+  try {
+    db.exec(`ALTER TABLE beacon_nodes ADD COLUMN p2p TEXT`);
+  } catch (e) {
+    // Column already exists
+  }
 
   // Sessions table for authentication
   db.exec(`
@@ -160,14 +174,16 @@ export interface BootNode {
 export interface BeaconNode {
   id: number;
   name: string;
-  endpoint: string;
-  location: string;
-  status: 'active' | 'syncing' | 'inactive';
-  version: string;
-  sync_status: string;
-  slots: string;
-  epoch: string;
-  last_update: string;
+  endpoint?: string;
+  enr?: string;
+  p2p?: string;
+  location?: string;
+  status?: 'active' | 'syncing' | 'inactive';
+  version?: string;
+  sync_status?: string;
+  slots?: string;
+  epoch?: string;
+  last_update?: string;
   created_at: string;
   updated_at: string;
 }
