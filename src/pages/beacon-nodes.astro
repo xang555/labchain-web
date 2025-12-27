@@ -1,13 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getAllBeaconNodes, searchBeaconNodes } from '../lib/data';
+import Pagination from '../components/Pagination.astro';
+import { getBeaconNodesPaginated, searchBeaconNodesPaginated } from '../lib/data';
 
-// Get search query from URL
+// Get search query and page from URL
 const url = new URL(Astro.request.url);
 const searchQuery = url.searchParams.get('search') || '';
+const currentPage = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+const limit = 10;
 
-// Get beacon nodes from database
-const beaconNodesRaw = searchQuery ? searchBeaconNodes(searchQuery) : getAllBeaconNodes();
+// Get beacon nodes from database with pagination
+const result = searchQuery
+  ? searchBeaconNodesPaginated(searchQuery, currentPage, limit)
+  : getBeaconNodesPaginated(currentPage, limit);
+
+const { data: beaconNodesRaw, total, totalPages } = result;
 
 // Transform to display format - only name, enr, and p2p
 const beaconNodes = beaconNodesRaw.map(node => ({
@@ -130,6 +137,13 @@ const beaconNodes = beaconNodesRaw.map(node => ({
               ))}
             </tbody>
           </table>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            total={total}
+            baseUrl="/beacon-nodes"
+            searchQuery={searchQuery}
+          />
         </div>
       )}
     </div>

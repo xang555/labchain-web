@@ -2,9 +2,31 @@ import db from './db';
 import type { RpcEndpoint, BootNode, BeaconNode, NodeRequest } from './db';
 import { randomBytes } from 'crypto';
 
+// Pagination helper
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 // RPC Endpoints
 export function getAllRpcEndpoints(): RpcEndpoint[] {
   return db.prepare('SELECT * FROM rpc_endpoints ORDER BY type DESC, name ASC').all() as RpcEndpoint[];
+}
+
+export function getRpcEndpointsPaginated(page: number = 1, limit: number = 10): PaginatedResult<RpcEndpoint> {
+  const offset = (page - 1) * limit;
+  const total = (db.prepare('SELECT COUNT(*) as count FROM rpc_endpoints').get() as { count: number }).count;
+  const data = db.prepare('SELECT * FROM rpc_endpoints ORDER BY type DESC, name ASC LIMIT ? OFFSET ?').all(limit, offset) as RpcEndpoint[];
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 }
 
 export function searchRpcEndpoints(query: string): RpcEndpoint[] {
@@ -14,6 +36,27 @@ export function searchRpcEndpoints(query: string): RpcEndpoint[] {
     WHERE name LIKE ? OR endpoint LIKE ? OR location LIKE ? OR type LIKE ?
     ORDER BY type DESC, name ASC
   `).all(searchQuery, searchQuery, searchQuery, searchQuery) as RpcEndpoint[];
+}
+
+export function searchRpcEndpointsPaginated(query: string, page: number = 1, limit: number = 10): PaginatedResult<RpcEndpoint> {
+  const searchQuery = `%${query}%`;
+  const offset = (page - 1) * limit;
+  const total = (db.prepare(`
+    SELECT COUNT(*) as count FROM rpc_endpoints
+    WHERE name LIKE ? OR endpoint LIKE ? OR location LIKE ? OR type LIKE ?
+  `).get(searchQuery, searchQuery, searchQuery, searchQuery) as { count: number }).count;
+  const data = db.prepare(`
+    SELECT * FROM rpc_endpoints
+    WHERE name LIKE ? OR endpoint LIKE ? OR location LIKE ? OR type LIKE ?
+    ORDER BY type DESC, name ASC LIMIT ? OFFSET ?
+  `).all(searchQuery, searchQuery, searchQuery, searchQuery, limit, offset) as RpcEndpoint[];
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 }
 
 export function getRpcEndpointById(id: number): RpcEndpoint | null {
@@ -59,16 +102,50 @@ export function deleteRpcEndpoint(id: number): boolean {
 
 // Boot Nodes
 export function getAllBootNodes(): BootNode[] {
-  return db.prepare('SELECT * FROM boot_nodes ORDER BY status ASC, name ASC').all() as BootNode[];
+  return db.prepare('SELECT * FROM boot_nodes ORDER BY name ASC').all() as BootNode[];
+}
+
+export function getBootNodesPaginated(page: number = 1, limit: number = 10): PaginatedResult<BootNode> {
+  const offset = (page - 1) * limit;
+  const total = (db.prepare('SELECT COUNT(*) as count FROM boot_nodes').get() as { count: number }).count;
+  const data = db.prepare('SELECT * FROM boot_nodes ORDER BY name ASC LIMIT ? OFFSET ?').all(limit, offset) as BootNode[];
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 }
 
 export function searchBootNodes(query: string): BootNode[] {
   const searchQuery = `%${query}%`;
   return db.prepare(`
     SELECT * FROM boot_nodes
-    WHERE name LIKE ? OR enode LIKE ? OR location LIKE ? OR status LIKE ?
-    ORDER BY status ASC, name ASC
-  `).all(searchQuery, searchQuery, searchQuery, searchQuery) as BootNode[];
+    WHERE name LIKE ? OR enode LIKE ?
+    ORDER BY name ASC
+  `).all(searchQuery, searchQuery) as BootNode[];
+}
+
+export function searchBootNodesPaginated(query: string, page: number = 1, limit: number = 10): PaginatedResult<BootNode> {
+  const searchQuery = `%${query}%`;
+  const offset = (page - 1) * limit;
+  const total = (db.prepare(`
+    SELECT COUNT(*) as count FROM boot_nodes
+    WHERE name LIKE ? OR enode LIKE ?
+  `).get(searchQuery, searchQuery) as { count: number }).count;
+  const data = db.prepare(`
+    SELECT * FROM boot_nodes
+    WHERE name LIKE ? OR enode LIKE ?
+    ORDER BY name ASC LIMIT ? OFFSET ?
+  `).all(searchQuery, searchQuery, limit, offset) as BootNode[];
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 }
 
 export function getBootNodeById(id: number): BootNode | null {
@@ -112,16 +189,50 @@ export function deleteBootNode(id: number): boolean {
 
 // Beacon Nodes
 export function getAllBeaconNodes(): BeaconNode[] {
-  return db.prepare('SELECT * FROM beacon_nodes ORDER BY status ASC, name ASC').all() as BeaconNode[];
+  return db.prepare('SELECT * FROM beacon_nodes ORDER BY name ASC').all() as BeaconNode[];
+}
+
+export function getBeaconNodesPaginated(page: number = 1, limit: number = 10): PaginatedResult<BeaconNode> {
+  const offset = (page - 1) * limit;
+  const total = (db.prepare('SELECT COUNT(*) as count FROM beacon_nodes').get() as { count: number }).count;
+  const data = db.prepare('SELECT * FROM beacon_nodes ORDER BY name ASC LIMIT ? OFFSET ?').all(limit, offset) as BeaconNode[];
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 }
 
 export function searchBeaconNodes(query: string): BeaconNode[] {
   const searchQuery = `%${query}%`;
   return db.prepare(`
     SELECT * FROM beacon_nodes
-    WHERE name LIKE ? OR endpoint LIKE ? OR location LIKE ? OR status LIKE ?
-    ORDER BY status ASC, name ASC
-  `).all(searchQuery, searchQuery, searchQuery, searchQuery) as BeaconNode[];
+    WHERE name LIKE ? OR enr LIKE ? OR p2p LIKE ?
+    ORDER BY name ASC
+  `).all(searchQuery, searchQuery, searchQuery) as BeaconNode[];
+}
+
+export function searchBeaconNodesPaginated(query: string, page: number = 1, limit: number = 10): PaginatedResult<BeaconNode> {
+  const searchQuery = `%${query}%`;
+  const offset = (page - 1) * limit;
+  const total = (db.prepare(`
+    SELECT COUNT(*) as count FROM beacon_nodes
+    WHERE name LIKE ? OR enr LIKE ? OR p2p LIKE ?
+  `).get(searchQuery, searchQuery, searchQuery) as { count: number }).count;
+  const data = db.prepare(`
+    SELECT * FROM beacon_nodes
+    WHERE name LIKE ? OR enr LIKE ? OR p2p LIKE ?
+    ORDER BY name ASC LIMIT ? OFFSET ?
+  `).all(searchQuery, searchQuery, searchQuery, limit, offset) as BeaconNode[];
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
 }
 
 export function getBeaconNodeById(id: number): BeaconNode | null {

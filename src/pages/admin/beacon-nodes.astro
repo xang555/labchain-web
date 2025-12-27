@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { getAllBeaconNodes, getBeaconNodeById, createBeaconNode, updateBeaconNode, deleteBeaconNode } from '../../lib/data';
+import Pagination from '../../components/Pagination.astro';
+import { getBeaconNodesPaginated, getBeaconNodeById, createBeaconNode, updateBeaconNode, deleteBeaconNode } from '../../lib/data';
 import { validateSessionCookie } from '../../lib/auth';
 
 // Check authentication
@@ -15,6 +16,8 @@ const successParam = urlParamsMsg.get('success');
 let message = '';
 let messageType = '';
 
+const errorParam = urlParamsMsg.get('error');
+
 if (successParam === 'created') {
   message = 'Beacon node created successfully';
   messageType = 'success';
@@ -24,6 +27,9 @@ if (successParam === 'created') {
 } else if (successParam === 'deleted') {
   message = 'Beacon node deleted successfully';
   messageType = 'success';
+} else if (errorParam) {
+  message = errorParam;
+  messageType = 'error';
 }
 
 // Handle form submissions
@@ -32,11 +38,16 @@ if (Astro.request.method === 'POST') {
   const action = formData.get('action')?.toString();
 
   if (action === 'create' || action === 'update') {
-    const data = {
-      name: formData.get('name')?.toString() || '',
-      enr: formData.get('enr')?.toString() || '',
-      p2p: formData.get('p2p')?.toString() || '',
-    };
+    const name = formData.get('name')?.toString() || '';
+    const enr = formData.get('enr')?.toString() || '';
+    const p2p = formData.get('p2p')?.toString() || '';
+
+    // Validate: at least one of ENR or P2P must be provided
+    if (!enr && !p2p) {
+      return Astro.redirect('/admin/beacon-nodes?error=At least one of ENR or P2P must be provided');
+    }
+
+    const data = { name, enr, p2p };
 
     if (action === 'create') {
       createBeaconNode(data);
@@ -53,8 +64,13 @@ if (Astro.request.method === 'POST') {
   }
 }
 
-const beaconNodes = getAllBeaconNodes();
+// Pagination
 const urlParams = new URL(Astro.request.url).searchParams;
+const currentPage = Math.max(1, parseInt(urlParams.get('page') || '1'));
+const limit = 10;
+
+const { data: beaconNodes, total, totalPages } = getBeaconNodesPaginated(currentPage, limit);
+
 const showModal = urlParams.get('action') === 'new' || urlParams.get('edit');
 const editId = urlParams.get('edit') ? parseInt(urlParams.get('edit')!) : null;
 const editItem = editId ? getBeaconNodeById(editId) : null;
@@ -140,6 +156,12 @@ const editItem = editId ? getBeaconNodeById(editId) : null;
             ))}
           </tbody>
         </table>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          total={total}
+          baseUrl="/admin/beacon-nodes"
+        />
       </div>
     )}
   </div>

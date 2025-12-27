@@ -1,13 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getAllRpcEndpoints, searchRpcEndpoints } from '../lib/data';
+import Pagination from '../components/Pagination.astro';
+import { getRpcEndpointsPaginated, searchRpcEndpointsPaginated } from '../lib/data';
 
-// Get search query from URL
+// Get search query and page from URL
 const url = new URL(Astro.request.url);
 const searchQuery = url.searchParams.get('search') || '';
+const currentPage = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+const limit = 10;
 
-// Get RPC nodes from database
-const rpcNodesRaw = searchQuery ? searchRpcEndpoints(searchQuery) : getAllRpcEndpoints();
+// Get RPC nodes from database with pagination
+const result = searchQuery
+  ? searchRpcEndpointsPaginated(searchQuery, currentPage, limit)
+  : getRpcEndpointsPaginated(currentPage, limit);
+
+const { data: rpcNodesRaw, total, totalPages } = result;
 
 // Transform to display format
 const rpcNodes = rpcNodesRaw.map(node => ({
@@ -16,7 +23,6 @@ const rpcNodes = rpcNodesRaw.map(node => ({
   endpoint: node.endpoint,
   type: node.type,
   status: node.status,
-  latency: node.latency,
   features: node.features ? node.features.split(',').map(f => f.trim()) : []
 }));
 
@@ -132,7 +138,6 @@ const communityNodes = rpcNodes.filter(n => n.type === 'community').length;
                 <th>Endpoint</th>
                 <th>Type</th>
                 <th>Status</th>
-                <th>Latency</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -160,9 +165,6 @@ const communityNodes = rpcNodes.filter(n => n.type === 'community').length;
                     </span>
                   </td>
                   <td>
-                    <span class="latency-value">{node.latency || '-'}</span>
-                  </td>
-                  <td>
                     <button class="copy-btn" data-endpoint={node.endpoint} title="Copy RPC URL">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -174,6 +176,13 @@ const communityNodes = rpcNodes.filter(n => n.type === 'community').length;
               ))}
             </tbody>
           </table>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            total={total}
+            baseUrl="/rpc"
+            searchQuery={searchQuery}
+          />
         </div>
       )}
     </div>
@@ -511,11 +520,6 @@ const communityNodes = rpcNodes.filter(n => n.type === 'community').length;
 
   .status-badge.inactive .status-dot {
     background: #EF4444;
-  }
-
-  .latency-value {
-    font-size: 13px;
-    color: var(--text-secondary);
   }
 
   .copy-btn {

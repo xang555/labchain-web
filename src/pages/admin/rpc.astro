@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { getAllRpcEndpoints, getRpcEndpointById, createRpcEndpoint, updateRpcEndpoint, deleteRpcEndpoint } from '../../lib/data';
+import Pagination from '../../components/Pagination.astro';
+import { getRpcEndpointsPaginated, getRpcEndpointById, createRpcEndpoint, updateRpcEndpoint, deleteRpcEndpoint } from '../../lib/data';
 import { validateSessionCookie } from '../../lib/auth';
 
 // Check authentication
@@ -53,8 +54,13 @@ if (Astro.request.method === 'POST') {
   }
 }
 
-const rpcEndpoints = getAllRpcEndpoints();
+// Pagination
 const urlParams = new URL(Astro.request.url).searchParams;
+const currentPage = Math.max(1, parseInt(urlParams.get('page') || '1'));
+const limit = 10;
+
+const { data: rpcEndpoints, total, totalPages } = getRpcEndpointsPaginated(currentPage, limit);
+
 const showModal = urlParams.get('action') === 'new' || urlParams.get('edit');
 const editId = urlParams.get('edit') ? parseInt(urlParams.get('edit')!) : null;
 const editItem = editId ? getRpcEndpointById(editId) : null;
@@ -138,6 +144,12 @@ const editItem = editId ? getRpcEndpointById(editId) : null;
             ))}
           </tbody>
         </table>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          total={total}
+          baseUrl="/admin/rpc"
+        />
       </div>
     )}
   </div>

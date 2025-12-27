@@ -98,6 +98,39 @@ export function initDatabase() {
     // Column already exists
   }
 
+  // Migration: Recreate beacon_nodes table to make endpoint nullable
+  // Check if endpoint is NOT NULL and migrate if needed
+  try {
+    const tableInfo = db.prepare("PRAGMA table_info(beacon_nodes)").all() as { name: string; notnull: number }[];
+    const endpointCol = tableInfo.find(col => col.name === 'endpoint');
+    if (endpointCol && endpointCol.notnull === 1) {
+      // Need to recreate table with nullable endpoint
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS beacon_nodes_new (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          endpoint TEXT,
+          enr TEXT,
+          p2p TEXT,
+          location TEXT,
+          status TEXT DEFAULT 'active',
+          version TEXT,
+          sync_status TEXT,
+          slots TEXT,
+          epoch TEXT,
+          last_update TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      db.exec(`INSERT INTO beacon_nodes_new SELECT * FROM beacon_nodes`);
+      db.exec(`DROP TABLE beacon_nodes`);
+      db.exec(`ALTER TABLE beacon_nodes_new RENAME TO beacon_nodes`);
+    }
+  } catch (e) {
+    // Migration already done or table doesn't exist yet
+  }
+
   // Sessions table for authentication
   db.exec(`
     CREATE TABLE IF NOT EXISTS sessions (

@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { getAllBootNodes, getBootNodeById, createBootNode, updateBootNode, deleteBootNode } from '../../lib/data';
+import Pagination from '../../components/Pagination.astro';
+import { getBootNodesPaginated, getBootNodeById, createBootNode, updateBootNode, deleteBootNode } from '../../lib/data';
 import { validateSessionCookie } from '../../lib/auth';
 
 // Check authentication
@@ -52,8 +53,13 @@ if (Astro.request.method === 'POST') {
   }
 }
 
-const bootNodes = getAllBootNodes();
+// Pagination
 const urlParams = new URL(Astro.request.url).searchParams;
+const currentPage = Math.max(1, parseInt(urlParams.get('page') || '1'));
+const limit = 10;
+
+const { data: bootNodes, total, totalPages } = getBootNodesPaginated(currentPage, limit);
+
 const showModal = urlParams.get('action') === 'new' || urlParams.get('edit');
 const editId = urlParams.get('edit') ? parseInt(urlParams.get('edit')!) : null;
 const editItem = editId ? getBootNodeById(editId) : null;
@@ -135,6 +141,12 @@ const editItem = editId ? getBootNodeById(editId) : null;
             ))}
           </tbody>
         </table>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          total={total}
+          baseUrl="/admin/boot-nodes"
+        />
       </div>
     )}
   </div>

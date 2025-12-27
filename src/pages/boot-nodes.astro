@@ -1,13 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getAllBootNodes, searchBootNodes } from '../lib/data';
+import Pagination from '../components/Pagination.astro';
+import { getBootNodesPaginated, searchBootNodesPaginated } from '../lib/data';
 
-// Get search query from URL
+// Get search query and page from URL
 const url = new URL(Astro.request.url);
 const searchQuery = url.searchParams.get('search') || '';
+const currentPage = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+const limit = 10;
 
-// Get boot nodes from database
-const bootNodesRaw = searchQuery ? searchBootNodes(searchQuery) : getAllBootNodes();
+// Get boot nodes from database with pagination
+const result = searchQuery
+  ? searchBootNodesPaginated(searchQuery, currentPage, limit)
+  : getBootNodesPaginated(currentPage, limit);
+
+const { data: bootNodesRaw, total, totalPages } = result;
 
 // Transform to display format - only name and enode
 const bootNodes = bootNodesRaw.map(node => ({
@@ -103,6 +110,13 @@ const bootNodes = bootNodesRaw.map(node => ({
               ))}
             </tbody>
           </table>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            total={total}
+            baseUrl="/boot-nodes"
+            searchQuery={searchQuery}
+          />
         </div>
       )}
     </div>
