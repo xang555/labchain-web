@@ -28,8 +28,8 @@ FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Install runtime dependencies for better-sqlite3
-RUN apk add --no-cache python3 make g++
+# Install runtime dependencies for better-sqlite3 and health check
+RUN apk add --no-cache python3 make g++ curl
 
 # Enable corepack for Yarn 4
 RUN corepack enable
@@ -56,6 +56,7 @@ RUN mkdir -p /app/data && chown -R astro:nodejs /app/data
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=4321
+ENV DATA_DIR=/app/data
 
 # Switch to non-root user
 USER astro
@@ -64,8 +65,8 @@ USER astro
 EXPOSE 4321
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:4321/ || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:4321/ || exit 1
 
 # Start the application
 CMD ["node", "./dist/server/entry.mjs"]

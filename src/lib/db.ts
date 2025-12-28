@@ -1,14 +1,9 @@
 import Database from 'better-sqlite3';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
-// Get the directory of the current module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Database path - store in project root/data folder
-const dataDir = join(__dirname, '../../data');
+// Database path - use DATA_DIR env var or default to ./data
+const dataDir = process.env.DATA_DIR || join(process.cwd(), 'data');
 if (!existsSync(dataDir)) {
   mkdirSync(dataDir, { recursive: true });
 }
