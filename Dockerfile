@@ -6,11 +6,16 @@ WORKDIR /app
 # Install dependencies for building native modules (better-sqlite3)
 RUN apk add --no-cache python3 make g++
 
-# Copy package files
+# Enable corepack for Yarn 4
+RUN corepack enable
+
+# Copy yarn files first
+COPY .yarnrc.yml ./
+COPY .yarn ./.yarn
 COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 # Copy source code
 COPY . .
@@ -26,16 +31,21 @@ WORKDIR /app
 # Install runtime dependencies for better-sqlite3
 RUN apk add --no-cache python3 make g++
 
+# Enable corepack for Yarn 4
+RUN corepack enable
+
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S astro -u 1001
 
-# Copy package files
+# Copy yarn files
+COPY .yarnrc.yml ./
+COPY .yarn ./.yarn
 COPY package.json yarn.lock ./
 
-# Install production dependencies only
-RUN yarn install --frozen-lockfile --production && \
-    yarn cache clean
+# Copy PnP files from builder
+COPY --from=builder /app/.pnp.cjs ./
+COPY --from=builder /app/.pnp.loader.mjs ./
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
