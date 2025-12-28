@@ -11,11 +11,11 @@ RUN corepack enable
 
 # Copy yarn files first
 COPY .yarnrc.yml ./
-COPY .yarn ./.yarn
+COPY .yarn/releases ./.yarn/releases
 COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN yarn install --immutable
+RUN yarn install
 
 # Copy source code
 COPY . .
@@ -40,12 +40,11 @@ RUN addgroup -g 1001 -S nodejs && \
 
 # Copy yarn files
 COPY .yarnrc.yml ./
-COPY .yarn ./.yarn
+COPY .yarn/releases ./.yarn/releases
 COPY package.json yarn.lock ./
 
-# Copy PnP files from builder
-COPY --from=builder /app/.pnp.cjs ./
-COPY --from=builder /app/.pnp.loader.mjs ./
+# Install production dependencies only
+RUN yarn workspaces focus --production
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
