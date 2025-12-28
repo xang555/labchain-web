@@ -1,43 +1,107 @@
-# Astro Starter Kit: Minimal
+# LAB Chain Website
 
-```sh
-yarn create astro@latest -- --template minimal
+Official website for LAB Chain with admin panel for managing network data (RPC Endpoints, Boot Nodes, Beacon Nodes).
+
+## Chain Details
+
+| Property | Value |
+|----------|-------|
+| Chain ID | 5222 |
+| Primary RPC | https://rpc.labchain.la |
+| Explorer | https://explorer.labchain.la |
+
+## Features
+
+- **Public Pages**: RPC endpoints, Boot nodes, Beacon nodes listings with search and pagination
+- **Admin Panel**: CRUD operations for managing network data
+- **Community Submissions**: Users can submit nodes for review
+- **Theme Support**: Light and dark mode
+- **SQLite Database**: Lightweight data storage with WAL mode
+
+## Tech Stack
+
+- [Astro](https://astro.build) - Web framework
+- [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) - SQLite database
+- Node.js adapter for SSR
+
+## Project Structure
+
+```
+src/
+├── components/        # Reusable components (Header, Footer, Logo, etc.)
+├── layouts/           # Page layouts (Layout, AdminLayout)
+├── lib/               # Database, auth, and data utilities
+├── pages/             # All routes
+│   ├── admin/         # Admin panel pages
+│   └── community/     # Community submission pages
+└── styles/            # Global CSS
+
+public/
+├── favicon.svg        # Browser favicon
+└── icon.svg           # Full-size logo
+
+data/
+└── labchain.db        # SQLite database (auto-created)
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Getting Started
 
-## 🚀 Project Structure
+### Prerequisites
 
-Inside of your Astro project, you'll see the following folders and files:
+- Node.js 18+
+- Yarn
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+### Installation
+
+```bash
+# Install dependencies
+yarn install
+
+# Start development server
+yarn dev
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+### Production
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+```bash
+# Build for production
+yarn build
 
-Any static assets, like images, can be placed in the `public/` directory.
+# Start production server
+node dist/server/entry.mjs
+```
 
-## 🧞 Commands
+## Commands
 
-All commands are run from the root of the project, from a terminal:
+| Command | Action |
+|---------|--------|
+| `yarn install` | Install dependencies |
+| `yarn dev` | Start dev server at `localhost:4321` |
+| `yarn build` | Build for production |
+| `yarn preview` | Preview production build |
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `yarn install`             | Installs dependencies                            |
-| `yarn dev`             | Starts local dev server at `localhost:4321`      |
-| `yarn build`           | Build your production site to `./dist/`          |
-| `yarn preview`         | Preview your build locally, before deploying     |
-| `yarn astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `yarn astro -- --help` | Get help using the Astro CLI                     |
+## Admin Setup
 
-## 👀 Want to learn more?
+1. Navigate to `/admin/login`
+2. On first visit, create an admin account
+3. Login to access the admin panel
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Environment
+
+The database is automatically created at `data/labchain.db` on first run.
+
+## License
+
+This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+
+You are free to:
+- **Share** — copy and redistribute the material
+- **Adapt** — remix, transform, and build upon the material
+
+Under the following terms:
+- **Attribution** — You must give appropriate credit
+- **NonCommercial** — You may not use the material for commercial purposes
+
+See [LICENSE](./LICENSE) for full details.
+
+For commercial licensing inquiries: xang.ultimate@gmail.com
