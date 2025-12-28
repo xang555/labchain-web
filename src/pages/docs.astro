@@ -632,32 +632,14 @@ const sections = [
     display: grid;
     grid-template-columns: 280px 1fr;
     min-height: calc(100vh - var(--header-height));
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
-  /* Mobile Toggle Button */
+  /* Mobile Toggle Button - Hidden, using header menu instead */
   .docs-mobile-toggle {
-    display: none;
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    background: var(--color-red);
-    color: white;
-    border: none;
-    border-radius: var(--radius-lg);
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(206, 17, 38, 0.4);
-    z-index: 100;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-  }
-
-  .docs-mobile-toggle:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(206, 17, 38, 0.5);
+    display: none !important;
   }
 
   /* Sidebar Overlay */
@@ -777,10 +759,13 @@ const sections = [
   .docs-main {
     padding: 48px;
     max-width: 900px;
+    min-width: 0;
+    overflow-x: hidden;
   }
 
   .docs-content {
     max-width: 100%;
+    overflow-x: hidden;
   }
 
   .docs-header {
@@ -1156,47 +1141,17 @@ const sections = [
   /* Responsive */
   @media (max-width: 1024px) {
     .docs-layout {
-      grid-template-columns: 1fr;
-    }
-
-    .docs-mobile-toggle {
-      display: flex;
-    }
-
-    .docs-sidebar-overlay {
       display: block;
+      width: 100%;
     }
 
     .docs-sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      width: 300px;
-      height: 100vh;
-      z-index: 250;
-      transform: translateX(-100%);
-      transition: transform var(--transition-normal);
-    }
-
-    .docs-sidebar.open {
-      transform: translateX(0);
-    }
-
-    .sidebar-header-mobile {
-      display: flex;
-    }
-
-    .sidebar-title-desktop {
       display: none;
-    }
-
-    .sidebar-content {
-      padding: 24px;
     }
 
     .docs-main {
       padding: 32px 24px;
+      max-width: 100%;
     }
 
     .node-types-grid {
@@ -1206,9 +1161,22 @@ const sections = [
     .requirements-grid {
       grid-template-columns: 1fr;
     }
+
+    .code-block {
+      max-width: 100%;
+    }
+
+    .code-block code {
+      font-size: 12px;
+    }
   }
 
   @media (max-width: 640px) {
+    .docs-layout {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
     .docs-header h1 {
       font-size: 1.75rem;
     }
@@ -1217,18 +1185,43 @@ const sections = [
       grid-template-columns: 1fr;
     }
 
-    .docs-mobile-toggle {
-      bottom: 16px;
-      right: 16px;
-      padding: 10px 16px;
-    }
-
-    .docs-sidebar {
-      width: 280px;
-    }
-
     .docs-main {
       padding: 24px 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .docs-content {
+      width: 100%;
+    }
+
+    .code-block {
+      padding: 12px 40px 12px 12px;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    .code-block code {
+      font-size: 11px;
+    }
+
+    .params-table {
+      margin-left: -16px;
+      margin-right: -16px;
+      width: calc(100% + 32px);
+    }
+
+    .params-table table {
+      font-size: 12px;
+    }
+
+    .params-table th,
+    .params-table td {
+      padding: 10px 12px;
+    }
+
+    .setup-steps li {
+      padding-left: 40px;
     }
   }
 </style>
