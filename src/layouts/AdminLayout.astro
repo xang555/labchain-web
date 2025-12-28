@@ -97,43 +97,53 @@ const navItems = [
       </nav>
 
       <div class="sidebar-footer">
-        <div class="user-info">
-          <div class="user-avatar">
-            {user.username.charAt(0).toUpperCase()}
-          </div>
-          <span class="user-name">{user.username}</span>
-        </div>
-        <div class="sidebar-actions">
-          <button class="action-btn theme-toggle" title="Toggle theme">
-            <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-            <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        <div class="user-menu-wrapper">
+          <button class="user-menu-trigger" id="userMenuTrigger">
+            <div class="user-avatar">
+              {user.username.charAt(0).toUpperCase()}
+            </div>
+            <span class="user-name">{user.username}</span>
+            <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </button>
-          <a href="/" class="action-btn" title="View Site">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
-          </a>
-          <a href="/admin/logout" class="action-btn" title="Logout">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-              <polyline points="16 17 21 12 16 7"></polyline>
-              <line x1="21" y1="12" x2="9" y2="12"></line>
-            </svg>
-          </a>
+          <div class="user-menu" id="userMenu">
+            <button class="menu-item theme-toggle">
+              <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <span class="theme-text-light">Light Mode</span>
+              <span class="theme-text-dark">Dark Mode</span>
+            </button>
+            <a href="/" class="menu-item" target="_blank">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              <span>View Public Site</span>
+            </a>
+            <div class="menu-divider"></div>
+            <a href="/admin/logout" class="menu-item logout">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Logout</span>
+            </a>
+          </div>
         </div>
       </div>
     </aside>
@@ -266,17 +276,35 @@ const navItems = [
     }
 
     .sidebar-footer {
-      padding: 16px;
+      padding: 12px;
       border-top: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
 
-    .user-info {
+    .user-menu-wrapper {
+      position: relative;
+    }
+
+    .user-menu-trigger {
       display: flex;
       align-items: center;
       gap: 12px;
+      width: 100%;
+      padding: 8px 12px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .user-menu-trigger:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .user-menu-trigger.active {
+      background: var(--bg-tertiary);
+      border-color: var(--border-color);
     }
 
     .user-avatar {
@@ -290,32 +318,100 @@ const navItems = [
       justify-content: center;
       font-weight: 600;
       font-size: 14px;
+      flex-shrink: 0;
     }
 
     .user-name {
       font-size: 14px;
       font-weight: 500;
+      flex: 1;
+      text-align: left;
     }
 
-    .sidebar-actions {
-      display: flex;
-      gap: 8px;
+    .chevron-icon {
+      color: var(--text-tertiary);
+      transition: transform var(--transition-fast);
     }
 
-    .action-btn {
+    .user-menu-trigger.active .chevron-icon {
+      transform: rotate(180deg);
+    }
+
+    .user-menu {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      right: 0;
+      margin-bottom: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all var(--transition-fast);
+      box-shadow: var(--shadow-lg);
+      z-index: 200;
+    }
+
+    .user-menu.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .menu-item {
       display: flex;
       align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
+      gap: 12px;
+      width: 100%;
+      padding: 10px 12px;
+      background: transparent;
+      border: none;
       border-radius: var(--radius-md);
       color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
       transition: all var(--transition-fast);
+      text-decoration: none;
     }
 
-    .action-btn:hover {
+    .menu-item:hover {
       background: var(--bg-tertiary);
       color: var(--text-primary);
+    }
+
+    .menu-item.logout {
+      color: #ef4444;
+    }
+
+    .menu-item.logout:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .menu-divider {
+      height: 1px;
+      background: var(--border-color);
+      margin: 8px 0;
+    }
+
+    /* Theme toggle text */
+    .theme-text-light {
+      display: none;
+    }
+
+    .theme-text-dark {
+      display: inline;
+    }
+
+    [data-theme="dark"] .theme-text-light {
+      display: inline;
+    }
+
+    [data-theme="dark"] .theme-text-dark {
+      display: none;
     }
 
     .main-content {
@@ -692,7 +788,8 @@ const navItems = [
       .logo span,
       .badge,
       .nav-item span,
-      .user-name {
+      .user-name,
+      .chevron-icon {
         display: none;
       }
 
@@ -701,8 +798,15 @@ const navItems = [
         padding: 12px;
       }
 
-      .user-info {
+      .user-menu-trigger {
         justify-content: center;
+        padding: 8px;
+      }
+
+      .user-menu {
+        left: 8px;
+        right: auto;
+        min-width: 200px;
       }
 
       .main-content {
@@ -762,6 +866,8 @@ const navItems = [
   <script>
     // Theme toggle functionality
     const themeToggle = document.querySelector('.theme-toggle');
+    const userMenuTrigger = document.getElementById('userMenuTrigger');
+    const userMenu = document.getElementById('userMenu');
 
     function getTheme(): 'light' | 'dark' {
       const stored = localStorage.getItem('theme');
@@ -777,9 +883,40 @@ const navItems = [
     // Initialize theme
     setTheme(getTheme());
 
-    themeToggle?.addEventListener('click', () => {
+    themeToggle?.addEventListener('click', (e) => {
+      e.stopPropagation();
       const currentTheme = document.documentElement.getAttribute('data-theme');
       setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+
+    // User menu toggle
+    function toggleMenu() {
+      userMenu?.classList.toggle('open');
+      userMenuTrigger?.classList.toggle('active');
+    }
+
+    function closeMenu() {
+      userMenu?.classList.remove('open');
+      userMenuTrigger?.classList.remove('active');
+    }
+
+    userMenuTrigger?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!userMenu?.contains(e.target as Node) && !userMenuTrigger?.contains(e.target as Node)) {
+        closeMenu();
+      }
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeMenu();
+      }
     });
   </script>
 </body>
