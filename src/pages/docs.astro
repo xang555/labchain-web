@@ -7,6 +7,7 @@ const sections = [
   { id: 'el-node', label: 'Execution Layer Node' },
   { id: 'beacon-node', label: 'Beacon Node' },
   { id: 'validator-node', label: 'Validator Node' },
+  { id: 'exiting-validators', label: 'Exiting Validators' },
   { id: 'commands', label: 'Node Commands' },
 ];
 ---
@@ -47,7 +48,7 @@ const sections = [
           ))}
         </nav>
         <div class="sidebar-cta">
-          <a href="https://github.com/xang555/labchain" class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/AIDappLab/labchain" class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
             </svg>
@@ -174,11 +175,33 @@ const sections = [
             </li>
             <li>
               <strong>Foundry</strong> (validators only)
-              <p>Required for the <code>cast</code> tool to broadcast deposit transactions.</p>
+              <p>Required for the <code>cast</code> tool to broadcast deposit transactions:</p>
+              <div class="code-block">
+                <code>curl -L https://foundry.paradigm.xyz | bash && foundryup</code>
+                <button class="copy-btn" data-copy="curl -L https://foundry.paradigm.xyz | bash && foundryup">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
             </li>
             <li>
               <strong>jq</strong> (validators only)
-              <p>JSON processor for handling validator data.</p>
+              <p>JSON processor for handling validator data:</p>
+              <div class="code-block">
+                <code># Ubuntu/Debian
+sudo apt-get install jq
+
+# macOS
+brew install jq</code>
+                <button class="copy-btn" data-copy="sudo apt-get install jq">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
             </li>
           </ol>
 
@@ -228,8 +251,8 @@ const sections = [
             <li>
               <strong>Clone the repository</strong>
               <div class="code-block">
-                <code>git clone https://github.com/xang555/labchain.git && cd labchain</code>
-                <button class="copy-btn" data-copy="git clone https://github.com/xang555/labchain.git && cd labchain">
+                <code>git clone https://github.com/AIDappLab/labchain.git && cd labchain</code>
+                <button class="copy-btn" data-copy="git clone https://github.com/AIDappLab/labchain.git && cd labchain">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -527,6 +550,106 @@ const sections = [
               <p>Look for "Enabled validator" and attestation messages to confirm successful operation.</p>
             </li>
           </ol>
+        </section>
+
+        <!-- Exiting Validators Section -->
+        <section id="exiting-validators" class="docs-section">
+          <h2>Exiting Validators</h2>
+          <p>
+            If you wish to stop validating and withdraw your stake, you can initiate a voluntary exit.
+            The <code>./exit-validators.sh</code> script handles voluntary exits for your validators.
+          </p>
+
+          <div class="info-box warning">
+            <h4>Warning: Irreversible Action</h4>
+            <p>Voluntary exits are <strong>irreversible</strong>. Once initiated, you cannot resume validating with the same keys. Make sure you understand the implications before proceeding.</p>
+          </div>
+
+          <h3>Exit Process Timeline</h3>
+          <div class="params-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Phase</th>
+                  <th>Duration</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Exit Queue</td>
+                  <td>Variable</td>
+                  <td>Depends on network exit queue length</td>
+                </tr>
+                <tr>
+                  <td>Withdrawal Delay</td>
+                  <td>~27 hours</td>
+                  <td>256 epochs after exit is processed</td>
+                </tr>
+                <tr>
+                  <td>Total Minimum</td>
+                  <td>~54 hours</td>
+                  <td>From exit initiation to withdrawal eligibility</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Initiating a Voluntary Exit</h3>
+          <ol class="setup-steps">
+            <li>
+              <strong>Run the exit script</strong>
+              <div class="code-block">
+                <code>./exit-validators.sh</code>
+                <button class="copy-btn" data-copy="./exit-validators.sh">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+              <p>Follow the interactive prompts to select validators for exit.</p>
+            </li>
+            <li>
+              <strong>Confirm the exit</strong>
+              <p>Review the validator public keys and confirm you want to proceed with the exit.</p>
+            </li>
+            <li>
+              <strong>Wait for processing</strong>
+              <p>Monitor the exit queue and withdrawal status through the beacon chain explorer.</p>
+            </li>
+          </ol>
+
+          <h3>Withdrawal Credentials</h3>
+          <p>Your withdrawal credentials determine how you receive your staked LAB after exiting:</p>
+          <div class="params-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Prefix</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>BLS</td>
+                  <td><code>0x00</code></td>
+                  <td>Legacy credentials - requires update for automatic withdrawals</td>
+                </tr>
+                <tr>
+                  <td>Execution</td>
+                  <td><code>0x01</code></td>
+                  <td>Automatic withdrawals enabled to your ETH address</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="info-box success">
+            <h4>LAB Chain Uses 0x01 Credentials</h4>
+            <p>LAB Chain validators use <code>0x01</code> execution withdrawal credentials by default. This means automatic withdrawals are enabled to your specified ETH address when you exit.</p>
+          </div>
         </section>
 
         <!-- Commands Section -->
