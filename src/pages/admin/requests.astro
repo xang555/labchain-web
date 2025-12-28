@@ -677,6 +677,11 @@ const emailConfigured = isEmailConfigured();
   }
 
   @media (max-width: 768px) {
+    .header-content {
+      flex-direction: column;
+      gap: 12px;
+    }
+
     .stats-row {
       flex-wrap: wrap;
     }
@@ -689,6 +694,59 @@ const emailConfigured = isEmailConfigured();
 
     .detail-grid {
       grid-template-columns: 1fr;
+    }
+
+    .modal-lg {
+      max-width: calc(100% - 32px);
+    }
+
+    .modal-footer {
+      flex-wrap: wrap;
+    }
+
+    .modal-footer .btn {
+      flex: 1;
+      min-width: calc(50% - 6px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stat-chip {
+      padding: 8px 12px;
+    }
+
+    .stat-count {
+      font-size: 16px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+    }
+
+    .detail-title {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .detail-meta {
+      flex-wrap: wrap;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn {
+      width: 100%;
+    }
+
+    .modal-footer {
+      flex-direction: column;
+    }
+
+    .modal-footer .btn {
+      width: 100%;
     }
   }
 </style>

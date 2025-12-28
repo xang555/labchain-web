@@ -13,10 +13,32 @@ const sections = [
 
 <Layout title="Documentation - LAB Chain" description="Complete documentation for running LAB Chain nodes. Learn how to set up Execution Layer, Beacon, and Validator nodes.">
   <div class="docs-layout">
+    <!-- Mobile Sidebar Toggle -->
+    <button class="docs-mobile-toggle" id="docsSidebarToggle" aria-label="Toggle documentation menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <span>Menu</span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="docs-sidebar-overlay" id="docsSidebarOverlay"></div>
+
     <!-- Sidebar -->
-    <aside class="docs-sidebar">
+    <aside class="docs-sidebar" id="docsSidebar">
       <div class="sidebar-content">
-        <h3>Documentation</h3>
+        <div class="sidebar-header-mobile">
+          <h3>Documentation</h3>
+          <button class="sidebar-close-btn" id="docsSidebarClose" aria-label="Close menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <h3 class="sidebar-title-desktop">Documentation</h3>
         <nav class="sidebar-nav">
           {sections.map((section) => (
             <a href={`#${section.id}`} class="sidebar-link">
@@ -612,6 +634,85 @@ const sections = [
     min-height: calc(100vh - var(--header-height));
   }
 
+  /* Mobile Toggle Button */
+  .docs-mobile-toggle {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--color-red);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(206, 17, 38, 0.4);
+    z-index: 100;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .docs-mobile-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(206, 17, 38, 0.5);
+  }
+
+  /* Sidebar Overlay */
+  .docs-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+  }
+
+  .docs-sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Mobile Sidebar Header */
+  .sidebar-header-mobile {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .sidebar-header-mobile h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .sidebar-close-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+
   /* Sidebar */
   .docs-sidebar {
     position: sticky;
@@ -620,13 +721,14 @@ const sections = [
     border-right: 1px solid var(--border-color);
     background: var(--bg-secondary);
     overflow-y: auto;
+    z-index: 50;
   }
 
   .sidebar-content {
     padding: 32px 24px;
   }
 
-  .sidebar-content h3 {
+  .sidebar-title-desktop {
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
@@ -1057,8 +1159,40 @@ const sections = [
       grid-template-columns: 1fr;
     }
 
+    .docs-mobile-toggle {
+      display: flex;
+    }
+
+    .docs-sidebar-overlay {
+      display: block;
+    }
+
     .docs-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 300px;
+      height: 100vh;
+      z-index: 250;
+      transform: translateX(-100%);
+      transition: transform var(--transition-normal);
+    }
+
+    .docs-sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-header-mobile {
+      display: flex;
+    }
+
+    .sidebar-title-desktop {
       display: none;
+    }
+
+    .sidebar-content {
+      padding: 24px;
     }
 
     .docs-main {
@@ -1081,6 +1215,20 @@ const sections = [
 
     .docs-nav-cards {
       grid-template-columns: 1fr;
+    }
+
+    .docs-mobile-toggle {
+      bottom: 16px;
+      right: 16px;
+      padding: 10px 16px;
+    }
+
+    .docs-sidebar {
+      width: 280px;
+    }
+
+    .docs-main {
+      padding: 24px 16px;
     }
   }
 </style>
@@ -1136,4 +1284,49 @@ const sections = [
   }, observerOptions);
 
   sections.forEach(section => observer.observe(section));
+
+  // Mobile docs sidebar toggle
+  const docsSidebarToggle = document.getElementById('docsSidebarToggle');
+  const docsSidebar = document.getElementById('docsSidebar');
+  const docsSidebarOverlay = document.getElementById('docsSidebarOverlay');
+  const docsSidebarClose = document.getElementById('docsSidebarClose');
+
+  function openDocsSidebar() {
+    docsSidebar?.classList.add('open');
+    docsSidebarOverlay?.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDocsSidebar() {
+    docsSidebar?.classList.remove('open');
+    docsSidebarOverlay?.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  docsSidebarToggle?.addEventListener('click', openDocsSidebar);
+  docsSidebarClose?.addEventListener('click', closeDocsSidebar);
+  docsSidebarOverlay?.addEventListener('click', closeDocsSidebar);
+
+  // Close sidebar when clicking a link
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 1024) {
+        closeDocsSidebar();
+      }
+    });
+  });
+
+  // Close on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeDocsSidebar();
+    }
+  });
+
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1024) {
+      closeDocsSidebar();
+    }
+  });
 </script>
