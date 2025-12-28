@@ -134,3 +134,47 @@ export function validateSessionCookie(cookie: string | undefined): User | null {
 
   return getUserFromSession(sessionId);
 }
+
+// Update username
+export function updateUsername(userId: number, newUsername: string): { success: boolean; error?: string } {
+  // Check if username already exists
+  const existing = getUserByUsername(newUsername);
+  if (existing && existing.id !== userId) {
+    return { success: false, error: 'Username already exists' };
+  }
+
+  try {
+    db.prepare(`
+      UPDATE users SET username = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+    `).run(newUsername, userId);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+// Update password
+export function updatePassword(userId: number, currentPassword: string, newPassword: string): { success: boolean; error?: string } {
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as User | null;
+
+  if (!user) {
+    return { success: false, error: 'User not found' };
+  }
+
+  // Verify current password
+  if (!verifyPassword(currentPassword, user.password_hash)) {
+    return { success: false, error: 'Current password is incorrect' };
+  }
+
+  // Hash new password and update
+  const newPasswordHash = hashPassword(newPassword);
+
+  try {
+    db.prepare(`
+      UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+    `).run(newPasswordHash, userId);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}

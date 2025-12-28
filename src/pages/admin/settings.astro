@@ -1,7 +1,7 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getEmailSettings, setEmailSettings } from '../../lib/data';
-import { validateSessionCookie } from '../../lib/auth';
+import { validateSessionCookie, updateUsername, updatePassword } from '../../lib/auth';
 
 // Check authentication
 const user = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
@@ -13,6 +13,8 @@ let message = '';
 let messageType = '';
 let testEmailMessage = '';
 let testEmailType = '';
+let accountMessage = '';
+let accountMessageType = '';
 
 // Handle form submissions
 if (Astro.request.method === 'POST') {
@@ -84,16 +86,57 @@ if (Astro.request.method === 'POST') {
         }
       }
     }
+  } else if (action === 'update_username') {
+    const newUsername = formData.get('new_username')?.toString();
+    if (newUsername && newUsername.trim()) {
+      const result = updateUsername(user.id, newUsername.trim());
+      if (result.success) {
+        accountMessage = 'Username updated successfully';
+        accountMessageType = 'success';
+      } else {
+        accountMessage = result.error || 'Failed to update username';
+        accountMessageType = 'error';
+      }
+    } else {
+      accountMessage = 'Please enter a valid username';
+      accountMessageType = 'error';
+    }
+  } else if (action === 'update_password') {
+    const currentPassword = formData.get('current_password')?.toString();
+    const newPassword = formData.get('new_password')?.toString();
+    const confirmPassword = formData.get('confirm_password')?.toString();
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      accountMessage = 'Please fill in all password fields';
+      accountMessageType = 'error';
+    } else if (newPassword !== confirmPassword) {
+      accountMessage = 'New passwords do not match';
+      accountMessageType = 'error';
+    } else if (newPassword.length < 6) {
+      accountMessage = 'New password must be at least 6 characters';
+      accountMessageType = 'error';
+    } else {
+      const result = updatePassword(user.id, currentPassword, newPassword);
+      if (result.success) {
+        accountMessage = 'Password updated successfully';
+        accountMessageType = 'success';
+      } else {
+        accountMessage = result.error || 'Failed to update password';
+        accountMessageType = 'error';
+      }
+    }
   }
 }
 
+// Re-fetch user in case username was updated
+const currentUser = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
 const emailSettings = getEmailSettings();
 ---
 
-<AdminLayout title="Settings" currentPage="settings" user={user}>
+<AdminLayout title="Settings" currentPage="settings" user={currentUser || user}>
   <div class="page-header">
     <h1 class="page-title">Settings</h1>
-    <p class="page-subtitle">Configure application settings and email notifications</p>
+    <p class="page-subtitle">Configure admin account and email notifications</p>
   </div>
 
   {message && (
@@ -101,6 +144,101 @@ const emailSettings = getEmailSettings();
   )}
 
   <div class="settings-grid">
+    <!-- Admin Account Settings -->
+    <div class="card settings-card">
+      <div class="card-header">
+        <div class="card-icon account">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div>
+          <h2 class="card-title">Admin Account</h2>
+          <p class="card-subtitle">Update your username and password</p>
+        </div>
+      </div>
+
+      {accountMessage && (
+        <div class={`alert alert-${accountMessageType}`} style="margin: 24px 24px 0;">{accountMessage}</div>
+      )}
+
+      <div class="settings-form">
+        <!-- Change Username -->
+        <form method="POST" class="account-form">
+          <input type="hidden" name="action" value="update_username" />
+          <h3 class="form-section-title">Change Username</h3>
+          <div class="form-group">
+            <label class="form-label" for="new_username">Username *</label>
+            <input
+              type="text"
+              id="new_username"
+              name="new_username"
+              class="form-input"
+              value={currentUser?.username || user.username}
+              required
+            />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-secondary">
+              Update Username
+            </button>
+          </div>
+        </form>
+
+        <div class="form-divider"></div>
+
+        <!-- Change Password -->
+        <form method="POST" class="account-form">
+          <input type="hidden" name="action" value="update_password" />
+          <h3 class="form-section-title">Change Password</h3>
+          <div class="form-group">
+            <label class="form-label" for="current_password">Current Password *</label>
+            <input
+              type="password"
+              id="current_password"
+              name="current_password"
+              class="form-input"
+              placeholder="Enter current password"
+              required
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="new_password">New Password *</label>
+              <input
+                type="password"
+                id="new_password"
+                name="new_password"
+                class="form-input"
+                placeholder="Enter new password"
+                minlength="6"
+                required
+              />
+              <span class="form-hint">Minimum 6 characters</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="confirm_password">Confirm New Password *</label>
+              <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                class="form-input"
+                placeholder="Confirm new password"
+                minlength="6"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-secondary">
+              Update Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Email Configuration -->
     <div class="card settings-card">
       <div class="card-header">
@@ -240,7 +378,7 @@ const emailSettings = getEmailSettings();
       </div>
 
       {testEmailMessage && (
-        <div class={`alert alert-${testEmailType}`} style="margin-bottom: 20px;">{testEmailMessage}</div>
+        <div class={`alert alert-${testEmailType}`} style="margin: 24px 24px 0;">{testEmailMessage}</div>
       )}
 
       <form method="POST" class="settings-form">
@@ -268,32 +406,6 @@ const emailSettings = getEmailSettings();
           </button>
         </div>
       </form>
-    </div>
-
-    <!-- Email Templates Info -->
-    <div class="card settings-card info-card">
-      <div class="card-header">
-        <div class="card-icon info">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-        </div>
-        <div>
-          <h2 class="card-title">Email Notifications</h2>
-          <p class="card-subtitle">About automated email notifications</p>
-        </div>
-      </div>
-
-      <div class="info-content">
-        <p>When email is configured, the system will automatically send notifications to users when:</p>
-        <ul>
-          <li><strong>Node Approved:</strong> User will receive confirmation that their node has been approved and added to the network.</li>
-          <li><strong>Node Rejected:</strong> User will receive notification with the reason for rejection.</li>
-        </ul>
-        <p class="note">Make sure to test your email configuration before approving/rejecting submissions.</p>
-      </div>
     </div>
   </div>
 </AdminLayout>
@@ -333,9 +445,9 @@ const emailSettings = getEmailSettings();
     color: #3b82f6;
   }
 
-  .card-icon.info {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
+  .card-icon.account {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
   }
 
   .card-title {
@@ -352,6 +464,25 @@ const emailSettings = getEmailSettings();
 
   .settings-form {
     padding: 24px;
+  }
+
+  .account-form {
+    margin-bottom: 0;
+  }
+
+  .form-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .form-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 24px 0;
   }
 
   .form-row {
@@ -401,45 +532,6 @@ const emailSettings = getEmailSettings();
     display: flex;
     justify-content: flex-end;
     padding-top: 8px;
-  }
-
-  .info-card .info-content {
-    padding: 24px;
-  }
-
-  .info-content p {
-    font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 16px;
-  }
-
-  .info-content ul {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 16px 0;
-  }
-
-  .info-content li {
-    padding: 12px 16px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-  }
-
-  .info-content li strong {
-    color: var(--color-red);
-  }
-
-  .info-content .note {
-    padding: 12px 16px;
-    background: rgba(234, 179, 8, 0.1);
-    border: 1px solid rgba(234, 179, 8, 0.3);
-    border-radius: var(--radius-md);
-    color: #eab308;
-    margin: 0;
   }
 
   @media (max-width: 768px) {
