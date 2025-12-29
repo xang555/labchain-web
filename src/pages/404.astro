@@ -12,14 +12,14 @@ import Layout from '../layouts/Layout.astro';
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="gradient404" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#CE1126" />
-                  <stop offset="50%" stop-color="#002868" />
-                  <stop offset="100%" stop-color="#CE1126" />
+                  <stop offset="0%" stop-color="rgb(20, 137, 213)" />
+                  <stop offset="50%" stop-color="rgb(16, 110, 170)" />
+                  <stop offset="100%" stop-color="rgb(20, 137, 213)" />
                 </linearGradient>
               </defs>
               <circle cx="50" cy="50" r="48" fill="url(#gradient404)" />
               <circle cx="50" cy="50" r="20" fill="#FFFFFF" opacity="0.95" />
-              <text x="50" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#002868">L</text>
+              <text x="50" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="rgb(16, 110, 170)">L</text>
             </svg>
           </div>
           <span class="digit">4</span>
@@ -202,8 +202,8 @@ import Layout from '../layouts/Layout.astro';
 
   .link-card:hover {
     background: var(--bg-tertiary);
-    border-color: var(--color-red);
-    color: var(--color-red);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
     transform: translateY(-2px);
   }
 

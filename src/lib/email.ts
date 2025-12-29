@@ -85,7 +85,7 @@ https://labchain.la
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(135deg, #CE1126 0%, #002868 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+  <div style="background: linear-gradient(135deg, rgb(20, 137, 213) 0%, rgb(16, 110, 170) 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
     <h1 style="color: white; margin: 0; font-size: 24px;">LAB Chain</h1>
   </div>
 
@@ -116,7 +116,7 @@ https://labchain.la
         </tr>
         <tr>
           <td style="padding: 8px 0; color: #6b7280;">Tracking ID:</td>
-          <td style="padding: 8px 0; font-family: monospace; color: #CE1126;">${request.tracking_id}</td>
+          <td style="padding: 8px 0; font-family: monospace; color: rgb(20, 137, 213);">${request.tracking_id}</td>
         </tr>
       </table>
     </div>
@@ -130,7 +130,7 @@ https://labchain.la
 
   <div style="background: #111827; padding: 20px; border-radius: 0 0 12px 12px; text-align: center;">
     <p style="color: #9ca3af; margin: 0; font-size: 12px;">LAB Chain - The Native Blockchain of Laos</p>
-    <a href="https://labchain.la" style="color: #CE1126; font-size: 12px;">labchain.la</a>
+    <a href="https://labchain.la" style="color: rgb(20, 137, 213); font-size: 12px;">labchain.la</a>
   </div>
 </body>
 </html>
@@ -193,7 +193,7 @@ https://labchain.la
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(135deg, #CE1126 0%, #002868 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+  <div style="background: linear-gradient(135deg, rgb(20, 137, 213) 0%, rgb(16, 110, 170) 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
     <h1 style="color: white; margin: 0; font-size: 24px;">LAB Chain</h1>
   </div>
 
@@ -224,7 +224,7 @@ https://labchain.la
         </tr>
         <tr>
           <td style="padding: 8px 0; color: #6b7280;">Tracking ID:</td>
-          <td style="padding: 8px 0; font-family: monospace; color: #CE1126;">${request.tracking_id}</td>
+          <td style="padding: 8px 0; font-family: monospace; color: rgb(20, 137, 213);">${request.tracking_id}</td>
         </tr>
       </table>
     </div>
@@ -241,7 +241,7 @@ https://labchain.la
 
   <div style="background: #111827; padding: 20px; border-radius: 0 0 12px 12px; text-align: center;">
     <p style="color: #9ca3af; margin: 0; font-size: 12px;">LAB Chain - The Native Blockchain of Laos</p>
-    <a href="https://labchain.la" style="color: #CE1126; font-size: 12px;">labchain.la</a>
+    <a href="https://labchain.la" style="color: rgb(20, 137, 213); font-size: 12px;">labchain.la</a>
   </div>
 </body>
 </html>
@@ -309,7 +309,7 @@ https://labchain.la
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(135deg, #CE1126 0%, #002868 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+  <div style="background: linear-gradient(135deg, rgb(20, 137, 213) 0%, rgb(16, 110, 170) 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
     <h1 style="color: white; margin: 0; font-size: 24px;">LAB Chain</h1>
   </div>
 
@@ -328,7 +328,7 @@ https://labchain.la
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
           <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; color: #6b7280; width: 140px;">Tracking ID:</td>
-          <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-family: monospace; color: #CE1126;">${request.tracking_id}</td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-family: monospace; color: rgb(20, 137, 213);">${request.tracking_id}</td>
         </tr>
         <tr>
           <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; color: #6b7280;">Requested Amount:</td>
@@ -354,7 +354,7 @@ https://labchain.la
 
   <div style="background: #111827; padding: 20px; border-radius: 0 0 12px 12px; text-align: center;">
     <p style="color: #9ca3af; margin: 0; font-size: 12px;">LAB Chain - The Native Blockchain of Laos</p>
-    <a href="https://labchain.la" style="color: #CE1126; font-size: 12px;">labchain.la</a>
+    <a href="https://labchain.la" style="color: rgb(20, 137, 213); font-size: 12px;">labchain.la</a>
   </div>
 </body>
 </html>
@@ -412,7 +412,7 @@ https://labchain.la
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(135deg, #CE1126 0%, #002868 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+  <div style="background: linear-gradient(135deg, rgb(20, 137, 213) 0%, rgb(16, 110, 170) 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
     <h1 style="color: white; margin: 0; font-size: 24px;">LAB Chain</h1>
   </div>
 
@@ -431,7 +431,7 @@ https://labchain.la
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
           <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; color: #6b7280; width: 140px;">Tracking ID:</td>
-          <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-family: monospace; color: #CE1126;">${request.tracking_id}</td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-family: monospace; color: rgb(20, 137, 213);">${request.tracking_id}</td>
         </tr>
         <tr>
           <td style="padding: 8px 0; border-bottom: 1px solid #f3f4f6; color: #6b7280;">Requested Amount:</td>
@@ -458,7 +458,7 @@ https://labchain.la
 
   <div style="background: #111827; padding: 20px; border-radius: 0 0 12px 12px; text-align: center;">
     <p style="color: #9ca3af; margin: 0; font-size: 12px;">LAB Chain - The Native Blockchain of Laos</p>
-    <a href="https://labchain.la" style="color: #CE1126; font-size: 12px;">labchain.la</a>
+    <a href="https://labchain.la" style="color: rgb(20, 137, 213); font-size: 12px;">labchain.la</a>
   </div>
 </body>
 </html>

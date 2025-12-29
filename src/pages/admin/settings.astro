@@ -69,7 +69,7 @@ if (Astro.request.method === 'POST') {
             text: 'This is a test email from LAB Chain admin panel. If you received this, your email configuration is working correctly!',
             html: `
               <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: #CE1126;">LAB Chain - Test Email</h2>
+                <h2 style="color: rgb(20, 137, 213);">LAB Chain - Test Email</h2>
                 <p>This is a test email from LAB Chain admin panel.</p>
                 <p>If you received this, your email configuration is working correctly!</p>
                 <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
@@ -434,8 +434,8 @@ const emailSettings = getEmailSettings();
     justify-content: center;
     width: 48px;
     height: 48px;
-    background: rgba(206, 17, 38, 0.1);
-    color: var(--color-red);
+    background: rgba(20, 137, 213, 0.1);
+    color: var(--color-primary);
     border-radius: var(--radius-lg);
     flex-shrink: 0;
   }
@@ -520,7 +520,7 @@ const emailSettings = getEmailSettings();
   .checkbox-label input[type="checkbox"] {
     width: 18px;
     height: 18px;
-    accent-color: var(--color-red);
+    accent-color: var(--color-primary);
   }
 
   .checkbox-text {

@@ -31,7 +31,7 @@ const navItems = [
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/svg+xml" href="/icon.svg" sizes="any">
   <link rel="apple-touch-icon" href="/icon.svg">
-  <meta name="theme-color" content="#CE1126">
+  <meta name="theme-color" content="rgb(20, 137, 213)">
   <!-- Prevent FOUC for theme -->
   <script is:inline>
     const theme = localStorage.getItem('theme') ||
@@ -179,17 +179,24 @@ const navItems = [
 
   <style is:global>
     :root {
-      --color-red: #CE1126;
-      --color-blue: #002868;
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #111118;
-      --bg-card: #16161d;
-      --bg-tertiary: #1c1c24;
-      --text-primary: #ffffff;
-      --text-secondary: #a1a1aa;
-      --text-tertiary: #71717a;
-      --border-color: #27272a;
-      --border-color-strong: #3f3f46;
+      --color-primary: rgb(20 137 213);
+      --color-primary-dark: rgb(14 105 168);
+      --color-primary-light: rgb(56 165 237);
+      --color-white: #FFFFFF;
+      --bg-primary: #0F172A;
+      --bg-secondary: #1E293B;
+      --bg-card: #1E293B;
+      --bg-tertiary: #334155;
+      --bg-highlight: rgba(20, 137, 213, 0.12);
+      --bg-accent: rgba(20, 137, 213, 0.15);
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-tertiary: #94A3B8;
+      --text-link: rgb(56 165 237);
+      --border-color: #334155;
+      --border-color-strong: #475569;
+      --border-color-accent: rgba(20, 137, 213, 0.35);
+      --shadow-primary: 0 4px 14px -3px rgba(20, 137, 213, 0.35);
       --radius-sm: 6px;
       --radius-md: 8px;
       --radius-lg: 12px;
@@ -262,8 +269,8 @@ const navItems = [
       font-size: 11px;
       font-weight: 600;
       padding: 4px 8px;
-      background: rgba(206, 17, 38, 0.1);
-      color: var(--color-red);
+      background: rgba(20, 137, 213, 0.1);
+      color: var(--color-primary);
       border-radius: 9999px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -295,8 +302,8 @@ const navItems = [
     }
 
     .nav-item.active {
-      background: rgba(206, 17, 38, 0.1);
-      color: var(--color-red);
+      background: rgba(20, 137, 213, 0.1);
+      color: var(--color-primary);
     }
 
     .sidebar-footer {
@@ -334,7 +341,7 @@ const navItems = [
     .user-avatar {
       width: 36px;
       height: 36px;
-      background: var(--color-red);
+      background: var(--color-primary);
       color: white;
       border-radius: 50%;
       display: flex;
@@ -482,7 +489,7 @@ const navItems = [
     }
 
     .btn-primary {
-      background: var(--color-red);
+      background: var(--color-primary);
       color: white;
     }
 
@@ -545,7 +552,7 @@ const navItems = [
     .form-select:focus,
     .form-textarea:focus {
       outline: none;
-      border-color: var(--color-red);
+      border-color: var(--color-primary);
     }
 
     .form-input::placeholder {
@@ -640,8 +647,8 @@ const navItems = [
     }
 
     .type-badge.official {
-      background: rgba(206, 17, 38, 0.1);
-      color: var(--color-red);
+      background: rgba(20, 137, 213, 0.1);
+      color: var(--color-primary);
     }
 
     .type-badge.community {

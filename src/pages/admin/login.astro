@@ -69,15 +69,18 @@ if (Astro.request.method === 'POST') {
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <style>
     :root {
-      --color-red: #CE1126;
-      --color-blue: #002868;
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #111118;
-      --bg-card: #16161d;
-      --text-primary: #ffffff;
-      --text-secondary: #a1a1aa;
-      --text-tertiary: #71717a;
-      --border-color: #27272a;
+      --color-primary: rgb(20 137 213);
+      --color-primary-dark: rgb(14 105 168);
+      --color-white: #FFFFFF;
+      --bg-primary: #0F172A;
+      --bg-secondary: #1E293B;
+      --bg-card: #1E293B;
+      --bg-tertiary: #334155;
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-tertiary: #94A3B8;
+      --border-color: #334155;
+      --shadow-primary: 0 4px 14px -3px rgba(20, 137, 213, 0.35);
       --radius-md: 8px;
       --radius-lg: 12px;
       --radius-xl: 16px;
@@ -161,7 +164,7 @@ if (Astro.request.method === 'POST') {
 
     input:focus {
       outline: none;
-      border-color: var(--color-red);
+      border-color: var(--color-primary);
     }
 
     input::placeholder {
@@ -173,7 +176,7 @@ if (Astro.request.method === 'POST') {
       padding: 14px 24px;
       font-size: 16px;
       font-weight: 600;
-      background: var(--color-red);
+      background: var(--color-primary);
       color: white;
       border: none;
       border-radius: var(--radius-md);
@@ -234,7 +237,7 @@ if (Astro.request.method === 'POST') {
     }
 
     .back-link:hover {
-      color: var(--color-red);
+      color: var(--color-primary);
     }
   </style>
 </head>
@@ -245,14 +248,14 @@ if (Astro.request.method === 'POST') {
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#CE1126"/>
+              <stop offset="0%" stop-color="rgb(20, 137, 213)"/>
               <stop offset="50%" stop-color="#FFFFFF"/>
-              <stop offset="100%" stop-color="#002868"/>
+              <stop offset="100%" stop-color="rgb(16, 110, 170)"/>
             </linearGradient>
           </defs>
           <circle cx="50" cy="50" r="45" stroke="url(#logoGradient)" stroke-width="4" fill="none"/>
-          <path d="M30 50 L45 35 L45 45 L70 45 L70 55 L45 55 L45 65 Z" fill="#CE1126"/>
-          <circle cx="50" cy="50" r="8" fill="#002868"/>
+          <path d="M30 50 L45 35 L45 45 L70 45 L70 55 L45 55 L45 65 Z" fill="rgb(20, 137, 213)"/>
+          <circle cx="50" cy="50" r="8" fill="rgb(16, 110, 170)"/>
         </svg>
       </div>
 
