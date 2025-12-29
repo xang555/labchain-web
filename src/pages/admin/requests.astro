@@ -191,8 +191,8 @@ const emailConfigured = isEmailConfigured();
     </div>
   </div>
 
-  <div class="card">
-    {filteredRequests.length === 0 ? (
+  {filteredRequests.length === 0 ? (
+    <div class="card">
       <div class="empty-state">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -203,93 +203,172 @@ const emailConfigured = isEmailConfigured();
         <h3>No Requests</h3>
         <p>{filterStatus === 'all' ? 'No node requests have been submitted yet.' : `No ${filterStatus} requests.`}</p>
       </div>
-    ) : (
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Tracking ID</th>
-              <th>Type</th>
-              <th>Name</th>
-              <th>Contact</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRequests.map((req) => (
+    </div>
+  ) : (
+    <>
+      <!-- Desktop Table View -->
+      <div class="card desktop-view">
+        <div class="table-container">
+          <table>
+            <thead>
               <tr>
-                <td>
-                  <code class="tracking-code">{req.tracking_id}</code>
-                </td>
-                <td>
-                  <span class={`type-badge ${req.node_type}`}>{nodeTypeLabels[req.node_type] || req.node_type}</span>
-                </td>
-                <td>
-                  <strong>{req.name}</strong>
-                  <div class="endpoint-preview" title={req.endpoint}>
-                    {req.endpoint.length > 30 ? req.endpoint.substring(0, 30) + '...' : req.endpoint}
-                  </div>
-                </td>
-                <td>
-                  <div class="contact-info">
-                    {req.contact_name && <span class="contact-name">{req.contact_name}</span>}
-                    <a href={`mailto:${req.contact_email}`} class="contact-email">{req.contact_email}</a>
-                  </div>
-                </td>
-                <td>
-                  <span class={`status-badge ${req.status}`}>{req.status}</span>
-                </td>
-                <td>
-                  <span class="date-text">{new Date(req.created_at).toLocaleDateString()}</span>
-                </td>
-                <td>
-                  <div class="actions-cell">
-                    <a href={`/admin/requests?view=${req.id}`} class="action-icon" title="View Details">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>
-                    </a>
-                    {req.status === 'pending' && (
-                      <>
-                        <form method="POST" class="inline-form">
-                          <input type="hidden" name="action" value="approve" />
-                          <input type="hidden" name="id" value={req.id} />
-                          <button type="submit" class="action-icon approve" title="Approve">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                              <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                          </button>
-                        </form>
-                        <a href={`/admin/requests?view=${req.id}&reject=1`} class="action-icon reject" title="Reject">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                          </svg>
-                        </a>
-                      </>
-                    )}
-                    <form method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this request?')">
-                      <input type="hidden" name="action" value="delete" />
-                      <input type="hidden" name="id" value={req.id} />
-                      <button type="submit" class="action-icon delete" title="Delete">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <polyline points="3 6 5 6 21 6"></polyline>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                      </button>
-                    </form>
-                  </div>
-                </td>
+                <th>Tracking ID</th>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredRequests.map((req) => (
+                <tr>
+                  <td>
+                    <code class="tracking-code">{req.tracking_id}</code>
+                  </td>
+                  <td>
+                    <span class={`type-badge ${req.node_type}`}>{nodeTypeLabels[req.node_type] || req.node_type}</span>
+                  </td>
+                  <td>
+                    <strong>{req.name}</strong>
+                    <div class="endpoint-preview" title={req.endpoint}>
+                      {req.endpoint.length > 30 ? req.endpoint.substring(0, 30) + '...' : req.endpoint}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="contact-info">
+                      {req.contact_name && <span class="contact-name">{req.contact_name}</span>}
+                      <a href={`mailto:${req.contact_email}`} class="contact-email">{req.contact_email}</a>
+                    </div>
+                  </td>
+                  <td>
+                    <span class={`status-badge ${req.status}`}>{req.status}</span>
+                  </td>
+                  <td>
+                    <span class="date-text">{new Date(req.created_at).toLocaleDateString()}</span>
+                  </td>
+                  <td>
+                    <div class="actions-cell">
+                      <a href={`/admin/requests?view=${req.id}`} class="action-icon" title="View Details">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </a>
+                      {req.status === 'pending' && (
+                        <>
+                          <form method="POST" class="inline-form">
+                            <input type="hidden" name="action" value="approve" />
+                            <input type="hidden" name="id" value={req.id} />
+                            <button type="submit" class="action-icon approve" title="Approve">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </button>
+                          </form>
+                          <a href={`/admin/requests?view=${req.id}&reject=1`} class="action-icon reject" title="Reject">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                          </a>
+                        </>
+                      )}
+                      <form method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this request?')">
+                        <input type="hidden" name="action" value="delete" />
+                        <input type="hidden" name="id" value={req.id} />
+                        <button type="submit" class="action-icon delete" title="Delete">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    )}
-  </div>
+
+      <!-- Mobile Card View -->
+      <div class="mobile-cards">
+        {filteredRequests.map((req) => (
+          <div class="request-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class={`type-badge ${req.node_type}`}>{nodeTypeLabels[req.node_type] || req.node_type}</span>
+                <span class={`status-badge ${req.status}`}>{req.status}</span>
+              </div>
+              <span class="card-date">{new Date(req.created_at).toLocaleDateString()}</span>
+            </div>
+
+            <div class="card-body">
+              <div class="card-title-row">
+                <div class="card-name">{req.name}</div>
+                <code class="tracking-code-small">{req.tracking_id}</code>
+              </div>
+
+              <div class="card-endpoint">
+                <span class="card-endpoint-label">Endpoint</span>
+                <code class="card-endpoint-value">{req.endpoint.length > 40 ? req.endpoint.substring(0, 40) + '...' : req.endpoint}</code>
+              </div>
+
+              <div class="card-contact">
+                {req.contact_name && <span class="card-contact-name">{req.contact_name}</span>}
+                <a href={`mailto:${req.contact_email}`} class="card-contact-email">{req.contact_email}</a>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <a href={`/admin/requests?view=${req.id}`} class="card-action-btn view">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                View
+              </a>
+              {req.status === 'pending' && (
+                <>
+                  <form method="POST" class="card-approve-form">
+                    <input type="hidden" name="action" value="approve" />
+                    <input type="hidden" name="id" value={req.id} />
+                    <button type="submit" class="card-action-btn approve">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      Approve
+                    </button>
+                  </form>
+                  <a href={`/admin/requests?view=${req.id}&reject=1`} class="card-action-btn reject">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Reject
+                  </a>
+                </>
+              )}
+              <form method="POST" class="card-delete-form" onsubmit="return confirm('Are you sure you want to delete this request?')">
+                <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="id" value={req.id} />
+                <button type="submit" class="card-action-btn delete">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )}
 
   <!-- View/Reject Modal -->
   <div class={`modal-overlay ${viewItem ? 'open' : ''}`} id="modal">
@@ -907,10 +986,208 @@ const emailConfigured = isEmailConfigured();
     min-width: 700px;
   }
 
+  /* Mobile Cards */
+  .mobile-cards {
+    display: none;
+  }
+
+  .request-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .request-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    gap: 12px;
+  }
+
+  .card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .card-date {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  .card-body {
+    padding: 16px;
+  }
+
+  .card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .card-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .tracking-code-small {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-red);
+    background: rgba(206, 17, 38, 0.1);
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+  }
+
+  .card-endpoint {
+    margin-bottom: 12px;
+  }
+
+  .card-endpoint-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .card-endpoint-value {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    word-break: break-all;
+  }
+
+  .card-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .card-contact-name {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .card-contact-email {
+    font-size: 13px;
+    color: var(--text-secondary);
+    word-break: break-all;
+  }
+
+  .card-contact-email:hover {
+    color: var(--color-red);
+  }
+
+  .card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+  }
+
+  .card-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-action-btn:hover {
+    border-color: var(--border-color-strong);
+    color: var(--text-primary);
+  }
+
+  .card-action-btn.view:hover {
+    border-color: var(--color-blue);
+    color: var(--color-blue);
+  }
+
+  .card-action-btn.approve {
+    border-color: #22C55E;
+    color: #22C55E;
+  }
+
+  .card-action-btn.approve:hover {
+    background: rgba(34, 197, 94, 0.1);
+  }
+
+  .card-action-btn.reject {
+    border-color: #EF4444;
+    color: #EF4444;
+  }
+
+  .card-action-btn.reject:hover {
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .card-action-btn.delete {
+    border-color: var(--text-tertiary);
+    color: var(--text-tertiary);
+  }
+
+  .card-action-btn.delete:hover {
+    border-color: #EF4444;
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .card-approve-form,
+  .card-delete-form {
+    display: contents;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .desktop-view {
+      display: none;
+    }
+
+    .mobile-cards {
+      display: block;
+    }
+  }
+
   @media (max-width: 768px) {
     .header-content {
       flex-direction: column;
       gap: 12px;
+    }
+
+    .email-badge {
+      font-size: 11px;
+      padding: 5px 10px;
     }
 
     /* Hide desktop filter, show mobile dropdown */
@@ -927,7 +1204,13 @@ const emailConfigured = isEmailConfigured();
     }
 
     .modal-lg {
-      max-width: calc(100% - 32px);
+      max-width: calc(100% - 24px);
+      max-height: calc(100vh - 48px);
+    }
+
+    .modal-body {
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
     }
 
     .modal-footer {
@@ -938,17 +1221,48 @@ const emailConfigured = isEmailConfigured();
       flex: 1;
       min-width: calc(50% - 6px);
     }
+
+    .card-actions {
+      flex-wrap: wrap;
+    }
+
+    .card-action-btn {
+      flex: 1 1 calc(50% - 4px);
+      min-width: calc(50% - 4px);
+    }
   }
 
   @media (max-width: 480px) {
+    .page-header {
+      padding-bottom: 16px;
+    }
+
+    .detail-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+    }
+
     .detail-title {
       flex-direction: column;
       align-items: flex-start;
       gap: 8px;
     }
 
+    .detail-title h3 {
+      font-size: 18px;
+    }
+
     .detail-meta {
       flex-wrap: wrap;
+    }
+
+    .detail-grid {
+      gap: 16px;
+    }
+
+    .detail-code {
+      font-size: 11px;
+      padding: 10px;
     }
 
     .form-actions {
@@ -961,10 +1275,38 @@ const emailConfigured = isEmailConfigured();
 
     .modal-footer {
       flex-direction: column;
+      gap: 8px;
     }
 
     .modal-footer .btn {
       width: 100%;
+    }
+
+    .card-title-row {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-action-btn {
+      flex: 1 1 100%;
+      min-width: 100%;
+    }
+
+    .modal-lg {
+      max-width: calc(100% - 16px);
+      margin: 8px;
+    }
+
+    .modal-header {
+      padding: 16px;
+    }
+
+    .modal-body {
+      padding: 16px;
+    }
+
+    .modal-footer {
+      padding: 16px;
     }
   }
 </style>
