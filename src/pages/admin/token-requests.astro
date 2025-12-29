@@ -168,8 +168,8 @@ const filteredRequests = filterStatus === 'all'
     </div>
   </div>
 
-  <div class="card">
-    {filteredRequests.length === 0 ? (
+  {filteredRequests.length === 0 ? (
+    <div class="card">
       <div class="empty-state">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
@@ -179,92 +179,172 @@ const filteredRequests = filterStatus === 'all'
         <h3>No Requests</h3>
         <p>{filterStatus === 'all' ? 'No token requests have been submitted yet.' : `No ${filterStatus} requests.`}</p>
       </div>
-    ) : (
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Tracking ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Wallet</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRequests.map((req) => (
+    </div>
+  ) : (
+    <>
+      <!-- Desktop Table View -->
+      <div class="card desktop-view">
+        <div class="table-container">
+          <table>
+            <thead>
               <tr>
-                <td>
-                  <code class="tracking-code">{req.tracking_id}</code>
-                </td>
-                <td>
-                  <strong>{req.first_name} {req.last_name}</strong>
-                </td>
-                <td>
-                  <a href={`mailto:${req.email}`} class="contact-email">{req.email}</a>
-                </td>
-                <td>
-                  <code class="wallet-address" title={req.wallet_address}>
-                    {req.wallet_address.substring(0, 6)}...{req.wallet_address.substring(38)}
-                  </code>
-                </td>
-                <td>
-                  <span class="amount-text">{req.requested_amount}</span>
-                  {req.transferred_amount && (
-                    <div class="transferred-amount">Sent: {req.transferred_amount}</div>
-                  )}
-                </td>
-                <td>
-                  <span class={`status-badge ${req.status}`}>{req.status}</span>
-                </td>
-                <td>
-                  <span class="date-text">{new Date(req.created_at).toLocaleDateString()}</span>
-                </td>
-                <td>
-                  <div class="actions-cell">
-                    <a href={`/admin/token-requests?view=${req.id}`} class="action-icon" title="View Details">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>
-                    </a>
-                    {req.status === 'pending' && (
-                      <>
-                        <a href={`/admin/token-requests?view=${req.id}&action=approve`} class="action-icon approve" title="Approve">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                          </svg>
-                        </a>
-                        <a href={`/admin/token-requests?view=${req.id}&action=reject`} class="action-icon reject" title="Reject">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                          </svg>
-                        </a>
-                      </>
-                    )}
-                    <form method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this request?')">
-                      <input type="hidden" name="action" value="delete" />
-                      <input type="hidden" name="id" value={req.id} />
-                      <button type="submit" class="action-icon delete" title="Delete">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <polyline points="3 6 5 6 21 6"></polyline>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                      </button>
-                    </form>
-                  </div>
-                </td>
+                <th>Tracking ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Wallet</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredRequests.map((req) => (
+                <tr>
+                  <td>
+                    <code class="tracking-code">{req.tracking_id}</code>
+                  </td>
+                  <td>
+                    <strong>{req.first_name} {req.last_name}</strong>
+                  </td>
+                  <td>
+                    <a href={`mailto:${req.email}`} class="contact-email">{req.email}</a>
+                  </td>
+                  <td>
+                    <code class="wallet-address" title={req.wallet_address}>
+                      {req.wallet_address.substring(0, 6)}...{req.wallet_address.substring(38)}
+                    </code>
+                  </td>
+                  <td>
+                    <span class="amount-text">{req.requested_amount}</span>
+                    {req.transferred_amount && (
+                      <div class="transferred-amount">Sent: {req.transferred_amount}</div>
+                    )}
+                  </td>
+                  <td>
+                    <span class={`status-badge ${req.status}`}>{req.status}</span>
+                  </td>
+                  <td>
+                    <span class="date-text">{new Date(req.created_at).toLocaleDateString()}</span>
+                  </td>
+                  <td>
+                    <div class="actions-cell">
+                      <a href={`/admin/token-requests?view=${req.id}`} class="action-icon" title="View Details">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </a>
+                      {req.status === 'pending' && (
+                        <>
+                          <a href={`/admin/token-requests?view=${req.id}&action=approve`} class="action-icon approve" title="Approve">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          </a>
+                          <a href={`/admin/token-requests?view=${req.id}&action=reject`} class="action-icon reject" title="Reject">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                          </a>
+                        </>
+                      )}
+                      <form method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this request?')">
+                        <input type="hidden" name="action" value="delete" />
+                        <input type="hidden" name="id" value={req.id} />
+                        <button type="submit" class="action-icon delete" title="Delete">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    )}
-  </div>
+
+      <!-- Mobile Card View -->
+      <div class="mobile-cards">
+        {filteredRequests.map((req) => (
+          <div class="request-card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <code class="tracking-code">{req.tracking_id}</code>
+                <span class={`status-badge ${req.status}`}>{req.status}</span>
+              </div>
+              <span class="card-date">{new Date(req.created_at).toLocaleDateString()}</span>
+            </div>
+
+            <div class="card-body">
+              <div class="card-name">{req.first_name} {req.last_name}</div>
+              <a href={`mailto:${req.email}`} class="card-email">{req.email}</a>
+
+              <div class="card-details">
+                <div class="card-detail">
+                  <span class="card-detail-label">Wallet</span>
+                  <code class="card-detail-value wallet">{req.wallet_address.substring(0, 10)}...{req.wallet_address.substring(36)}</code>
+                </div>
+                <div class="card-detail">
+                  <span class="card-detail-label">Requested</span>
+                  <span class="card-detail-value amount">{req.requested_amount}</span>
+                </div>
+                {req.transferred_amount && (
+                  <div class="card-detail">
+                    <span class="card-detail-label">Sent</span>
+                    <span class="card-detail-value sent">{req.transferred_amount}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <a href={`/admin/token-requests?view=${req.id}`} class="card-action-btn view">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                View
+              </a>
+              {req.status === 'pending' && (
+                <>
+                  <a href={`/admin/token-requests?view=${req.id}&action=approve`} class="card-action-btn approve">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Approve
+                  </a>
+                  <a href={`/admin/token-requests?view=${req.id}&action=reject`} class="card-action-btn reject">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Reject
+                  </a>
+                </>
+              )}
+              <form method="POST" class="card-delete-form" onsubmit="return confirm('Are you sure you want to delete this request?')">
+                <input type="hidden" name="action" value="delete" />
+                <input type="hidden" name="id" value={req.id} />
+                <button type="submit" class="card-action-btn delete">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )}
 
   <!-- View/Action Modal -->
   <div class={`modal-overlay ${viewItem ? 'open' : ''}`} id="modal">
@@ -849,9 +929,202 @@ const filteredRequests = filterStatus === 'all'
     min-width: 900px;
   }
 
+  /* Mobile Cards */
+  .mobile-cards {
+    display: none;
+  }
+
+  .request-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    gap: 12px;
+  }
+
+  .card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .card-header .tracking-code {
+    font-size: 11px;
+  }
+
+  .card-date {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  .card-body {
+    padding: 16px;
+  }
+
+  .card-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .card-email {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 16px;
+    word-break: break-all;
+  }
+
+  .card-email:hover {
+    color: var(--color-red);
+  }
+
+  .card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .card-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .card-detail-label {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  .card-detail-value {
+    font-size: 13px;
+    color: var(--text-primary);
+    text-align: right;
+    min-width: 0;
+    word-break: break-all;
+  }
+
+  .card-detail-value.wallet {
+    font-family: monospace;
+    font-size: 11px;
+    background: var(--bg-tertiary);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .card-detail-value.amount {
+    font-weight: 600;
+  }
+
+  .card-detail-value.sent {
+    font-weight: 600;
+    color: #22C55E;
+  }
+
+  .card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+  }
+
+  .card-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .card-action-btn:hover {
+    border-color: var(--border-color-strong);
+    color: var(--text-primary);
+  }
+
+  .card-action-btn.view:hover {
+    border-color: var(--color-blue);
+    color: var(--color-blue);
+  }
+
+  .card-action-btn.approve {
+    border-color: #22C55E;
+    color: #22C55E;
+  }
+
+  .card-action-btn.approve:hover {
+    background: rgba(34, 197, 94, 0.1);
+  }
+
+  .card-action-btn.reject {
+    border-color: #EF4444;
+    color: #EF4444;
+  }
+
+  .card-action-btn.reject:hover {
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .card-action-btn.delete {
+    border-color: var(--text-tertiary);
+    color: var(--text-tertiary);
+  }
+
+  .card-action-btn.delete:hover {
+    border-color: #EF4444;
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .card-delete-form {
+    display: contents;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .desktop-view {
+      display: none;
+    }
+
+    .mobile-cards {
+      display: block;
+    }
+  }
+
   @media (max-width: 768px) {
     .header-content {
       flex-direction: column;
+      gap: 12px;
+    }
+
+    .title-with-icon {
       gap: 12px;
     }
 
@@ -868,7 +1141,13 @@ const filteredRequests = filterStatus === 'all'
     }
 
     .modal-lg {
-      max-width: calc(100% - 32px);
+      max-width: calc(100% - 24px);
+      max-height: calc(100vh - 48px);
+    }
+
+    .modal-body {
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
     }
 
     .modal-footer {
@@ -879,13 +1158,50 @@ const filteredRequests = filterStatus === 'all'
       flex: 1;
       min-width: calc(50% - 6px);
     }
+
+    .card-actions {
+      flex-wrap: wrap;
+    }
+
+    .card-action-btn {
+      flex: 1 1 calc(50% - 4px);
+      min-width: calc(50% - 4px);
+    }
   }
 
   @media (max-width: 480px) {
+    .page-header {
+      padding-bottom: 16px;
+    }
+
+    .title-with-icon {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .detail-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+    }
+
     .detail-title {
       flex-direction: column;
       align-items: flex-start;
       gap: 8px;
+    }
+
+    .detail-title h3 {
+      font-size: 18px;
+    }
+
+    .detail-grid {
+      gap: 16px;
+    }
+
+    .detail-code {
+      font-size: 11px;
+      padding: 10px;
     }
 
     .form-actions {
@@ -898,10 +1214,34 @@ const filteredRequests = filterStatus === 'all'
 
     .modal-footer {
       flex-direction: column;
+      gap: 8px;
     }
 
     .modal-footer .btn {
       width: 100%;
+      min-width: 100%;
+    }
+
+    .card-action-btn {
+      flex: 1 1 100%;
+      min-width: 100%;
+    }
+
+    .modal-lg {
+      max-width: calc(100% - 16px);
+      margin: 8px;
+    }
+
+    .modal-header {
+      padding: 16px;
+    }
+
+    .modal-body {
+      padding: 16px;
+    }
+
+    .modal-footer {
+      padding: 16px;
     }
   }
 </style>
