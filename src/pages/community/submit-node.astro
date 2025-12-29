@@ -134,7 +134,16 @@ if (Astro.request.method === 'POST') {
 
             <!-- Fields for Boot Node -->
             <div class="form-group" id="bootnode-endpoint-group" style="display: none;">
-              <label class="form-label">Enode *</label>
+              <label class="form-label">
+                Enode *
+                <a href="/docs#bootnode-info" class="info-link" title="How to get Enode" target="_blank">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                </a>
+              </label>
               <textarea name="enode" class="form-textarea" placeholder="enode://...@host:port"></textarea>
               <span class="form-hint">The enode URL for peer discovery</span>
             </div>
@@ -142,13 +151,31 @@ if (Astro.request.method === 'POST') {
             <!-- Fields for Beacon Node -->
             <div class="beacon-fields" id="beacon-fields" style="display: none;">
               <div class="form-group">
-                <label class="form-label">ENR (Ethereum Node Record)</label>
+                <label class="form-label">
+                  ENR (Ethereum Node Record)
+                  <a href="/docs#bootnode-info" class="info-link" title="How to get ENR" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                  </a>
+                </label>
                 <textarea name="enr" class="form-textarea" placeholder="enr:-..."></textarea>
                 <span class="form-hint">The ENR string for peer discovery</span>
               </div>
 
               <div class="form-group">
-                <label class="form-label">P2P (libp2p Address)</label>
+                <label class="form-label">
+                  P2P (libp2p Address)
+                  <a href="/docs#bootnode-info" class="info-link" title="How to get libp2p address" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                  </a>
+                </label>
                 <textarea name="p2p" class="form-textarea" placeholder="/ip4/... or /dns4/..."></textarea>
                 <span class="form-hint">The libp2p multiaddress for direct P2P connection</span>
               </div>
@@ -360,11 +387,25 @@ if (Astro.request.method === 'POST') {
   }
 
   .form-label {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 8px;
+  }
+
+  .info-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    transition: color var(--transition-fast);
+  }
+
+  .info-link:hover {
+    color: var(--color-red);
   }
 
   .form-input,

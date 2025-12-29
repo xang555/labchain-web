@@ -8,6 +8,7 @@ const sections = [
   { id: 'beacon-node', label: 'Beacon Node' },
   { id: 'validator-node', label: 'Validator Node' },
   { id: 'exiting-validators', label: 'Exiting Validators' },
+  { id: 'bootnode-info', label: 'Bootnode Information' },
   { id: 'commands', label: 'Node Commands' },
 ];
 ---
@@ -649,6 +650,58 @@ brew install jq</code>
           <div class="info-box success">
             <h4>LAB Chain Uses 0x01 Credentials</h4>
             <p>LAB Chain validators use <code>0x01</code> execution withdrawal credentials by default. This means automatic withdrawals are enabled to your specified ETH address when you exit.</p>
+          </div>
+        </section>
+
+        <!-- Bootnode Information Section -->
+        <section id="bootnode-info" class="docs-section">
+          <h2>Get Bootnode Information</h2>
+          <p>
+            If you're running a bootnode and need to share connection info with other nodes, use these commands to get the necessary addresses.
+          </p>
+
+          <h3>Get EL Bootnode Enode</h3>
+          <p>Get the enode URL that other Execution Layer nodes can use to connect:</p>
+          <div class="code-block">
+            <code>cd EL && ./get-bootnode-enode.sh</code>
+            <button class="copy-btn" data-copy="cd EL && ./get-bootnode-enode.sh">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+          <p>This returns the enode URL (e.g., <code>enode://abc123...@IP:30303</code>)</p>
+
+          <h3>Get CL Bootnode ENR</h3>
+          <p>Get the ENR record that other Consensus Layer nodes can use for peer discovery:</p>
+          <div class="code-block">
+            <code>cd CL && ./get-bootnode-enr.sh</code>
+            <button class="copy-btn" data-copy="cd CL && ./get-bootnode-enr.sh">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+          <p>This returns the ENR record (e.g., <code>enr:-...</code>)</p>
+
+          <h3>Get CL Bootnode libp2p Address</h3>
+          <p>Get the libp2p multiaddr for nodes using libp2p discovery mode:</p>
+          <div class="code-block">
+            <code>curl -s http://localhost:5052/eth/v1/node/identity | jq -r '.data.p2p_addresses[0]'</code>
+            <button class="copy-btn" data-copy="curl -s http://localhost:5052/eth/v1/node/identity | jq -r '.data.p2p_addresses[0]'">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+          <p>This returns the libp2p multiaddr (e.g., <code>/ip4/IP/tcp/9000/p2p/PEER_ID</code>)</p>
+
+          <div class="info-box warning">
+            <h4>Important: Replace IP Address</h4>
+            <p>When sharing bootnode addresses with other operators, replace <code>IP</code> with your server's public IP address so they can connect to your node.</p>
           </div>
         </section>
 
