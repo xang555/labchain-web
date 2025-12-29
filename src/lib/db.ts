@@ -164,6 +164,26 @@ export function initDatabase() {
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Token requests table for LAB token faucet requests
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS token_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tracking_id TEXT UNIQUE NOT NULL,
+      first_name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      wallet_address TEXT NOT NULL,
+      requested_amount TEXT NOT NULL,
+      reason TEXT NOT NULL,
+      contact_info TEXT,
+      status TEXT DEFAULT 'pending',
+      transferred_amount TEXT,
+      admin_notes TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 }
 
 // Initialize database on import
@@ -251,5 +271,22 @@ export interface NodeRequest {
 export interface Setting {
   key: string;
   value: string;
+  updated_at: string;
+}
+
+export interface TokenRequest {
+  id: number;
+  tracking_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  wallet_address: string;
+  requested_amount: string;
+  reason: string;
+  contact_info: string;
+  status: 'pending' | 'approved' | 'rejected' | 'transferred';
+  transferred_amount: string;
+  admin_notes: string;
+  created_at: string;
   updated_at: string;
 }

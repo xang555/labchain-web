@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import LabToken from '../../components/LabToken.astro';
 ---
 
 <Layout title="Community - LAB Chain" description="Join the LAB Chain community. Contribute nodes, participate in governance, and help build the future of blockchain in Laos.">
@@ -24,6 +25,28 @@ import Layout from '../../layouts/Layout.astro';
 
   <section class="community-section">
     <div class="container">
+      <!-- How It Works Section -->
+      <div class="how-it-works">
+        <h2>How to Contribute</h2>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h4>Run a Node</h4>
+            <p>Set up your own LAB Chain node using our documentation. You can run an RPC endpoint, boot node, or beacon node.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h4>Submit Details</h4>
+            <p>Fill out our submission form with your node details and contact information. We'll review your submission promptly.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h4>Get Listed</h4>
+            <p>Once approved, your node will be listed on our public pages. You'll receive an email notification about your submission status.</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Main Action Card -->
       <div class="hero-card">
         <div class="hero-card-content">
@@ -48,25 +71,20 @@ import Layout from '../../layouts/Layout.astro';
         </div>
       </div>
 
-      <!-- How It Works Section -->
-      <div class="how-it-works">
-        <h2>How to Contribute</h2>
-        <div class="steps-grid">
-          <div class="step-card">
-            <div class="step-number">1</div>
-            <h4>Run a Node</h4>
-            <p>Set up your own LAB Chain node using our documentation. You can run an RPC endpoint, boot node, or beacon node.</p>
+      <!-- Request Tokens Card -->
+      <div class="hero-card token-card">
+        <div class="hero-card-content">
+          <div class="hero-icon token-icon">
+            <LabToken size={64} />
           </div>
-          <div class="step-card">
-            <div class="step-number">2</div>
-            <h4>Submit Details</h4>
-            <p>Fill out our submission form with your node details and contact information. We'll review your submission promptly.</p>
+          <div class="hero-text">
+            <h2>Request LAB Tokens</h2>
+            <p>Need LAB tokens for development, testing, or running a validator? Submit a request and our team will review it.</p>
           </div>
-          <div class="step-card">
-            <div class="step-number">3</div>
-            <h4>Get Listed</h4>
-            <p>Once approved, your node will be listed on our public pages. You'll receive an email notification about your submission status.</p>
-          </div>
+          <a href="/community/request-tokens" class="btn btn-primary btn-lg">
+            <LabToken size={20} />
+            Request Tokens
+          </a>
         </div>
       </div>
 
@@ -124,7 +142,18 @@ import Layout from '../../layouts/Layout.astro';
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     padding: 48px;
+    margin-bottom: 32px;
+  }
+
+  .hero-card.token-card {
+    background: linear-gradient(135deg, rgba(0, 40, 104, 0.1) 0%, rgba(206, 17, 38, 0.1) 100%);
     margin-bottom: 48px;
+  }
+
+  .hero-icon.token-icon {
+    background: transparent;
+    width: auto;
+    height: auto;
   }
 
   .hero-card-content {
@@ -168,7 +197,7 @@ import Layout from '../../layouts/Layout.astro';
 
   /* How It Works */
   .how-it-works {
-    margin-bottom: 0;
+    margin-bottom: 48px;
   }
 
   .how-it-works h2 {

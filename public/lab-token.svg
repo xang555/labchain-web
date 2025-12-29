@@ -1,0 +1,23 @@
+<svg width="512" height="512" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tokenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#CE1126" />
+      <stop offset="50%" stop-color="#002868" />
+      <stop offset="100%" stop-color="#CE1126" />
+    </linearGradient>
+  </defs>
+
+  <!-- Main Circle Background (same as website icon) -->
+  <circle cx="50" cy="50" r="48" fill="url(#tokenGradient)" />
+
+  <!-- Inner white circle -->
+  <circle cx="50" cy="50" r="36" fill="#FFFFFF" fill-opacity="0.95" />
+
+  <!-- L Symbol - Clean Bitcoin-inspired design -->
+  <!-- Main L shape with rounded corners -->
+  <path d="M38 26 C38 24 39.5 23 41.5 23 L46.5 23 C48.5 23 50 24 50 26 L50 64 L61 64 C63 64 64 65.5 64 67.5 L64 72.5 C64 74.5 63 76 61 76 L41.5 76 C39.5 76 38 74.5 38 72.5 Z" fill="#002868"/>
+
+  <!-- Two horizontal strike-through lines -->
+  <rect x="32" y="36" width="24" height="5" rx="2" fill="#002868"/>
+  <rect x="32" y="48" width="24" height="5" rx="2" fill="#002868"/>
+</svg>

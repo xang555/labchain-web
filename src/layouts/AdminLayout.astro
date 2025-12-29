@@ -1,5 +1,6 @@
 ---
 import Logo from '../components/Logo.astro';
+import LabToken from '../components/LabToken.astro';
 
 interface Props {
   title: string;
@@ -15,6 +16,7 @@ const navItems = [
   { label: 'Boot Nodes', href: '/admin/boot-nodes', icon: 'boot' },
   { label: 'Beacon Nodes', href: '/admin/beacon-nodes', icon: 'beacon' },
   { label: 'Share Node Requests', href: '/admin/requests', icon: 'requests' },
+  { label: 'Token Requests', href: '/admin/token-requests', icon: 'token-requests' },
   { label: 'Settings', href: '/admin/settings', icon: 'settings' },
 ];
 ---
@@ -103,6 +105,9 @@ const navItems = [
                 <line x1="12" y1="18" x2="12" y2="12"></line>
                 <line x1="9" y1="15" x2="15" y2="15"></line>
               </svg>
+            )}
+            {item.icon === 'token-requests' && (
+              <LabToken size={20} />
             )}
             {item.icon === 'settings' && (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

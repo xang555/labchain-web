@@ -1,5 +1,5 @@
 import db from './db';
-import type { RpcEndpoint, BootNode, BeaconNode, NodeRequest, Setting } from './db';
+import type { RpcEndpoint, BootNode, BeaconNode, NodeRequest, Setting, TokenRequest } from './db';
 import { randomBytes } from 'crypto';
 
 // Pagination helper
@@ -479,4 +479,115 @@ export function setEmailSettings(settings: {
   setSetting('smtp_from', settings.smtp_from);
   setSetting('smtp_from_name', settings.smtp_from_name);
   setSetting('smtp_secure', settings.smtp_secure);
+}
+
+// Token Requests
+function generateTokenTrackingId(): string {
+  return 'TKN-' + randomBytes(4).toString('hex').toUpperCase();
+}
+
+export function getAllTokenRequests(): TokenRequest[] {
+  return db.prepare('SELECT * FROM token_requests ORDER BY created_at DESC').all() as TokenRequest[];
+}
+
+export function getTokenRequestsPaginated(page: number = 1, limit: number = 10): PaginatedResult<TokenRequest> {
+  const offset = (page - 1) * limit;
+  const total = (db.prepare('SELECT COUNT(*) as count FROM token_requests').get() as { count: number }).count;
+  const data = db.prepare('SELECT * FROM token_requests ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset) as TokenRequest[];
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
+}
+
+export function getTokenRequestsByStatus(status: string): TokenRequest[] {
+  return db.prepare("SELECT * FROM token_requests WHERE status = ? ORDER BY created_at DESC").all(status) as TokenRequest[];
+}
+
+export function getTokenRequestsByStatusPaginated(status: string, page: number = 1, limit: number = 10): PaginatedResult<TokenRequest> {
+  const offset = (page - 1) * limit;
+  const total = (db.prepare("SELECT COUNT(*) as count FROM token_requests WHERE status = ?").get(status) as { count: number }).count;
+  const data = db.prepare("SELECT * FROM token_requests WHERE status = ? ORDER BY created_at DESC LIMIT ? OFFSET ?").all(status, limit, offset) as TokenRequest[];
+  return {
+    data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  };
+}
+
+export function getTokenRequestById(id: number): TokenRequest | null {
+  return db.prepare('SELECT * FROM token_requests WHERE id = ?').get(id) as TokenRequest | null;
+}
+
+export function getTokenRequestByTrackingId(trackingId: string): TokenRequest | null {
+  return db.prepare('SELECT * FROM token_requests WHERE tracking_id = ?').get(trackingId) as TokenRequest | null;
+}
+
+export function createTokenRequest(data: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  wallet_address: string;
+  requested_amount: string;
+  reason: string;
+  contact_info?: string;
+}): TokenRequest {
+  const trackingId = generateTokenTrackingId();
+
+  const stmt = db.prepare(`
+    INSERT INTO token_requests (tracking_id, first_name, last_name, email, wallet_address, requested_amount, reason, contact_info, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+  `);
+
+  const result = stmt.run(
+    trackingId,
+    data.first_name,
+    data.last_name,
+    data.email,
+    data.wallet_address,
+    data.requested_amount,
+    data.reason,
+    data.contact_info || ''
+  );
+
+  return db.prepare('SELECT * FROM token_requests WHERE id = ?').get(result.lastInsertRowid) as TokenRequest;
+}
+
+export function updateTokenRequestStatus(id: number, status: string, adminNotes?: string, transferredAmount?: string): TokenRequest | null {
+  const existing = getTokenRequestById(id);
+  if (!existing) return null;
+
+  const stmt = db.prepare(`
+    UPDATE token_requests
+    SET status = ?, admin_notes = ?, transferred_amount = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+
+  stmt.run(
+    status,
+    adminNotes || existing.admin_notes || '',
+    transferredAmount || existing.transferred_amount || '',
+    id
+  );
+  return getTokenRequestById(id);
+}
+
+export function deleteTokenRequest(id: number): boolean {
+  const result = db.prepare('DELETE FROM token_requests WHERE id = ?').run(id);
+  return result.changes > 0;
+}
+
+export function getTokenRequestStats() {
+  const pending = (db.prepare("SELECT COUNT(*) as count FROM token_requests WHERE status = 'pending'").get() as { count: number }).count;
+  const approved = (db.prepare("SELECT COUNT(*) as count FROM token_requests WHERE status = 'approved'").get() as { count: number }).count;
+  const transferred = (db.prepare("SELECT COUNT(*) as count FROM token_requests WHERE status = 'transferred'").get() as { count: number }).count;
+  const rejected = (db.prepare("SELECT COUNT(*) as count FROM token_requests WHERE status = 'rejected'").get() as { count: number }).count;
+  const total = (db.prepare("SELECT COUNT(*) as count FROM token_requests").get() as { count: number }).count;
+
+  return { pending, approved, transferred, rejected, total };
 }
