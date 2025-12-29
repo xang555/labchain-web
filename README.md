@@ -71,6 +71,31 @@ yarn build
 node dist/server/entry.mjs
 ```
 
+### Docker Deployment
+
+```bash
+# Build and start container
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f labchain-web
+
+# Stop container
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up -d --build
+```
+
+#### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NODE_ENV` | `production` | Environment mode |
+| `HOST` | `0.0.0.0` | Server host |
+| `PORT` | `4321` | Server port |
+| `DATA_DIR` | `/app/data` | SQLite database directory |
+
 ## Commands
 
 | Command | Action |
