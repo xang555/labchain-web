@@ -1,12 +1,6 @@
-<svg width="512" height="512" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background circle -->
-  <circle cx="50" cy="50" r="48" fill="rgb(20, 137, 213)" />
-
-  <!-- Currency L symbol (like ₺ Turkish Lira style) -->
-  <!-- Main L shape - bold -->
-  <path d="M36 22 L44 22 L44 62 L64 62 L64 70 L36 70 Z" fill="#FFFFFF"/>
-
-  <!-- Two horizontal strike-through lines (currency style) -->
-  <rect x="30" y="36" width="22" height="4" rx="1" fill="#FFFFFF"/>
-  <rect x="30" y="46" width="22" height="4" rx="1" fill="#FFFFFF"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M255.76 501.52C391.49 501.52 501.52 391.49 501.52 255.76C501.52 120.03 391.49 10 255.76 10C120.03 10 10 120.03 10 255.76C10 391.49 120.03 501.52 255.76 501.52Z" fill="#1489D5"/>
+<path d="M199.72 133H240.68V337.8H343.08V378.76H199.72V133Z" fill="white"/>
+<path d="M276.52 204.68H174.12C171.292 204.68 169 206.972 169 209.8V220.04C169 222.868 171.292 225.16 174.12 225.16H276.52C279.348 225.16 281.64 222.868 281.64 220.04V209.8C281.64 206.972 279.348 204.68 276.52 204.68Z" fill="white"/>
+<path d="M276.52 255.88H174.12C171.292 255.88 169 258.172 169 261V271.24C169 274.068 171.292 276.36 174.12 276.36H276.52C279.348 276.36 281.64 274.068 281.64 271.24V261C281.64 258.172 279.348 255.88 276.52 255.88Z" fill="white"/>
 </svg>

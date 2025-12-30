@@ -1,39 +1,59 @@
-<svg width="512" height="512" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="rgb(20, 137, 213)" />
-      <stop offset="50%" stop-color="rgb(16, 110, 170)" />
-      <stop offset="100%" stop-color="rgb(20, 137, 213)" />
-    </linearGradient>
-  </defs>
-
-  <!-- Main Circle Background -->
-  <circle cx="50" cy="50" r="48" fill="url(#logoGradient)" />
-
-  <!-- Inner white circle -->
-  <circle cx="50" cy="50" r="20" fill="#FFFFFF" fill-opacity="0.95" />
-
-  <!-- Connecting lines from blocks to center -->
-  <line x1="50" y1="20" x2="50" y2="35" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-  <line x1="80" y1="50" x2="65" y2="50" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-  <line x1="50" y1="80" x2="50" y2="65" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-  <line x1="20" y1="50" x2="35" y2="50" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-
-  <!-- Blockchain Blocks - Top -->
-  <rect x="42" y="8" width="16" height="12" rx="2" fill="#FFFFFF" stroke="rgb(16, 110, 170)" stroke-width="1.5"/>
-
-  <!-- Blockchain Blocks - Right -->
-  <rect x="80" y="44" width="12" height="12" rx="2" fill="#FFFFFF" stroke="rgb(16, 110, 170)" stroke-width="1.5"/>
-
-  <!-- Blockchain Blocks - Bottom -->
-  <rect x="42" y="80" width="16" height="12" rx="2" fill="#FFFFFF" stroke="rgb(16, 110, 170)" stroke-width="1.5"/>
-
-  <!-- Blockchain Blocks - Left -->
-  <rect x="8" y="44" width="12" height="12" rx="2" fill="#FFFFFF" stroke="rgb(16, 110, 170)" stroke-width="1.5"/>
-
-  <!-- Decorative dots (representing nodes) -->
-  <circle cx="50" cy="35" r="3" fill="#FFFFFF" />
-  <circle cx="65" cy="50" r="3" fill="#FFFFFF" />
-  <circle cx="50" cy="65" r="3" fill="#FFFFFF" />
-  <circle cx="35" cy="50" r="3" fill="#FFFFFF" />
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M42 153.782L91.8837 129.613L141.767 153.782V208.162L91.8837 232.331L42 208.162V153.782Z" fill="url(#paint0_linear_11_2)"/>
+<path d="M98.5349 217.225H85.2326V301.817H98.5349V217.225Z" fill="url(#paint1_linear_11_2)"/>
+<path d="M42 316.923L91.8837 292.754L141.767 316.923V371.303L91.8837 395.472L42 371.303V316.923Z" fill="url(#paint2_linear_11_2)"/>
+<path d="M211.605 66.169L261.488 42L311.372 66.169V120.549L261.488 144.718L211.605 120.549V66.169Z" fill="url(#paint3_linear_11_2)"/>
+<path d="M268.14 132.634H254.837V217.225H268.14V132.634Z" fill="url(#paint4_linear_11_2)"/>
+<path d="M211.605 229.31L261.488 205.141L311.372 229.31V283.69L261.488 307.859L211.605 283.69V229.31Z" fill="url(#paint5_linear_11_2)"/>
+<path d="M268.14 295.775H254.837V380.366H268.14V295.775Z" fill="url(#paint6_linear_11_2)"/>
+<path d="M389.294 368.557L383.971 356.643L299.697 392.601L305.019 404.515L389.294 368.557Z" fill="url(#paint7_linear_11_2)"/>
+<path d="M211.605 392.451L261.488 368.282L311.372 392.451V446.831L261.488 471L211.605 446.831V392.451Z" fill="url(#paint8_linear_11_2)"/>
+<path d="M371.233 153.782L421.116 129.613L471 153.782V208.162L421.116 232.331L371.233 208.162V153.782Z" fill="url(#paint9_linear_11_2)"/>
+<path d="M370.302 316.689L420.185 292.52L470.069 316.689V371.069L420.185 395.238L370.302 371.069V316.689Z" fill="url(#paint10_linear_11_2)"/>
+<defs>
+<linearGradient id="paint0_linear_11_2" x1="42" y1="129.613" x2="10309.5" y2="10102.1" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint1_linear_11_2" x1="85.2326" y1="217.225" x2="2681.5" y2="625.497" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint2_linear_11_2" x1="42" y1="292.754" x2="10309.5" y2="10265.3" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint3_linear_11_2" x1="211.605" y1="42" x2="10479.1" y2="10014.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint4_linear_11_2" x1="254.837" y1="132.634" x2="2851.1" y2="540.906" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint5_linear_11_2" x1="211.605" y1="205.141" x2="10479.1" y2="10177.7" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint6_linear_11_2" x1="254.837" y1="295.775" x2="2851.1" y2="704.047" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint7_linear_11_2" x1="383.971" y1="356.643" x2="1051.96" y2="2845.85" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint8_linear_11_2" x1="211.605" y1="368.282" x2="10479.1" y2="10340.8" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint9_linear_11_2" x1="371.233" y1="129.613" x2="10638.7" y2="10102.1" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+<linearGradient id="paint10_linear_11_2" x1="370.302" y1="292.52" x2="10637.8" y2="10265" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1FB6FF"/>
+<stop offset="1" stop-color="#8B5CF6"/>
+</linearGradient>
+</defs>
 </svg>
