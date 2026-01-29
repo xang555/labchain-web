@@ -1113,6 +1113,7 @@ curl http://localhost:5052/eth/v1/beacon/headers/head</code>
     opacity: 0;
     visibility: hidden;
     transition: all var(--transition-normal);
+    pointer-events: none;
   }
 
   .docs-sidebar-overlay.open {
@@ -1783,7 +1784,22 @@ curl http://localhost:5052/eth/v1/beacon/headers/head</code>
 
   docsSidebarToggle?.addEventListener('click', openDocsSidebar);
   docsSidebarClose?.addEventListener('click', closeDocsSidebar);
-  docsSidebarOverlay?.addEventListener('click', closeDocsSidebar);
+
+  // Close sidebar when clicking outside of it
+  document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 1024) {
+      const sidebar = document.getElementById('docsSidebar');
+      const toggleBtn = document.getElementById('docsSidebarToggle');
+      const closeBtn = document.getElementById('docsSidebarClose');
+
+      if (sidebar?.classList.contains('open') &&
+          !sidebar.contains(e.target) &&
+          !toggleBtn?.contains(e.target) &&
+          !closeBtn?.contains(e.target)) {
+        closeDocsSidebar();
+      }
+    }
+  });
 
   // Close sidebar when clicking a link
   sidebarLinks.forEach(link => {
