@@ -1073,9 +1073,34 @@ curl http://localhost:5052/eth/v1/beacon/headers/head</code>
     overflow-x: hidden;
   }
 
-  /* Mobile Toggle Button - Hidden, using header menu instead */
+  /* Mobile Toggle Button */
   .docs-mobile-toggle {
-    display: none !important;
+    position: fixed;
+    top: calc(var(--header-height) + 16px);
+    left: 16px;
+    z-index: 60;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
+  }
+
+  .docs-mobile-toggle:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--color-primary);
+  }
+
+  .docs-mobile-toggle svg {
+    flex-shrink: 0;
   }
 
   /* Sidebar Overlay */
@@ -1142,6 +1167,7 @@ curl http://localhost:5052/eth/v1/beacon/headers/head</code>
     background: var(--bg-secondary);
     overflow-y: auto;
     z-index: 50;
+    transition: transform var(--transition-normal);
   }
 
   .sidebar-content {
@@ -1584,12 +1610,33 @@ curl http://localhost:5052/eth/v1/beacon/headers/head</code>
       width: 100%;
     }
 
+    .docs-mobile-toggle {
+      display: flex;
+    }
+
     .docs-sidebar {
+      transform: translateX(-100%);
+    }
+
+    .docs-sidebar.open {
+      transform: translateX(0);
+    }
+
+    .docs-sidebar-overlay {
+      display: block;
+    }
+
+    .sidebar-header-mobile {
+      display: flex;
+    }
+
+    .sidebar-title-desktop {
       display: none;
     }
 
     .docs-main {
-      padding: 32px 24px;
+      margin-left: 0;
+      padding: 80px 24px 32px;
       max-width: 100%;
     }
 
@@ -1666,8 +1713,9 @@ curl http://localhost:5052/eth/v1/beacon/headers/head</code>
 </style>
 
 <script>
-  // Copy button functionality
-  const copyButtons = document.querySelectorAll('.copy-btn');
+  document.addEventListener('DOMContentLoaded', () => {
+    // Copy button functionality
+    const copyButtons = document.querySelectorAll('.copy-btn');
 
   copyButtons.forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -1760,5 +1808,6 @@ curl http://localhost:5052/eth/v1/beacon/headers/head</code>
     if (window.innerWidth > 1024) {
       closeDocsSidebar();
     }
+  });
   });
 </script>
