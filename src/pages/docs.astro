@@ -49,7 +49,7 @@ const sections = [
           ))}
         </nav>
         <div class="sidebar-cta">
-          <a href="https://github.com/labchain5222/labchain" class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/AIDappLab/labchain" class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
             </svg>
@@ -139,6 +139,10 @@ const sections = [
               </thead>
               <tbody>
                 <tr>
+                  <td>Network Name</td>
+                  <td><code>lab-chain</code></td>
+                </tr>
+                <tr>
                   <td>Chain ID</td>
                   <td><code>5222</code></td>
                 </tr>
@@ -149,6 +153,10 @@ const sections = [
                 <tr>
                   <td>Deposit Contract</td>
                   <td><code>0x5454545454545454545454545454545454545454</code></td>
+                </tr>
+                <tr>
+                  <td>Explorer</td>
+                  <td><a href="https://explorer.labchain.la" target="_blank" rel="noopener noreferrer">https://explorer.labchain.la</a></td>
                 </tr>
               </tbody>
             </table>
@@ -173,13 +181,42 @@ const sections = [
                   </svg>
                 </button>
               </div>
+              <p>Create a new user and grant docker permissions:</p>
+              <div class="code-block">
+                <code># Create new user (replace 'nodeuser' with your preferred username)
+sudo useradd -m -s /bin/bash nodeuser
+# Add user to docker group
+sudo usermod -aG docker nodeuser
+# Switch to new user
+su - nodeuser</code>
+                <button class="copy-btn" data-copy="sudo useradd -m -s /bin/bash nodeuser">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+              <p>Verify installation:</p>
+              <div class="code-block">
+                <code>docker --version
+docker compose version</code>
+                <button class="copy-btn" data-copy="docker --version">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
             </li>
             <li>
               <strong>Foundry</strong> (validators only)
               <p>Required for the <code>cast</code> tool to broadcast deposit transactions:</p>
               <div class="code-block">
-                <code>curl -L https://foundry.paradigm.xyz | bash && foundryup</code>
-                <button class="copy-btn" data-copy="curl -L https://foundry.paradigm.xyz | bash && foundryup">
+                <code>curl -L https://foundry.paradigm.xyz | bash
+foundryup
+# Verify installation
+cast --version</code>
+                <button class="copy-btn" data-copy="curl -L https://foundry.paradigm.xyz | bash">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -192,11 +229,11 @@ const sections = [
               <p>JSON processor for handling validator data:</p>
               <div class="code-block">
                 <code># Ubuntu/Debian
-sudo apt-get install jq
+sudo apt install jq
 
 # macOS
 brew install jq</code>
-                <button class="copy-btn" data-copy="sudo apt-get install jq">
+                <button class="copy-btn" data-copy="sudo apt install jq">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -247,13 +284,15 @@ brew install jq</code>
             </table>
           </div>
 
-          <h3>Initial Setup</h3>
+          <h3>Getting Started</h3>
+          <p>Follow these steps to set up your environment before running any node.</p>
           <ol class="setup-steps">
             <li>
               <strong>Clone the repository</strong>
               <div class="code-block">
-                <code>git clone https://github.com/labchain5222/labchain.git && cd labchain</code>
-                <button class="copy-btn" data-copy="git clone https://github.com/labchain5222/labchain.git && cd labchain">
+                <code>git clone https://github.com/AIDappLab/labchain.git
+cd labchain</code>
+                <button class="copy-btn" data-copy="git clone https://github.com/AIDappLab/labchain.git">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -275,10 +314,11 @@ brew install jq</code>
             </li>
             <li>
               <strong>Generate JWT secret</strong>
-              <p>Required for EL/CL communication:</p>
+              <p>The JWT secret secures communication between EL and CL.</p>
               <div class="code-block">
-                <code>openssl rand -hex 32 > jwt.hex</code>
-                <button class="copy-btn" data-copy="openssl rand -hex 32 > jwt.hex">
+                <code>mkdir -p config/jwt
+openssl rand -hex 32 > config/jwt/jwtsecret</code>
+                <button class="copy-btn" data-copy="mkdir -p config/jwt">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -287,6 +327,11 @@ brew install jq</code>
               </div>
             </li>
           </ol>
+
+          <div class="info-box success">
+            <h4>Ready to Run Nodes</h4>
+            <p>Your environment is now set up! The default configuration is pre-configured and ready to use. You can simply press Enter to accept defaults during <code>./node.sh init</code>, or skip the init step entirely and start nodes directly.</p>
+          </div>
         </section>
 
         <!-- EL Node Section -->
@@ -328,9 +373,15 @@ brew install jq</code>
           </div>
 
           <h3>Setup Instructions</h3>
+
+          <div class="info-box">
+            <h4>Note: Optional Configuration</h4>
+            <p>The default configuration is pre-configured and ready to use. You can simply press Enter to accept defaults during <code>./node.sh init</code>, or skip the init step entirely and start nodes directly.</p>
+          </div>
+
           <ol class="setup-steps">
             <li>
-              <strong>Initialize the EL node</strong>
+              <strong>Configure EL (optional - defaults are ready to use)</strong>
               <div class="code-block">
                 <code>./node.sh init el</code>
                 <button class="copy-btn" data-copy="./node.sh init el">
@@ -340,7 +391,39 @@ brew install jq</code>
                   </svg>
                 </button>
               </div>
-              <p>This will guide you through interactive configuration.</p>
+              <p>Configuration options:</p>
+              <div class="params-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Config</th>
+                      <th>Default</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>JSON-RPC HTTP port</td>
+                      <td><code>8545</code></td>
+                    </tr>
+                    <tr>
+                      <td>WebSocket RPC port</td>
+                      <td><code>8546</code></td>
+                    </tr>
+                    <tr>
+                      <td>Auth RPC port (Engine API)</td>
+                      <td><code>8551</code></td>
+                    </tr>
+                    <tr>
+                      <td>P2P networking port</td>
+                      <td><code>30303</code></td>
+                    </tr>
+                    <tr>
+                      <td>Bootnode enode URL</td>
+                      <td>Pre-configured</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </li>
             <li>
               <strong>Start the EL node</strong>
@@ -355,17 +438,22 @@ brew install jq</code>
               </div>
             </li>
             <li>
-              <strong>Verify sync status</strong>
+              <strong>Verify EL is running</strong>
               <div class="code-block">
-                <code>curl http://localhost:8545 -X POST -H "Content-Type: application/json" -d '&#123;"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1&#125;'</code>
-                <button class="copy-btn" data-copy="curl http://localhost:8545 -X POST -H 'Content-Type: application/json' -d '{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;eth_syncing&quot;,&quot;params&quot;:[],&quot;id&quot;:1}'">
+                <code># View logs
+./node.sh logs el
+
+# Test RPC
+curl -X POST -H "Content-Type: application/json" \
+--data '&#123;"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1&#125;' \
+http://localhost:8545</code>
+                <button class="copy-btn" data-copy="./node.sh logs el">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
                 </button>
               </div>
-              <p>Returns <code>false</code> when fully synced.</p>
             </li>
           </ol>
         </section>
@@ -406,9 +494,15 @@ brew install jq</code>
           </div>
 
           <h3>Setup Instructions</h3>
+
+          <div class="info-box">
+            <h4>Note: Optional Configuration</h4>
+            <p>The default configuration is pre-configured and ready to use. You can simply press Enter to accept defaults during <code>./node.sh init</code>, or skip the init step entirely and start nodes directly.</p>
+          </div>
+
           <ol class="setup-steps">
             <li>
-              <strong>Initialize the CL node</strong>
+              <strong>Configure CL (optional - defaults are ready to use)</strong>
               <div class="code-block">
                 <code>./node.sh init cl</code>
                 <button class="copy-btn" data-copy="./node.sh init cl">
@@ -417,6 +511,47 @@ brew install jq</code>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
                 </button>
+              </div>
+              <p>Configuration options:</p>
+              <div class="params-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Config</th>
+                      <th>Default</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Execution engine endpoint</td>
+                      <td><code>http://reth-node:8551</code></td>
+                    </tr>
+                    <tr>
+                      <td>Beacon HTTP API port</td>
+                      <td><code>5052</code></td>
+                    </tr>
+                    <tr>
+                      <td>P2P networking port</td>
+                      <td><code>9000</code></td>
+                    </tr>
+                    <tr>
+                      <td>Target peers</td>
+                      <td><code>64</code></td>
+                    </tr>
+                    <tr>
+                      <td>Public IP for P2P discovery</td>
+                      <td>Auto-detected</td>
+                    </tr>
+                    <tr>
+                      <td>Discovery protocol</td>
+                      <td><code>enr</code></td>
+                    </tr>
+                    <tr>
+                      <td>Bootnode addresses</td>
+                      <td>Pre-configured</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </li>
             <li>
@@ -432,10 +567,14 @@ brew install jq</code>
               </div>
             </li>
             <li>
-              <strong>Verify sync status</strong>
+              <strong>Verify CL is running</strong>
               <div class="code-block">
-                <code>curl http://localhost:5052/eth/v1/node/syncing</code>
-                <button class="copy-btn" data-copy="curl http://localhost:5052/eth/v1/node/syncing">
+                <code># View logs
+./node.sh logs cl
+
+# Test beacon API
+curl http://localhost:5052/eth/v1/node/syncing</code>
+                <button class="copy-btn" data-copy="./node.sh logs cl">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -479,51 +618,100 @@ brew install jq</code>
           <h3>Step 1: Generate Validator Keystores</h3>
           <p>Use the validator management script to generate keystores from your mnemonic:</p>
           <div class="code-block">
-            <code>cd vc && ./manage-validators.sh --count 1 --withdrawal YOUR_LAB_ADDRESS</code>
-            <button class="copy-btn" data-copy="cd vc && ./manage-validators.sh --count 1 --withdrawal YOUR_LAB_ADDRESS">
+            <code>cd VC
+./manage-validators.sh</code>
+            <button class="copy-btn" data-copy="cd VC">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
             </button>
           </div>
-          <p>Options:</p>
+          <p>The script will guide you through:</p>
           <ul>
-            <li><code>--count</code>: Number of validators to generate</li>
-            <li><code>--withdrawal</code>: Your LAB address for receiving rewards</li>
+            <li>Number of validators to create (default: 1)</li>
+            <li>Your LAB withdrawal address</li>
+            <li>Starting validator index (default: 0)</li>
+            <li>Output directories</li>
           </ul>
 
-          <h3>Step 2: Fund Your Validators</h3>
-          <p>Each validator requires exactly 32 LAB. Use the deposit broadcast script:</p>
+          <div class="info-box warning">
+            <h4>Important: Save Your Mnemonic</h4>
+            <p>Save your mnemonic securely when prompted! This is the only way to recover your validator keys.</p>
+          </div>
+
+          <p>This creates:</p>
+          <ul>
+            <li><code>./output/deposits.json</code> - Deposit data for broadcasting</li>
+            <li><code>./managed-keystores/validators/</code> - Keystore files</li>
+            <li><code>./managed-keystores/secrets/</code> - Password files</li>
+          </ul>
+
+          <h3>Step 2: Fund Your Validators (Deposit 32 LAB)</h3>
+          <p>Each validator requires exactly 32 LAB. Use the deposit script:</p>
           <div class="code-block">
-            <code>./broadcast-deposits.sh --rpc RPC_ENDPOINT --deposit-file deposit_data.json --private-key YOUR_PRIVATE_KEY</code>
-            <button class="copy-btn" data-copy="./broadcast-deposits.sh --rpc RPC_ENDPOINT --deposit-file deposit_data.json --private-key YOUR_PRIVATE_KEY">
+            <code>./broadcast-deposits.sh</code>
+            <button class="copy-btn" data-copy="./broadcast-deposits.sh">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
             </button>
           </div>
+          <p>The script will guide you through:</p>
+          <ul>
+            <li>Path to deposits.json (default: ./output/deposits.json)</li>
+            <li>RPC endpoint (default: http://localhost:8545)</li>
+            <li>Sender address (your funded wallet)</li>
+            <li>Private key (hidden input)</li>
+            <li>Chain ID and deposit contract (pre-configured defaults)</li>
+            <li>Dry-run option to preview before sending</li>
+          </ul>
 
           <div class="info-box warning">
             <h4>Activation Time</h4>
             <p>Validator activation takes approximately <strong>16-24 hours</strong> after the deposit transaction is confirmed.</p>
           </div>
 
-          <h3>Step 3: Start Validator Client</h3>
+          <h3>Step 3: Configure and Start Validator Client</h3>
           <ol class="setup-steps">
             <li>
-              <strong>Initialize the validator client</strong>
+              <strong>Configure VC (optional - defaults are ready to use)</strong>
               <div class="code-block">
-                <code>./node.sh init vc</code>
-                <button class="copy-btn" data-copy="./node.sh init vc">
+                <code>cd ..
+./node.sh init vc</code>
+                <button class="copy-btn" data-copy="cd ..">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
                 </button>
               </div>
-              <p>Configure your fee recipient address and keystore location.</p>
+              <p>Configuration options:</p>
+              <div class="params-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Config</th>
+                      <th>Default</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Beacon node REST API endpoints</td>
+                      <td><code>http://lighthouse-bn:5052</code></td>
+                    </tr>
+                    <tr>
+                      <td>Fee recipient address</td>
+                      <td><code>0x0000...0000</code></td>
+                    </tr>
+                    <tr>
+                      <td>Validator keystores directory</td>
+                      <td><code>./managed-keystores</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </li>
             <li>
               <strong>Start the validator client</strong>
@@ -538,7 +726,7 @@ brew install jq</code>
               </div>
             </li>
             <li>
-              <strong>Check validator logs</strong>
+              <strong>Verify your validator</strong>
               <div class="code-block">
                 <code>./node.sh logs vc</code>
                 <button class="copy-btn" data-copy="./node.sh logs vc">
@@ -548,22 +736,43 @@ brew install jq</code>
                   </svg>
                 </button>
               </div>
-              <p>Look for "Enabled validator" and attestation messages to confirm successful operation.</p>
+              <p>Look for these messages in the logs:</p>
+              <ul>
+                <li><code>Enabled validator</code> - Your validator is loaded</li>
+                <li><code>Successfully published attestation</code> - Validator is attesting (after activation)</li>
+                <li><code>Successfully published block</code> - Validator proposed a block</li>
+              </ul>
             </li>
           </ol>
         </section>
 
         <!-- Exiting Validators Section -->
         <section id="exiting-validators" class="docs-section">
-          <h2>Exiting Validators</h2>
+          <h2>Exiting Validators (Withdraw Funds)</h2>
           <p>
-            If you wish to stop validating and withdraw your stake, you can initiate a voluntary exit.
-            The <code>./exit-validators.sh</code> script handles voluntary exits for your validators.
+            To exit your validator and withdraw all funds (stake + rewards), use the exit script:
           </p>
+
+          <div class="code-block">
+            <code>cd VC
+./exit-validators.sh</code>
+            <button class="copy-btn" data-copy="cd VC">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
 
           <div class="info-box warning">
             <h4>Warning: Irreversible Action</h4>
-            <p>Voluntary exits are <strong>irreversible</strong>. Once initiated, you cannot resume validating with the same keys. Make sure you understand the implications before proceeding.</p>
+            <p>Voluntary exits are <strong>irreversible</strong>. After exit:</p>
+            <ol style="margin: 8px 0 0 20px; padding: 0;">
+              <li>Validator enters exit queue</li>
+              <li>Exit processing (~27 hours minimum)</li>
+              <li>Withdrawal delay (~27 hours after exit)</li>
+              <li>Funds (32 LAB + rewards) sent to your withdrawal address</li>
+            </ol>
           </div>
 
           <h3>Exit Process Timeline</h3>
@@ -596,28 +805,24 @@ brew install jq</code>
             </table>
           </div>
 
-          <h3>Initiating a Voluntary Exit</h3>
+          <h3>Using the Exit Script</h3>
+          <p>The script will guide you through the process interactively:</p>
           <ol class="setup-steps">
             <li>
-              <strong>Run the exit script</strong>
-              <div class="code-block">
-                <code>./exit-validators.sh</code>
-                <button class="copy-btn" data-copy="./exit-validators.sh">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                  </svg>
-                </button>
-              </div>
-              <p>Follow the interactive prompts to select validators for exit.</p>
+              <strong>Configure beacon node URL</strong>
+              <p>Default: <code>http://localhost:5052</code></p>
+            </li>
+            <li>
+              <strong>Configure keystore directory</strong>
+              <p>Default: <code>./managed-keystores</code></p>
+            </li>
+            <li>
+              <strong>Select validators to exit</strong>
+              <p>Choose: all validators, specific numbers, or by public key</p>
             </li>
             <li>
               <strong>Confirm the exit</strong>
-              <p>Review the validator public keys and confirm you want to proceed with the exit.</p>
-            </li>
-            <li>
-              <strong>Wait for processing</strong>
-              <p>Monitor the exit queue and withdrawal status through the beacon chain explorer.</p>
+              <p>Review the validator public keys and confirm you want to proceed with the exit</p>
             </li>
           </ol>
 
@@ -703,6 +908,22 @@ brew install jq</code>
             <h4>Important: Replace IP Address</h4>
             <p>When sharing bootnode addresses with other operators, replace <code>IP</code> with your server's public IP address so they can connect to your node.</p>
           </div>
+
+          <h3>Custom RPC URLs</h3>
+          <p>You can also specify a custom RPC URL for getting bootnode information:</p>
+          <div class="code-block">
+            <code># Custom EL RPC
+RPC_URL=http://192.168.1.100:8545 ./get-bootnode-enode.sh
+
+# Custom CL RPC
+RPC_URL=http://192.168.1.100:5052 ./get-bootnode-enr.sh</code>
+            <button class="copy-btn" data-copy="RPC_URL=http://192.168.1.100:8545">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
         </section>
 
         <!-- Commands Section -->
@@ -763,17 +984,57 @@ brew install jq</code>
 
           <h3>Examples</h3>
           <div class="code-block">
-            <code># Start all nodes
+            <code># Start EL with default settings
+./node.sh start el
+
+# Start all nodes
 ./node.sh start all
 
-# Check status
+# Stop validator client
+./node.sh stop vc
+
+# View CL logs
+./node.sh logs cl
+
+# Check status of all nodes
 ./node.sh status
 
-# View EL logs
-./node.sh logs el
-
-# Restart beacon node
+# Restart CL
 ./node.sh restart cl</code>
+          </div>
+
+          <h3>Check Sync Status</h3>
+          <div class="code-block">
+            <code># EL sync status
+curl -X POST -H "Content-Type: application/json" \
+--data '&#123;"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1&#125;' \
+http://localhost:8545
+
+# CL sync status
+curl http://localhost:5052/eth/v1/node/syncing</code>
+            <button class="copy-btn" data-copy="curl -X POST">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+
+          <h3>Get Current Block/Slot</h3>
+          <div class="code-block">
+            <code># Current EL block
+curl -X POST -H "Content-Type: application/json" \
+--data '&#123;"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1&#125;' \
+http://localhost:8545
+
+# Current CL slot
+curl http://localhost:5052/eth/v1/beacon/headers/head</code>
+            <button class="copy-btn" data-copy="curl -X POST">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
           </div>
         </section>
 
@@ -805,8 +1066,7 @@ brew install jq</code>
 
 <style>
   .docs-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
+    display: block;
     min-height: calc(100vh - var(--header-height));
     width: 100%;
     max-width: 100vw;
@@ -873,8 +1133,10 @@ brew install jq</code>
 
   /* Sidebar */
   .docs-sidebar {
-    position: sticky;
+    position: fixed;
     top: var(--header-height);
+    left: 0;
+    width: 280px;
     height: calc(100vh - var(--header-height));
     border-right: 1px solid var(--border-color);
     background: var(--bg-secondary);
@@ -933,6 +1195,7 @@ brew install jq</code>
 
   /* Main Content */
   .docs-main {
+    margin-left: 280px;
     padding: 48px;
     max-width: 900px;
     min-width: 0;
