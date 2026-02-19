@@ -493,6 +493,73 @@ http://localhost:8545</code>
             <p>The Beacon Node requires a running Execution Layer node. It connects to the EL at <code>http://reth-node:8551</code> by default.</p>
           </div>
 
+          <h3>Choose Your Sync Mode</h3>
+          <div class="params-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mode</th>
+                  <th>Speed</th>
+                  <th>Storage</th>
+                  <th>When to Use</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Full Sync</strong></td>
+                  <td>Slower (syncs from genesis)</td>
+                  <td>More</td>
+                  <td>Complete node with full history</td>
+                </tr>
+                <tr>
+                  <td><strong>Checkpoint Sync</strong></td>
+                  <td>Fast (syncs from recent point)</td>
+                  <td>Less</td>
+                  <td>Quick startup, trusted checkpoint</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Full Sync (Default)</h4>
+          <div class="code-block">
+            <code># SYNC_MODE=full is set by default
+# No additional configuration needed
+./node.sh start cl</code>
+            <button class="copy-btn" data-copy="./node.sh start cl">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+
+          <h4>Checkpoint Sync (Recommended for Faster Setup)</h4>
+          <p>Set checkpoint sync mode during configuration:</p>
+          <div class="code-block">
+            <code>./node.sh init cl
+# Select: 2) checkpoint
+# Enter checkpoint URL: https://checkpoin.labchain.la</code>
+            <button class="copy-btn" data-copy="./node.sh init cl">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+          <p>Or manually edit <code>CL/.env</code>:</p>
+          <div class="code-block">
+            <code># CL/.env
+SYNC_MODE=checkpoint
+CHECKPOINT_SYNC_URL=https://checkpoin.labchain.la</code>
+            <button class="copy-btn" data-copy="SYNC_MODE=checkpoint">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+
           <h3>Setup Instructions</h3>
 
           <div class="info-box">
@@ -549,6 +616,14 @@ http://localhost:8545</code>
                     <tr>
                       <td>Bootnode addresses</td>
                       <td>Pre-configured</td>
+                    </tr>
+                    <tr>
+                      <td>Sync mode</td>
+                      <td><code>full</code> or <code>checkpoint</code></td>
+                    </tr>
+                    <tr>
+                      <td>Checkpoint sync URL</td>
+                      <td>Required for checkpoint mode</td>
                     </tr>
                   </tbody>
                 </table>
