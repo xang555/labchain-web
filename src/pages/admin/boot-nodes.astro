@@ -115,7 +115,7 @@ const editItem = editId ? getBootNodeById(editId) : null;
                   <strong>{node.name}</strong>
                 </td>
                 <td>
-                  <code class="endpoint-code">{node.enode.length > 60 ? node.enode.substring(0, 60) + '...' : node.enode}</code>
+                  <code class="endpoint-code">{node.enode}</code>
                 </td>
                 <td>
                   <div class="actions-cell">
@@ -195,12 +195,19 @@ const editItem = editId ? getBootNodeById(editId) : null;
     align-items: flex-start;
   }
 
+  .table-container td:nth-child(2) {
+    max-width: 500px;
+  }
+
   .endpoint-code {
     font-size: 12px;
     background: var(--bg-tertiary);
     padding: 4px 8px;
     border-radius: var(--radius-sm);
     color: var(--text-secondary);
+    display: block;
+    word-break: break-all;
+    line-height: 1.5;
   }
 
   .inline-form {

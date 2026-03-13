@@ -127,10 +127,10 @@ const editItem = editId ? getBeaconNodeById(editId) : null;
                   <strong>{node.name}</strong>
                 </td>
                 <td>
-                  <code class="endpoint-code">{node.enr ? (node.enr.length > 40 ? node.enr.substring(0, 40) + '...' : node.enr) : '-'}</code>
+                  <code class="endpoint-code">{node.enr || '-'}</code>
                 </td>
                 <td>
-                  <code class="endpoint-code">{node.p2p ? (node.p2p.length > 40 ? node.p2p.substring(0, 40) + '...' : node.p2p) : '-'}</code>
+                  <code class="endpoint-code">{node.p2p || '-'}</code>
                 </td>
                 <td>
                   <div class="actions-cell">
@@ -216,12 +216,20 @@ const editItem = editId ? getBeaconNodeById(editId) : null;
     align-items: flex-start;
   }
 
+  .table-container td:nth-child(3),
+  .table-container td:nth-child(4) {
+    max-width: 400px;
+  }
+
   .endpoint-code {
     font-size: 12px;
     background: var(--bg-tertiary);
     padding: 4px 8px;
     border-radius: var(--radius-sm);
     color: var(--text-secondary);
+    display: block;
+    word-break: break-all;
+    line-height: 1.5;
   }
 
   .inline-form {

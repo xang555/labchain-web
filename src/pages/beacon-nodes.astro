@@ -99,14 +99,14 @@ const beaconNodes = beaconNodesRaw.map(node => ({
                   </td>
                   <td>
                     {node.enr ? (
-                      <code class="endpoint-code" title={node.enr}>{node.enr.length > 40 ? node.enr.substring(0, 40) + '...' : node.enr}</code>
+                      <code class="endpoint-code">{node.enr}</code>
                     ) : (
                       <span class="no-value">-</span>
                     )}
                   </td>
                   <td>
                     {node.p2p ? (
-                      <code class="endpoint-code" title={node.p2p}>{node.p2p.length > 40 ? node.p2p.substring(0, 40) + '...' : node.p2p}</code>
+                      <code class="endpoint-code">{node.p2p}</code>
                     ) : (
                       <span class="no-value">-</span>
                     )}
@@ -354,17 +354,20 @@ const beaconNodes = beaconNodesRaw.map(node => ({
     display: block;
   }
 
+  .data-table td:nth-child(3),
+  .data-table td:nth-child(4) {
+    max-width: 400px;
+  }
+
   .endpoint-code {
     font-size: 12px;
     color: var(--text-secondary);
     background: var(--bg-tertiary);
     padding: 4px 8px;
     border-radius: var(--radius-sm);
-    display: inline-block;
-    max-width: 300px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: block;
+    word-break: break-all;
+    line-height: 1.5;
   }
 
   .no-value {
