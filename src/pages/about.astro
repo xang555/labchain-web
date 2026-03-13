@@ -1,0 +1,385 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Logo from '../components/Logo.astro';
+---
+
+<Layout title="About LAB Chain">
+  <section class="about-hero">
+    <div class="container">
+      <div class="about-header">
+        <div class="about-logo">
+          <Logo size={100} showText={false} />
+        </div>
+        <h1 class="about-title">LAB Chain</h1>
+        <p class="about-subtitle">LAO Blockchain</p>
+        <button class="about-tagline" id="loveBtn" aria-label="See who made this">
+          <span class="tagline-heart">❤️</span>
+          <span class="tagline-text">Made with love</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Creators Modal -->
+  <div class="modal-overlay" id="modalOverlay"></div>
+  <div class="creators-modal" id="creatorsModal">
+    <button class="modal-close" id="modalClose" aria-label="Close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="modal-hearts">
+      <span class="modal-heart" style="--delay: 0s; --x: -20px;">❤️</span>
+      <span class="modal-heart" style="--delay: 0.15s; --x: 0px;">❤️</span>
+      <span class="modal-heart" style="--delay: 0.3s; --x: 20px;">❤️</span>
+    </div>
+    <div class="modal-icon">❤️</div>
+    <h2 class="modal-title">Made with Love</h2>
+    <p class="modal-subtitle">by</p>
+    <div class="creators-grid">
+      <div class="creator-card">
+        <div class="creator-avatar">👨‍💻</div>
+        <h3>Uncle Os555</h3>
+        <p>Core Developer</p>
+      </div>
+      <div class="creator-card">
+        <div class="creator-avatar">👨‍💻</div>
+        <h3>Xangnam</h3>
+        <p>Core Developer</p>
+      </div>
+    </div>
+    <div class="modal-team">
+      <span class="team-icon">🚀</span>
+      <span>LAOITDEV Team</span>
+    </div>
+  </div>
+
+  <section class="about-content">
+    <div class="container">
+      <div class="about-section">
+        <h2>What is LAB Chain?</h2>
+        <p>
+          LAB Chain is an EVM-native blockchain network built specifically for Laos. It provides fast, secure,
+          and decentralized infrastructure to power the next generation of Web3 applications in the region.
+        </p>
+        <p>
+          Our mission is to make blockchain technology accessible to everyone in Laos, enabling developers,
+          businesses, and individuals to leverage the power of decentralized systems.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .about-hero {
+    padding: 120px 0 80px;
+    background: linear-gradient(180deg, var(--gradient-primary) 0%, transparent 100%);
+    background-size: 100% 200%;
+    background-position: top;
+  }
+
+  .about-header {
+    text-align: center;
+  }
+
+  .about-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .about-title {
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 800;
+    margin-bottom: 8px;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .about-subtitle {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+
+  .about-tagline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--bg-card);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-md);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+  }
+
+  .about-tagline:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .about-tagline:active {
+    transform: scale(0.98);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .creators-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--bg-card);
+    border-radius: var(--radius-2xl);
+    padding: 48px 40px;
+    max-width: 420px;
+    width: 90%;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 20px 60px rgba(206, 17, 38, 0.3);
+  }
+
+  .creators-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+  }
+
+  .modal-close:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: rotate(90deg);
+  }
+
+  .modal-hearts {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 16px;
+  }
+
+  .modal-heart {
+    font-size: 24px;
+    animation: modalFloat 2s ease-in-out infinite;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes modalFloat {
+    0%, 100% {
+      transform: translateY(0) translateX(var(--x));
+    }
+    50% {
+      transform: translateY(-12px) translateX(var(--x));
+    }
+  }
+
+  .modal-icon {
+    font-size: 64px;
+    text-align: center;
+    margin-bottom: 16px;
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  .modal-title {
+    font-size: 28px;
+    font-weight: 800;
+    text-align: center;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+
+  .modal-subtitle {
+    font-size: 16px;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .creators-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .creator-card {
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-xl);
+    text-align: center;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+  }
+
+  .creator-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-primary);
+    box-shadow: 0 8px 24px rgba(206, 17, 38, 0.2);
+  }
+
+  .creator-avatar {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+
+  .creator-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .creator-card p {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin: 0;
+  }
+
+  .modal-team {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .team-icon {
+    font-size: 20px;
+  }
+
+  .tagline-heart {
+    font-size: 20px;
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  .tagline-text {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .about-content {
+    padding: 80px 0;
+  }
+
+  .about-section {
+    max-width: 800px;
+    margin: 0 auto 64px;
+  }
+
+  .about-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .about-section h2 {
+    font-size: 2rem;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+  }
+
+  .about-section p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .about-hero {
+      padding: 100px 0 60px;
+    }
+  }
+</style>
+
+<script>
+  const loveBtn = document.getElementById('loveBtn');
+  const modal = document.getElementById('creatorsModal');
+  const overlay = document.getElementById('modalOverlay');
+  const closeBtn = document.getElementById('modalClose');
+
+  function openModal() {
+    if (modal && overlay) {
+      modal.classList.add('active');
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeModal() {
+    if (modal && overlay) {
+      modal.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  loveBtn?.addEventListener('click', openModal);
+  closeBtn?.addEventListener('click', closeModal);
+  overlay?.addEventListener('click', closeModal);
+
+  // Close on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+</script>
