@@ -10,7 +10,7 @@ export interface Migration {
 export interface AppliedMigration {
   version: number;
   name: string;
-  applied_at: string;
+  applied_at: string | null;
 }
 
 /**
