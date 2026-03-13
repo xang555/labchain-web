@@ -89,6 +89,7 @@ export interface Session {
   user_id: number;
   expires_at: string;
   created_at: string;
+  csrf_token?: string | null;
 }
 
 export interface NodeRequest {

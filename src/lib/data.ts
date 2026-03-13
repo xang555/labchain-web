@@ -1,6 +1,6 @@
 import db from './db';
 import type { RpcEndpoint, BootNode, BeaconNode, NodeRequest, Setting, TokenRequest, Sponsor, Partner, NodeContributor } from './db';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 // Pagination helper
 export interface PaginatedResult<T> {
@@ -463,6 +463,31 @@ export function getEmailSettings(): {
   };
 }
 
+// Validation error result
+export interface ValidationError {
+  field: string;
+  message: string;
+}
+
+// Validate email address format
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Validate hostname format
+function isValidHostname(hostname: string): boolean {
+  if (!hostname || hostname.length > 253) return false;
+  const hostnameRegex = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/;
+  return hostnameRegex.test(hostname);
+}
+
+// Validate port number
+function isValidPort(port: string): boolean {
+  const portNum = Number.parseInt(port, 10);
+  return !Number.isNaN(portNum) && portNum >= 1 && portNum <= 65535;
+}
+
 export function setEmailSettings(settings: {
   smtp_host: string;
   smtp_port: string;
@@ -471,14 +496,51 @@ export function setEmailSettings(settings: {
   smtp_from: string;
   smtp_from_name: string;
   smtp_secure: string;
-}): void {
-  setSetting('smtp_host', settings.smtp_host);
-  setSetting('smtp_port', settings.smtp_port);
-  setSetting('smtp_user', settings.smtp_user);
+}): { success: boolean; errors?: ValidationError[] } {
+  const errors: ValidationError[] = [];
+
+  // Validate SMTP host
+  if (!settings.smtp_host || settings.smtp_host.trim() === '') {
+    errors.push({ field: 'smtp_host', message: 'SMTP host is required' });
+  } else if (!isValidHostname(settings.smtp_host.trim())) {
+    errors.push({ field: 'smtp_host', message: 'Invalid SMTP host format' });
+  }
+
+  // Validate SMTP port
+  if (!settings.smtp_port || settings.smtp_port.trim() === '') {
+    errors.push({ field: 'smtp_port', message: 'SMTP port is required' });
+  } else if (!isValidPort(settings.smtp_port)) {
+    errors.push({ field: 'smtp_port', message: 'SMTP port must be between 1 and 65535' });
+  }
+
+  // Validate SMTP from email
+  if (!settings.smtp_from || settings.smtp_from.trim() === '') {
+    errors.push({ field: 'smtp_from', message: 'From email is required' });
+  } else if (!isValidEmail(settings.smtp_from.trim())) {
+    errors.push({ field: 'smtp_from', message: 'Invalid from email format' });
+  }
+
+  // If there are validation errors, return them
+  if (errors.length > 0) {
+    return { success: false, errors };
+  }
+
+  // Sanitize and save settings
+  setSetting('smtp_host', settings.smtp_host.trim());
+  setSetting('smtp_port', settings.smtp_port.trim());
+  setSetting('smtp_user', settings.smtp_user.trim());
   setSetting('smtp_pass', settings.smtp_pass);
-  setSetting('smtp_from', settings.smtp_from);
-  setSetting('smtp_from_name', settings.smtp_from_name);
+  setSetting('smtp_from', settings.smtp_from.trim());
+  // Sanitize from_name to prevent HTML injection
+  setSetting('smtp_from_name', settings.smtp_from_name
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('\'', '&#x27;')
+  );
   setSetting('smtp_secure', settings.smtp_secure);
+
+  return { success: true };
 }
 
 // Token Requests

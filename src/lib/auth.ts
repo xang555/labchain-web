@@ -1,6 +1,6 @@
 import db from './db';
 import type { User, Session } from './db';
-import { createHash, randomBytes, timingSafeEqual } from 'crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 
 // Hash password using SHA-256 with salt
 export function hashPassword(password: string): string {
@@ -176,5 +176,43 @@ export function updatePassword(userId: number, currentPassword: string, newPassw
     return { success: true };
   } catch (error) {
     return { success: false, error: String(error) };
+  }
+}
+
+// CSRF Token Management
+// Generate CSRF token for a session
+export function generateCSRFToken(sessionId: string): string {
+  const token = randomBytes(32).toString('hex');
+
+  // Store the token in the database with the session
+  try {
+    db.prepare(`
+      UPDATE sessions SET csrf_token = ? WHERE id = ?
+    `).run(token, sessionId);
+  } catch (error) {
+    console.error('Error storing CSRF token:', error);
+  }
+
+  return token;
+}
+
+// Validate CSRF token
+export function validateCSRFToken(sessionId: string, token: string): boolean {
+  if (!token) {
+    return false;
+  }
+
+  const session = db.prepare(`
+    SELECT csrf_token FROM sessions WHERE id = ? AND expires_at > datetime('now')
+  `).get(sessionId) as { csrf_token: string | null } | undefined;
+
+  if (!session || !session.csrf_token) {
+    return false;
+  }
+
+  try {
+    return timingSafeEqual(Buffer.from(session.csrf_token), Buffer.from(token));
+  } catch {
+    return false;
   }
 }

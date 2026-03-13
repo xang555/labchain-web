@@ -1,7 +1,7 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
 import { getEmailSettings, setEmailSettings } from '../../lib/data';
-import { validateSessionCookie, updateUsername, updatePassword } from '../../lib/auth';
+import { validateSessionCookie, updateUsername, updatePassword, generateCSRFToken, validateCSRFToken } from '../../lib/auth';
 import { getMigrationStatus } from '../../lib/migrations';
 import { migrations } from '../../lib/migrations/index';
 import db from '../../lib/db';
@@ -12,123 +12,168 @@ if (!user) {
   return Astro.redirect('/admin/login');
 }
 
+// Extract session ID for CSRF token generation
+const cookie = Astro.request.headers.get('cookie') ?? '';
+const cookies = Object.fromEntries(
+  cookie.split(';').map(c => {
+    const [key, ...val] = c.trim().split('=');
+    return [key, val.join('=')];
+  })
+);
+const sessionId = cookies['session'] || '';
+
 let message = '';
 let messageType = '';
 let testEmailMessage = '';
 let testEmailType = '';
 let accountMessage = '';
 let accountMessageType = '';
+let formErrors: Record<string, string> = {};
+let csrfToken = '';
 
 // Handle form submissions
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
   const action = formData.get('action')?.toString();
+  const submittedCSRFToken = formData.get('csrf_token')?.toString();
 
-  if (action === 'save_email') {
-    const smtp_host = formData.get('smtp_host')?.toString() || '';
-    const smtp_port = formData.get('smtp_port')?.toString() || '587';
-    const smtp_user = formData.get('smtp_user')?.toString() || '';
-    const smtp_pass = formData.get('smtp_pass')?.toString() || '';
-    const smtp_from = formData.get('smtp_from')?.toString() || '';
-    const smtp_from_name = formData.get('smtp_from_name')?.toString() || 'LAB Chain';
-    const smtp_secure = formData.get('smtp_secure') ? 'true' : 'false';
+  // Validate CSRF token for all POST requests
+  if (!validateCSRFToken(sessionId, submittedCSRFToken || '')) {
+    message = 'Invalid security token. Please try again.';
+    messageType = 'error';
+  } else {
+    if (action === 'save_email') {
+      const smtp_host = formData.get('smtp_host')?.toString() || '';
+      const smtp_port = formData.get('smtp_port')?.toString() || '587';
+      const smtp_user = formData.get('smtp_user')?.toString() || '';
+      const smtp_pass = formData.get('smtp_pass')?.toString() || '';
+      const smtp_from = formData.get('smtp_from')?.toString() || '';
+      const smtp_from_name = formData.get('smtp_from_name')?.toString() || 'LAB Chain';
+      const smtp_secure = formData.get('smtp_secure') ? 'true' : 'false';
 
-    setEmailSettings({
-      smtp_host,
-      smtp_port,
-      smtp_user,
-      smtp_pass,
-      smtp_from,
-      smtp_from_name,
-      smtp_secure,
-    });
+      const result = setEmailSettings({
+        smtp_host,
+        smtp_port,
+        smtp_user,
+        smtp_pass,
+        smtp_from,
+        smtp_from_name,
+        smtp_secure,
+      });
 
-    message = 'Email settings saved successfully';
-    messageType = 'success';
-  } else if (action === 'test_email') {
-    const testEmail = formData.get('test_email')?.toString();
-    if (testEmail) {
-      const settings = getEmailSettings();
-      if (!settings.smtp_host || !settings.smtp_user || !settings.smtp_pass) {
-        testEmailMessage = 'Please configure SMTP settings first';
-        testEmailType = 'error';
+      if (!result.success && result.errors) {
+        // Convert validation errors to a more usable format
+        for (const error of result.errors) {
+          formErrors[error.field] = error.message;
+        }
+        message = 'Please correct the errors below';
+        messageType = 'error';
       } else {
-        try {
-          const nodemailer = await import('nodemailer');
-          const transporter = nodemailer.default.createTransport({
-            host: settings.smtp_host,
-            port: parseInt(settings.smtp_port),
-            secure: settings.smtp_secure === 'true',
-            auth: {
-              user: settings.smtp_user,
-              pass: settings.smtp_pass,
-            },
-          });
-
-          await transporter.sendMail({
-            from: `"${settings.smtp_from_name}" <${settings.smtp_from}>`,
-            to: testEmail,
-            subject: 'LAB Chain - Test Email',
-            text: 'This is a test email from LAB Chain admin panel. If you received this, your email configuration is working correctly!',
-            html: `
-              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: rgb(20, 137, 213);">LAB Chain - Test Email</h2>
-                <p>This is a test email from LAB Chain admin panel.</p>
-                <p>If you received this, your email configuration is working correctly!</p>
-                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
-                <p style="color: #6b7280; font-size: 12px;">This email was sent from the LAB Chain admin panel.</p>
-              </div>
-            `,
-          });
-
-          testEmailMessage = `Test email sent successfully to ${testEmail}`;
-          testEmailType = 'success';
-        } catch (error) {
-          testEmailMessage = `Failed to send test email: ${error instanceof Error ? error.message : String(error)}`;
+        message = 'Email settings saved successfully';
+        messageType = 'success';
+      }
+    } else if (action === 'test_email') {
+      const testEmail = formData.get('test_email')?.toString();
+      if (testEmail) {
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(testEmail)) {
+          testEmailMessage = 'Invalid email address';
           testEmailType = 'error';
+        } else {
+          const settings = getEmailSettings();
+          if (!settings.smtp_host || !settings.smtp_user || !settings.smtp_pass) {
+            testEmailMessage = 'Please configure SMTP settings first';
+            testEmailType = 'error';
+          } else {
+            try {
+              const nodemailer = await import('nodemailer');
+              const transporter = nodemailer.default.createTransport({
+                host: settings.smtp_host,
+                port: parseInt(settings.smtp_port),
+                secure: settings.smtp_secure === 'true',
+                auth: {
+                  user: settings.smtp_user,
+                  pass: settings.smtp_pass,
+                },
+              });
+
+              await transporter.sendMail({
+                from: `"${settings.smtp_from_name}" <${settings.smtp_from}>`,
+                to: testEmail,
+                subject: 'LAB Chain - Test Email',
+                text: 'This is a test email from LAB Chain admin panel. If you received this, your email configuration is working correctly!',
+                html: `
+                  <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: rgb(20, 137, 213);">LAB Chain - Test Email</h2>
+                    <p>This is a test email from LAB Chain admin panel.</p>
+                    <p>If you received this, your email configuration is working correctly!</p>
+                    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                    <p style="color: #6b7280; font-size: 12px;">This email was sent from the LAB Chain admin panel.</p>
+                  </div>
+                `,
+              });
+
+              testEmailMessage = `Test email sent successfully to ${testEmail}`;
+              testEmailType = 'success';
+            } catch (error) {
+              testEmailMessage = `Failed to send test email: ${error instanceof Error ? error.message : String(error)}`;
+              testEmailType = 'error';
+            }
+          }
+        }
+      }
+    } else if (action === 'update_username') {
+      const newUsername = formData.get('new_username')?.toString();
+      if (newUsername && newUsername.trim()) {
+        const result = updateUsername(user.id, newUsername.trim());
+        if (result.success) {
+          accountMessage = 'Username updated successfully';
+          accountMessageType = 'success';
+        } else {
+          accountMessage = result.error || 'Failed to update username';
+          accountMessageType = 'error';
+        }
+      } else {
+        accountMessage = 'Please enter a valid username';
+        accountMessageType = 'error';
+      }
+    } else if (action === 'update_password') {
+      const currentPassword = formData.get('current_password')?.toString();
+      const newPassword = formData.get('new_password')?.toString();
+      const confirmPassword = formData.get('confirm_password')?.toString();
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        accountMessage = 'Please fill in all password fields';
+        accountMessageType = 'error';
+      } else if (newPassword !== confirmPassword) {
+        accountMessage = 'New passwords do not match';
+        accountMessageType = 'error';
+      } else if (newPassword.length < 6) {
+        accountMessage = 'New password must be at least 6 characters';
+        accountMessageType = 'error';
+      } else {
+        const result = updatePassword(user.id, currentPassword, newPassword);
+        if (result.success) {
+          accountMessage = 'Password updated successfully';
+          accountMessageType = 'success';
+        } else {
+          accountMessage = result.error || 'Failed to update password';
+          accountMessageType = 'error';
         }
       }
     }
-  } else if (action === 'update_username') {
-    const newUsername = formData.get('new_username')?.toString();
-    if (newUsername && newUsername.trim()) {
-      const result = updateUsername(user.id, newUsername.trim());
-      if (result.success) {
-        accountMessage = 'Username updated successfully';
-        accountMessageType = 'success';
-      } else {
-        accountMessage = result.error || 'Failed to update username';
-        accountMessageType = 'error';
-      }
-    } else {
-      accountMessage = 'Please enter a valid username';
-      accountMessageType = 'error';
-    }
-  } else if (action === 'update_password') {
-    const currentPassword = formData.get('current_password')?.toString();
-    const newPassword = formData.get('new_password')?.toString();
-    const confirmPassword = formData.get('confirm_password')?.toString();
-
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      accountMessage = 'Please fill in all password fields';
-      accountMessageType = 'error';
-    } else if (newPassword !== confirmPassword) {
-      accountMessage = 'New passwords do not match';
-      accountMessageType = 'error';
-    } else if (newPassword.length < 6) {
-      accountMessage = 'New password must be at least 6 characters';
-      accountMessageType = 'error';
-    } else {
-      const result = updatePassword(user.id, currentPassword, newPassword);
-      if (result.success) {
-        accountMessage = 'Password updated successfully';
-        accountMessageType = 'success';
-      } else {
-        accountMessage = result.error || 'Failed to update password';
-        accountMessageType = 'error';
-      }
-    }
   }
+}
+
+// Generate CSRF token only for GET requests (after POST handling)
+// This ensures we don't overwrite the token during form submission
+if (Astro.request.method !== 'POST') {
+  csrfToken = generateCSRFToken(sessionId);
+} else {
+  // For POST requests with errors, get the existing token from DB
+  const session = db.prepare('SELECT csrf_token FROM sessions WHERE id = ?').get(sessionId) as { csrf_token: string | null } | undefined;
+  csrfToken = session?.csrf_token || generateCSRFToken(sessionId);
 }
 
 // Re-fetch user in case username was updated
@@ -229,6 +274,7 @@ const migrationStatus = getMigrationStatus(db, migrations);
         <!-- Change Username -->
         <form method="POST" class="account-form">
           <input type="hidden" name="action" value="update_username" />
+          <input type="hidden" name="csrf_token" value={csrfToken} />
           <h3 class="form-section-title">Change Username</h3>
           <div class="form-group">
             <label class="form-label" for="new_username">Username *</label>
@@ -253,6 +299,7 @@ const migrationStatus = getMigrationStatus(db, migrations);
         <!-- Change Password -->
         <form method="POST" class="account-form">
           <input type="hidden" name="action" value="update_password" />
+          <input type="hidden" name="csrf_token" value={csrfToken} />
           <h3 class="form-section-title">Change Password</h3>
           <div class="form-group">
             <label class="form-label" for="current_password">Current Password *</label>
@@ -318,6 +365,7 @@ const migrationStatus = getMigrationStatus(db, migrations);
 
       <form method="POST" class="settings-form">
         <input type="hidden" name="action" value="save_email" />
+        <input type="hidden" name="csrf_token" value={csrfToken} />
 
         <div class="form-row">
           <div class="form-group">
@@ -330,7 +378,9 @@ const migrationStatus = getMigrationStatus(db, migrations);
               value={emailSettings.smtp_host}
               placeholder="e.g., smtp.gmail.com"
               required
+              class:list={["form-input", formErrors.smtp_host && "form-input-error"]}
             />
+            {formErrors.smtp_host && <span class="form-error">{formErrors.smtp_host}</span>}
           </div>
           <div class="form-group">
             <label class="form-label" for="smtp_port">SMTP Port *</label>
@@ -341,8 +391,12 @@ const migrationStatus = getMigrationStatus(db, migrations);
               class="form-input"
               value={emailSettings.smtp_port}
               placeholder="587"
+              min="1"
+              max="65535"
               required
+              class:list={["form-input", formErrors.smtp_port && "form-input-error"]}
             />
+            {formErrors.smtp_port && <span class="form-error">{formErrors.smtp_port}</span>}
           </div>
         </div>
 
@@ -384,7 +438,9 @@ const migrationStatus = getMigrationStatus(db, migrations);
               value={emailSettings.smtp_from}
               placeholder="noreply@labchain.la"
               required
+              class:list={["form-input", formErrors.smtp_from && "form-input-error"]}
             />
+            {formErrors.smtp_from && <span class="form-error">{formErrors.smtp_from}</span>}
           </div>
           <div class="form-group">
             <label class="form-label" for="smtp_from_name">From Name</label>
@@ -445,6 +501,7 @@ const migrationStatus = getMigrationStatus(db, migrations);
 
       <form method="POST" class="settings-form">
         <input type="hidden" name="action" value="test_email" />
+        <input type="hidden" name="csrf_token" value={csrfToken} />
 
         <div class="form-group">
           <label class="form-label" for="test_email">Recipient Email *</label>
@@ -588,6 +645,17 @@ const migrationStatus = getMigrationStatus(db, migrations);
   .checkbox-text {
     font-size: 14px;
     color: var(--text-primary);
+  }
+
+  .form-input-error {
+    border-color: #ef4444 !important;
+  }
+
+  .form-error {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #ef4444;
   }
 
   .form-actions {
