@@ -210,6 +210,7 @@ const stats = [
               <div class="logo-circle">
                 <img src={sponsor.logo_url} alt={sponsor.name} class="logo-image" loading="lazy" />
               </div>
+              <span class="logo-name">{sponsor.name}</span>
             </a>
           ))}
         </div>
@@ -237,6 +238,7 @@ const stats = [
               <div class="logo-circle">
                 <img src={partner.logo_url} alt={partner.name} class="logo-image" loading="lazy" />
               </div>
+              <span class="logo-name">{partner.name}</span>
             </a>
           ))}
         </div>
@@ -264,6 +266,7 @@ const stats = [
               <div class="logo-circle">
                 <img src={contributor.logo_url} alt={contributor.name} class="logo-image" loading="lazy" />
               </div>
+              <span class="logo-name">{contributor.name}</span>
             </a>
           ))}
         </div>
@@ -871,8 +874,21 @@ const stats = [
     transform: scale(1.05);
   }
 
-  .logo-item:hover .logo-image {
-    transform: scale(1.05);
+  .logo-name {
+    margin-top: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color var(--transition-fast);
+  }
+
+  .logo-item:hover .logo-name {
+    color: var(--color-primary);
   }
 
   /* Responsive */
@@ -926,6 +942,11 @@ const stats = [
     .logo-circle {
       width: 100px;
       height: 100px;
+    }
+
+    .logo-name {
+      font-size: 16px;
+      max-width: 120px;
     }
   }
 
@@ -986,6 +1007,11 @@ const stats = [
     .logo-circle {
       width: 80px;
       height: 80px;
+    }
+
+    .logo-name {
+      font-size: 14px;
+      max-width: 100px;
     }
 
     .info-grid {
