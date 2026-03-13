@@ -1,0 +1,353 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getAllNodeContributors, getNodeContributorById, createNodeContributor, updateNodeContributor, deleteNodeContributor } from '../../lib/data';
+import { validateSessionCookie } from '../../lib/auth';
+
+// Check authentication
+const user = validateSessionCookie(Astro.request.headers.get('cookie') ?? undefined);
+if (!user) {
+  return Astro.redirect('/admin/login');
+}
+
+// Handle success messages from redirects
+const urlParamsMsg = new URL(Astro.request.url).searchParams;
+const successParam = urlParamsMsg.get('success');
+let message = '';
+let messageType = '';
+
+if (successParam === 'created') {
+  message = 'Node contributor created successfully';
+  messageType = 'success';
+} else if (successParam === 'updated') {
+  message = 'Node contributor updated successfully';
+  messageType = 'success';
+} else if (successParam === 'deleted') {
+  message = 'Node contributor deleted successfully';
+  messageType = 'success';
+}
+
+// Handle form submissions
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action')?.toString();
+
+  if (action === 'create' || action === 'update') {
+    const data = {
+      name: formData.get('name')?.toString() || '',
+      logo_url: formData.get('logo_url')?.toString() || '',
+      website_url: formData.get('website_url')?.toString() || '',
+      display_order: parseInt(formData.get('display_order')?.toString() || '0'),
+      status: formData.get('status')?.toString() || 'active',
+    };
+
+    if (action === 'create') {
+      createNodeContributor(data);
+      return Astro.redirect('/admin/node-contributors?success=created');
+    } else {
+      const id = parseInt(formData.get('id')?.toString() || '0');
+      updateNodeContributor(id, data);
+      return Astro.redirect('/admin/node-contributors?success=updated');
+    }
+  } else if (action === 'delete') {
+    const id = parseInt(formData.get('id')?.toString() || '0');
+    deleteNodeContributor(id);
+    return Astro.redirect('/admin/node-contributors?success=deleted');
+  }
+}
+
+const contributors = getAllNodeContributors();
+const showModal = urlParamsMsg.get('action') === 'new' || urlParamsMsg.get('edit');
+const editId = urlParamsMsg.get('edit') ? parseInt(urlParamsMsg.get('edit')!) : null;
+const editItem = editId ? getNodeContributorById(editId) : null;
+---
+
+<AdminLayout title="Node Contributors" currentPage="node-contributors" user={user}>
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1 class="page-title">Node Contributors</h1>
+        <p class="page-subtitle">Manage node contributor logos displayed on the landing page</p>
+      </div>
+      <a href="/admin/node-contributors?action=new" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add Contributor
+      </a>
+    </div>
+  </div>
+
+  {message && (
+    <div class={`alert alert-${messageType}`}>{message}</div>
+  )}
+
+  <div class="card">
+    {contributors.length === 0 ? (
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        </svg>
+        <h3>No Node Contributors</h3>
+        <p>Add your first node contributor to display on the landing page.</p>
+        <a href="/admin/node-contributors?action=new" class="btn btn-primary">Add Contributor</a>
+      </div>
+    ) : (
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Logo</th>
+              <th>Name</th>
+              <th>Website</th>
+              <th>Order</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contributors.map((contributor) => (
+              <tr>
+                <td>
+                  <img src={contributor.logo_url} alt={contributor.name} class="logo-thumbnail" loading="lazy" />
+                </td>
+                <td>
+                  <strong>{contributor.name}</strong>
+                </td>
+                <td>
+                  {contributor.website_url ? (
+                    <a href={contributor.website_url} target="_blank" rel="noopener noreferrer" class="external-link">
+                      {contributor.website_url}
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                      </svg>
+                    </a>
+                  ) : (
+                    <span class="text-tertiary">—</span>
+                  )}
+                </td>
+                <td>
+                  <span class="order-badge">{contributor.display_order}</span>
+                </td>
+                <td>
+                  <span class={`status-badge ${contributor.status}`}>{contributor.status}</span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <a href={`/admin/node-contributors?edit=${contributor.id}`} class="action-icon" title="Edit">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    </a>
+                    <form method="POST" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this contributor?')">
+                      <input type="hidden" name="action" value="delete" />
+                      <input type="hidden" name="id" value={contributor.id} />
+                      <button type="submit" class="action-icon delete" title="Delete">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+
+  <!-- Modal -->
+  <div class={`modal-overlay ${showModal ? 'open' : ''}`} id="modal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2 class="modal-title">{editItem ? 'Edit Node Contributor' : 'Add Node Contributor'}</h2>
+        <a href="/admin/node-contributors" class="modal-close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </a>
+      </div>
+      <form method="POST">
+        <div class="modal-body">
+          <input type="hidden" name="action" value={editItem ? 'update' : 'create'} />
+          {editItem && <input type="hidden" name="id" value={editItem.id} />}
+
+          <div class="form-group">
+            <label class="form-label">Name *</label>
+            <input type="text" name="name" class="form-input" required value={editItem?.name || ''} placeholder="e.g., NodeRunner Inc." />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Logo URL *</label>
+            <input type="url" name="logo_url" class="form-input" required value={editItem?.logo_url || ''} placeholder="https://example.com/logo.png" />
+            <small class="form-help">Recommended: Square SVG or PNG with transparent background</small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Website URL</label>
+            <input type="url" name="website_url" class="form-input" value={editItem?.website_url || ''} placeholder="https://example.com" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Display Order</label>
+              <input type="number" name="display_order" class="form-input" value={editItem?.display_order ?? 0} min="0" />
+              <small class="form-help">Lower numbers appear first</small>
+            </div>
+
+            {editItem && (
+              <div class="form-group">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                  <option value="active" selected={editItem.status === 'active'}>Active</option>
+                  <option value="inactive" selected={editItem.status === 'inactive'}>Inactive</option>
+                </select>
+              </div>
+            )}
+          </div>
+
+          {editItem && editItem.logo_url && (
+            <div class="logo-preview">
+              <span class="preview-label">Preview:</span>
+              <img src={editItem.logo_url} alt={editItem.name} class="preview-image" />
+            </div>
+          )}
+        </div>
+        <div class="modal-footer">
+          <a href="/admin/node-contributors" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary">{editItem ? 'Update' : 'Create'}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .logo-thumbnail {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    padding: 4px;
+  }
+
+  .external-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .external-link:hover {
+    color: var(--color-primary);
+  }
+
+  .order-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .text-tertiary {
+    color: var(--text-tertiary);
+  }
+
+  .inline-form {
+    display: inline;
+  }
+
+  .modal-lg {
+    max-width: 550px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-help {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  .logo-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    margin-top: 8px;
+  }
+
+  .preview-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .preview-image {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    padding: 8px;
+  }
+
+  @media (max-width: 640px) {
+    .header-content {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Close modal on overlay click
+  const modal = document.getElementById('modal');
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      window.location.href = '/admin/node-contributors';
+    }
+  });
+
+  // Close modal on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('open')) {
+      window.location.href = '/admin/node-contributors';
+    }
+  });
+</script>

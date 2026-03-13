@@ -133,7 +133,7 @@ const currentUser = validateSessionCookie(Astro.request.headers.get('cookie') ??
 const emailSettings = getEmailSettings();
 ---
 
-<AdminLayout title="Settings" currentPage="settings" user={currentUser || user}>
+<AdminLayout title="Settings" currentPage="settings-general" user={currentUser || user}>
   <div class="page-header">
     <h1 class="page-title">Settings</h1>
     <p class="page-subtitle">Configure admin account and email notifications</p>

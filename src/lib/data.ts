@@ -1,5 +1,5 @@
 import db from './db';
-import type { RpcEndpoint, BootNode, BeaconNode, NodeRequest, Setting, TokenRequest } from './db';
+import type { RpcEndpoint, BootNode, BeaconNode, NodeRequest, Setting, TokenRequest, Sponsor, Partner, NodeContributor } from './db';
 import { randomBytes } from 'crypto';
 
 // Pagination helper
@@ -590,4 +590,169 @@ export function getTokenRequestStats() {
   const total = (db.prepare("SELECT COUNT(*) as count FROM token_requests").get() as { count: number }).count;
 
   return { pending, approved, transferred, rejected, total };
+}
+
+// ============================================
+// SPONSORS
+// ============================================
+
+export function getAllSponsors(): Sponsor[] {
+  return db.prepare('SELECT * FROM sponsors ORDER BY display_order ASC, name ASC').all() as Sponsor[];
+}
+
+export function getActiveSponsors(): Sponsor[] {
+  return db.prepare("SELECT * FROM sponsors WHERE status = 'active' ORDER BY display_order ASC, name ASC").all() as Sponsor[];
+}
+
+export function getSponsorById(id: number): Sponsor | null {
+  return db.prepare('SELECT * FROM sponsors WHERE id = ?').get(id) as Sponsor | null;
+}
+
+export function createSponsor(data: { name: string; logo_url: string; website_url?: string; display_order?: number }): Sponsor {
+  const stmt = db.prepare(`
+    INSERT INTO sponsors (name, logo_url, website_url, display_order)
+    VALUES (?, ?, ?, ?)
+  `);
+  const result = stmt.run(
+    data.name,
+    data.logo_url,
+    data.website_url || '',
+    data.display_order ?? 0
+  );
+  return db.prepare('SELECT * FROM sponsors WHERE id = ?').get(result.lastInsertRowid) as Sponsor;
+}
+
+export function updateSponsor(id: number, data: { name?: string; logo_url?: string; website_url?: string; display_order?: number; status?: string }): Sponsor | null {
+  const existing = getSponsorById(id);
+  if (!existing) return null;
+
+  const stmt = db.prepare(`
+    UPDATE sponsors
+    SET name = ?, logo_url = ?, website_url = ?, display_order = ?, status = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+  stmt.run(
+    data.name ?? existing.name,
+    data.logo_url ?? existing.logo_url,
+    data.website_url ?? existing.website_url,
+    data.display_order ?? existing.display_order,
+    data.status ?? existing.status,
+    id
+  );
+  return getSponsorById(id);
+}
+
+export function deleteSponsor(id: number): boolean {
+  const result = db.prepare('DELETE FROM sponsors WHERE id = ?').run(id);
+  return result.changes > 0;
+}
+
+// ============================================
+// PARTNERS
+// ============================================
+
+export function getAllPartners(): Partner[] {
+  return db.prepare('SELECT * FROM partners ORDER BY display_order ASC, name ASC').all() as Partner[];
+}
+
+export function getActivePartners(): Partner[] {
+  return db.prepare("SELECT * FROM partners WHERE status = 'active' ORDER BY display_order ASC, name ASC").all() as Partner[];
+}
+
+export function getPartnerById(id: number): Partner | null {
+  return db.prepare('SELECT * FROM partners WHERE id = ?').get(id) as Partner | null;
+}
+
+export function createPartner(data: { name: string; logo_url: string; website_url?: string; display_order?: number }): Partner {
+  const stmt = db.prepare(`
+    INSERT INTO partners (name, logo_url, website_url, display_order)
+    VALUES (?, ?, ?, ?)
+  `);
+  const result = stmt.run(
+    data.name,
+    data.logo_url,
+    data.website_url || '',
+    data.display_order ?? 0
+  );
+  return db.prepare('SELECT * FROM partners WHERE id = ?').get(result.lastInsertRowid) as Partner;
+}
+
+export function updatePartner(id: number, data: { name?: string; logo_url?: string; website_url?: string; display_order?: number; status?: string }): Partner | null {
+  const existing = getPartnerById(id);
+  if (!existing) return null;
+
+  const stmt = db.prepare(`
+    UPDATE partners
+    SET name = ?, logo_url = ?, website_url = ?, display_order = ?, status = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+  stmt.run(
+    data.name ?? existing.name,
+    data.logo_url ?? existing.logo_url,
+    data.website_url ?? existing.website_url,
+    data.display_order ?? existing.display_order,
+    data.status ?? existing.status,
+    id
+  );
+  return getPartnerById(id);
+}
+
+export function deletePartner(id: number): boolean {
+  const result = db.prepare('DELETE FROM partners WHERE id = ?').run(id);
+  return result.changes > 0;
+}
+
+// ============================================
+// NODE CONTRIBUTORS
+// ============================================
+
+export function getAllNodeContributors(): NodeContributor[] {
+  return db.prepare('SELECT * FROM node_contributors ORDER BY display_order ASC, name ASC').all() as NodeContributor[];
+}
+
+export function getActiveNodeContributors(): NodeContributor[] {
+  return db.prepare("SELECT * FROM node_contributors WHERE status = 'active' ORDER BY display_order ASC, name ASC").all() as NodeContributor[];
+}
+
+export function getNodeContributorById(id: number): NodeContributor | null {
+  return db.prepare('SELECT * FROM node_contributors WHERE id = ?').get(id) as NodeContributor | null;
+}
+
+export function createNodeContributor(data: { name: string; logo_url: string; website_url?: string; display_order?: number }): NodeContributor {
+  const stmt = db.prepare(`
+    INSERT INTO node_contributors (name, logo_url, website_url, display_order)
+    VALUES (?, ?, ?, ?)
+  `);
+  const result = stmt.run(
+    data.name,
+    data.logo_url,
+    data.website_url || '',
+    data.display_order ?? 0
+  );
+  return db.prepare('SELECT * FROM node_contributors WHERE id = ?').get(result.lastInsertRowid) as NodeContributor;
+}
+
+export function updateNodeContributor(id: number, data: { name?: string; logo_url?: string; website_url?: string; display_order?: number; status?: string }): NodeContributor | null {
+  const existing = getNodeContributorById(id);
+  if (!existing) return null;
+
+  const stmt = db.prepare(`
+    UPDATE node_contributors
+    SET name = ?, logo_url = ?, website_url = ?, display_order = ?, status = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `);
+  stmt.run(
+    data.name ?? existing.name,
+    data.logo_url ?? existing.logo_url,
+    data.website_url ?? existing.website_url,
+    data.display_order ?? existing.display_order,
+    data.status ?? existing.status,
+    id
+  );
+  return getNodeContributorById(id);
+}
+
+export function deleteNodeContributor(id: number): boolean {
+  const result = db.prepare('DELETE FROM node_contributors WHERE id = ?').run(id);
+  return result.changes > 0;
 }

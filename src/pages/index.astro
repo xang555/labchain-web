@@ -1,6 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Logo from '../components/Logo.astro';
+import { getActiveSponsors, getActivePartners, getActiveNodeContributors } from '../lib/data';
+
+const sponsors = getActiveSponsors();
+const partners = getActivePartners();
+const contributors = getActiveNodeContributors();
 
 const features = [
   {
@@ -184,6 +189,87 @@ const stats = [
       </div>
     </div>
   </section>
+
+  <!-- Sponsors Section -->
+  {sponsors.length > 0 && (
+    <section class="logos-section sponsors-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Our Sponsors</h2>
+          <p>Supported by leading organizations powering the LAB Chain ecosystem</p>
+        </div>
+        <div class="logos-grid">
+          {sponsors.map((sponsor) => (
+            <a
+              href={sponsor.website_url || '#'}
+              target={sponsor.website_url ? '_blank' : undefined}
+              rel={sponsor.website_url ? 'noopener noreferrer' : undefined}
+              class="logo-item"
+              title={sponsor.name}
+            >
+              <div class="logo-circle">
+                <img src={sponsor.logo_url} alt={sponsor.name} class="logo-image" loading="lazy" />
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Partners Section -->
+  {partners.length > 0 && (
+    <section class="logos-section partners-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Our Partners</h2>
+          <p>Collaborating with industry leaders to advance blockchain adoption</p>
+        </div>
+        <div class="logos-grid">
+          {partners.map((partner) => (
+            <a
+              href={partner.website_url || '#'}
+              target={partner.website_url ? '_blank' : undefined}
+              rel={partner.website_url ? 'noopener noreferrer' : undefined}
+              class="logo-item"
+              title={partner.name}
+            >
+              <div class="logo-circle">
+                <img src={partner.logo_url} alt={partner.name} class="logo-image" loading="lazy" />
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Node Contributors Section -->
+  {contributors.length > 0 && (
+    <section class="logos-section contributors-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Node Contributors</h2>
+          <p>Community members operating nodes and securing the network</p>
+        </div>
+        <div class="logos-grid">
+          {contributors.map((contributor) => (
+            <a
+              href={contributor.website_url || '#'}
+              target={contributor.website_url ? '_blank' : undefined}
+              rel={contributor.website_url ? 'noopener noreferrer' : undefined}
+              class="logo-item"
+              title={contributor.name}
+            >
+              <div class="logo-circle">
+                <img src={contributor.logo_url} alt={contributor.name} class="logo-image" loading="lazy" />
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
   <!-- CTA Section -->
   <section class="cta">
@@ -563,6 +649,234 @@ const stats = [
     color: var(--color-primary);
   }
 
+  /* Ecosystem Section */
+  .ecosystem {
+    padding: 100px 0;
+    background: var(--bg-secondary);
+  }
+
+  .ecosystem-section {
+    margin-bottom: 64px;
+  }
+
+  .ecosystem-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .ecosystem-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 32px;
+    color: var(--text-primary);
+  }
+
+  .ecosystem-title svg {
+    color: var(--color-primary);
+  }
+
+  .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 24px;
+  }
+
+  .logo-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-normal);
+    aspect-ratio: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .logo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary);
+  }
+
+  .logo-card:hover::before {
+    opacity: 1;
+  }
+
+  .logo-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+  }
+
+  .logo-card[href="#"] {
+    cursor: default;
+  }
+
+  .logo-img {
+    width: 100%;
+    height: 100%;
+    max-width: 120px;
+    max-height: 80px;
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+    filter: brightness(0) saturate(100%);
+    transition: filter var(--transition-normal);
+  }
+
+  [data-theme="dark"] .logo-img {
+    filter: brightness(0) saturate(100%);
+  }
+
+  [data-theme="light"] .logo-img {
+    filter: brightness(1) saturate(100%);
+  }
+
+  .logo-card:hover .logo-img {
+    filter: brightness(1) saturate(100%);
+  }
+
+  /* ============================================
+     MODERN LOGO SECTIONS
+  ============================================ */
+
+  .logos-section {
+    padding: 80px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .logos-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.4;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(206, 17, 38, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 50%, rgba(0, 40, 104, 0.08) 0%, transparent 50%);
+  }
+
+  .sponsors-section {
+    background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(206, 17, 38, 0.03) 50%, var(--bg-primary) 100%);
+  }
+
+  .partners-section {
+    background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(0, 40, 104, 0.03) 50%, var(--bg-primary) 100%);
+  }
+
+  .contributors-section {
+    background: linear-gradient(180deg, var(--bg-primary) 0%, rgba(206, 17, 38, 0.02) 50%, var(--bg-primary) 100%);
+  }
+
+  .logos-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .logo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform var(--transition-normal);
+  }
+
+  .logo-item[href="#"] {
+    pointer-events: none;
+  }
+
+  .logo-item:hover {
+    transform: translateY(-8px);
+  }
+
+  .logo-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    display: block;
+    overflow: hidden;
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.08),
+      0 0 0 0 rgba(206, 17, 38, 0);
+    transition: all var(--transition-normal);
+    position: relative;
+  }
+
+  [data-theme="dark"] .logo-circle {
+    background: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+    border-color: #4a5568;
+  }
+
+  [data-theme="light"] .logo-circle {
+    background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+    border-color: #e2e8f0;
+  }
+
+  .logo-circle::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    padding: 3px;
+    background: var(--color-primary);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    z-index: 1;
+  }
+
+  .logo-item:hover .logo-circle {
+    box-shadow:
+      0 8px 32px rgba(20, 137, 213, 0.35),
+      0 0 0 5px rgba(20, 137, 213, 0.15);
+    transform: translateY(-4px);
+    border-color: var(--color-primary);
+  }
+
+  .logo-item:hover .logo-circle::before {
+    opacity: 1;
+  }
+
+  .logo-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform var(--transition-normal);
+  }
+
+  .logo-item:hover .logo-image {
+    transform: scale(1.05);
+  }
+
+  .logo-item:hover .logo-image {
+    transform: scale(1.05);
+  }
+
+  /* Responsive */
+
   /* Responsive */
   @media (max-width: 1024px) {
     .hero .container {
@@ -587,6 +901,32 @@ const stats = [
     .info-grid {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    .logo-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+    }
+
+    .ecosystem-title {
+      font-size: 18px;
+    }
+
+    .logo-card {
+      padding: 24px 16px;
+    }
+
+    .logos-section {
+      padding: 60px 0;
+    }
+
+    .logos-grid {
+      gap: 30px;
+    }
+
+    .logo-circle {
+      width: 100px;
+      height: 100px;
+    }
   }
 
   @media (max-width: 640px) {
@@ -609,6 +949,67 @@ const stats = [
 
     .features-grid {
       grid-template-columns: 1fr;
+    }
+
+    .ecosystem {
+      padding: 64px 0;
+    }
+
+    .ecosystem-section {
+      margin-bottom: 48px;
+    }
+
+    .ecosystem-title {
+      font-size: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .logo-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .logo-card {
+      padding: 20px 12px;
+      border-radius: var(--radius-lg);
+    }
+
+    .logos-section {
+      padding: 48px 0;
+    }
+
+    .logos-grid {
+      gap: 20px;
+    }
+
+    .logo-circle {
+      width: 80px;
+      height: 80px;
+    }
+
+    .info-grid {
+      padding: 64px 0;
+    }
+
+    .ecosystem-section {
+      margin-bottom: 48px;
+    }
+
+    .ecosystem-title {
+      font-size: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .logo-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .logo-card {
+      padding: 20px 12px;
+      border-radius: var(--radius-lg);
     }
 
     .info-grid {

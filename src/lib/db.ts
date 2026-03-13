@@ -184,6 +184,48 @@ export function initDatabase() {
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Sponsors table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS sponsors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      logo_url TEXT NOT NULL,
+      website_url TEXT,
+      display_order INTEGER DEFAULT 0,
+      status TEXT DEFAULT 'active',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Partners table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS partners (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      logo_url TEXT NOT NULL,
+      website_url TEXT,
+      display_order INTEGER DEFAULT 0,
+      status TEXT DEFAULT 'active',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Node contributors table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS node_contributors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      logo_url TEXT NOT NULL,
+      website_url TEXT,
+      display_order INTEGER DEFAULT 0,
+      status TEXT DEFAULT 'active',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 }
 
 // Initialize database on import
@@ -287,6 +329,39 @@ export interface TokenRequest {
   status: 'pending' | 'approved' | 'rejected' | 'transferred';
   transferred_amount: string;
   admin_notes: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Sponsor {
+  id: number;
+  name: string;
+  logo_url: string;
+  website_url: string;
+  display_order: number;
+  status: 'active' | 'inactive';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Partner {
+  id: number;
+  name: string;
+  logo_url: string;
+  website_url: string;
+  display_order: number;
+  status: 'active' | 'inactive';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NodeContributor {
+  id: number;
+  name: string;
+  logo_url: string;
+  website_url: string;
+  display_order: number;
+  status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
 }
