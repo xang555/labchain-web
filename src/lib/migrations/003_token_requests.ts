@@ -8,7 +8,7 @@ export const migration: Migration = {
   up: (db: Database) => {
     // Token requests table for LAB token faucet requests
     db.exec(`
-      CREATE TABLE token_requests (
+      CREATE TABLE IF NOT EXISTS token_requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         tracking_id TEXT UNIQUE NOT NULL,
         first_name TEXT NOT NULL,

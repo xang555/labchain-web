@@ -8,7 +8,7 @@ export const migration: Migration = {
   up: (db: Database) => {
     // Users table for admin authentication
     db.exec(`
-      CREATE TABLE users (
+      CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
@@ -19,7 +19,7 @@ export const migration: Migration = {
 
     // RPC endpoints table
     db.exec(`
-      CREATE TABLE rpc_endpoints (
+      CREATE TABLE IF NOT EXISTS rpc_endpoints (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         endpoint TEXT NOT NULL,
@@ -37,7 +37,7 @@ export const migration: Migration = {
 
     // Boot nodes table
     db.exec(`
-      CREATE TABLE boot_nodes (
+      CREATE TABLE IF NOT EXISTS boot_nodes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         enode TEXT NOT NULL,
@@ -53,7 +53,7 @@ export const migration: Migration = {
 
     // Beacon nodes table (initial version with endpoint NOT NULL and no enr/p2p columns)
     db.exec(`
-      CREATE TABLE beacon_nodes (
+      CREATE TABLE IF NOT EXISTS beacon_nodes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         endpoint TEXT NOT NULL,
@@ -71,7 +71,7 @@ export const migration: Migration = {
 
     // Sessions table for authentication
     db.exec(`
-      CREATE TABLE sessions (
+      CREATE TABLE IF NOT EXISTS sessions (
         id TEXT PRIMARY KEY,
         user_id INTEGER NOT NULL,
         expires_at DATETIME NOT NULL,
@@ -82,7 +82,7 @@ export const migration: Migration = {
 
     // Node requests table for user submissions
     db.exec(`
-      CREATE TABLE node_requests (
+      CREATE TABLE IF NOT EXISTS node_requests (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         tracking_id TEXT UNIQUE NOT NULL,
         node_type TEXT NOT NULL,
@@ -101,7 +101,7 @@ export const migration: Migration = {
 
     // Settings table for application configuration
     db.exec(`
-      CREATE TABLE settings (
+      CREATE TABLE IF NOT EXISTS settings (
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP

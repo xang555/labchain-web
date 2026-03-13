@@ -8,7 +8,7 @@ export const migration: Migration = {
   up: (db: Database) => {
     // Sponsors table
     db.exec(`
-      CREATE TABLE sponsors (
+      CREATE TABLE IF NOT EXISTS sponsors (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         logo_url TEXT NOT NULL,
@@ -22,7 +22,7 @@ export const migration: Migration = {
 
     // Partners table
     db.exec(`
-      CREATE TABLE partners (
+      CREATE TABLE IF NOT EXISTS partners (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         logo_url TEXT NOT NULL,
@@ -36,7 +36,7 @@ export const migration: Migration = {
 
     // Node contributors table
     db.exec(`
-      CREATE TABLE node_contributors (
+      CREATE TABLE IF NOT EXISTS node_contributors (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         logo_url TEXT NOT NULL,
