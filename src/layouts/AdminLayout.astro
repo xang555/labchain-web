@@ -370,7 +370,7 @@ const navItems = [
       width: 100%;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 12px;
       padding: 12px 16px;
       border-radius: var(--radius-md);
@@ -412,6 +412,7 @@ const navItems = [
     }
 
     .nav-toggle .chevron {
+      margin-left: auto;
       transition: transform var(--transition-fast);
       flex-shrink: 0;
       opacity: 0.5;
